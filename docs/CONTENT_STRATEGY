@@ -1,0 +1,84 @@
+# Navigate Peptides — Content & SEO Strategy
+
+## The Constraint That Changes Everything
+
+The payment processor explicitly prohibits: "No blogs, FAQs, or SEO terms that imply personal or human use." LegitScript is unavailable for RUO vendors, blocking Google Ads and Meta Ads. **Organic SEO with purely scientific content is the only scalable traffic channel.**
+
+## Research Section (Client Vision: Knowledge Authority)
+
+### Structure
+| Section | Path | Content |
+|---------|------|---------|
+| Research Intelligence | /research/intelligence | Trend analysis, market data, industry context |
+| Research Library | /research/library | Mechanism deep-dives, pathway analysis articles |
+| Research Framework | /research/framework | Classification methodology, testing standards |
+| Emerging Research | /research/emerging | Novel compounds, new mechanisms, long-acting systems |
+
+### Compliant Content Model (Amino Foundry Standard)
+
+Every article must follow:
+- Purely molecular-mechanism language
+- PubMed PMID citations for every claim
+- Named scientific team byline
+- RUO disclaimer at end of every article
+- NO health outcomes, NO human dosing, NO consumer framing
+
+**Good:** "BPC-157 has been examined in rodent models for its interaction with nitric oxide synthase (NOS) pathways and VEGF expression in tissue preparations."
+
+**Bad:** "BPC-157 helps with gut healing and joint recovery."
+
+### Priority Articles
+
+1. **"Long-Acting Peptide Systems: Next-Generation Research Compounds"** (Client-requested)
+2. **"Understanding HPLC and Mass Spectrometry in Peptide Verification"**
+3. **"BPC-157: Published Preclinical Research Overview"**
+4. **"Mitochondrial Peptides: MOTS-c and SS-31 Research Landscape"**
+
+### Downloadable Content
+Research articles as PDFs — positions brand as reference point, captures leads.
+
+## SEO Strategy
+
+### Target Keywords
+- "peptide sciences alternative" — massive post-shutdown volume
+- "buy BPC-157 online" / "research peptides for sale"
+- "peptide COA verification" / "HPLC peptide testing"
+- "best peptide vendor 2026"
+- Compound-specific: "[compound name] research peptide"
+
+### Technical SEO
+- SSR/SSG for all public pages
+- Product schema, Article schema, Organization schema, BreadcrumbList, FAQPage
+- XML sitemap, canonical URLs, Open Graph tags
+- Page speed: Lighthouse >90, LCP <2.5s
+
+### Link Building Opportunity
+Peptide Sciences had 1.5M monthly visits and DA 41 before shutdown. Thousands of broken links point to their product pages. Broken link building against PS's backlink profile is the highest-ROI SEO tactic available.
+
+### Content Types That Rank (Within Compliance)
+- Individual compound pages (sequence, MW, CAS, research citations)
+- Scientific comparison tables (by mechanism, molecular target)
+- COA documentation and methodology pages
+- Peptide purity analysis and verification guides
+- Industry/regulatory analysis (factual, no consumer framing)
+
+## Aggregator Listings (Critical for Visibility)
+
+| Site | How to Get Listed |
+|------|-------------------|
+| PeptideDeck | Editorial review + COA verification + affiliate (10-15%) |
+| Peptibase | Research evidence + affiliate |
+| Muscle & Brawn | Outreach + samples |
+| Nootroholic | COA standards + affiliate |
+| The Peptide List | Community submission |
+
+Without an affiliate program, Navigate won't get listed. Budget 10-15% commission.
+
+## What We CANNOT Do (Processor Restrictions)
+- ❌ Blog posts framed around personal use scenarios
+- ❌ FAQs like "How do I use BPC-157?" or "What dose should I take?"
+- ❌ SEO content targeting human-use queries
+- ❌ Social media marketing with lifestyle/fitness framing
+- ❌ Influencer partnerships
+- ❌ Google Ads or Meta Ads (no LegitScript)
+- ❌ Email marketing with health benefit messaging
