@@ -1,0 +1,87 @@
+# Navigate Peptides — Product Catalog
+
+## Categories & Compounds
+
+### Metabolic Research (`#2F4666`)
+| Compound | Sizes | Price | Subtitle |
+|----------|-------|-------|----------|
+| AOD-9604 | 5mg | $35-50 | Modified hGH Fragment 177-191 |
+| 5-Amino-1MQ | 10mg | $40-55 | NNMT Inhibitor — Methylquinolinium Salt |
+| MOTS-c | 5mg | $45-60 | Mitochondrial-Derived Peptide — 16aa Sequence |
+| CJC-1295 (no DAC) | 5mg | $25-35 | Modified GRF 1-29 — Tetrasubstituted Analog |
+| Ipamorelin | 5mg | $25-35 | Selective GH Secretagogue — Pentapeptide |
+
+### Tissue Repair Research (`#9C843E`)
+| Compound | Sizes | Price | Subtitle |
+|----------|-------|-------|----------|
+| BPC-157 | 5mg, 10mg | $35-45/5mg | Synthetic Pentadecapeptide — BPC Fragment 15 |
+| TB-500 | 5mg, 10mg | $30-40/5mg | Thymosin Beta-4 Fragment — Actin-Binding Peptide |
+| KPV | 5mg | $40-55 | Alpha-MSH C-Terminal Tripeptide Fragment |
+
+### Cognitive Research (`#5E507F`)
+| Compound | Sizes | Price | Subtitle |
+|----------|-------|-------|----------|
+| Selank | 5mg | $25-35 | Synthetic Tuftsin Analog — Heptapeptide |
+| Semax | 5mg | $25-35 | Synthetic ACTH(4-7) Analog — Heptapeptide |
+| Dihexa | 10mg | $40-55 | Angiotensin IV Analog — Hexanedioic Acid Derivative |
+| PE-22-28 | 10mg | $35-50 | Spadin Analog — Neuroactive Heptapeptide |
+
+### Inflammation Research (`#4A141C`)
+| Compound | Sizes | Price | Subtitle |
+|----------|-------|-------|----------|
+| KPV | 5mg | $40-55 | Alpha-MSH C-Terminal Tripeptide Fragment |
+| BPC-157 | 5mg, 10mg | $35-45/5mg | Synthetic Pentadecapeptide — BPC Fragment 15 |
+| Thymosin Alpha-1 | 5mg | $40-55 | Thymic Peptide — Immune Modulation Sequence |
+
+### Cellular Research (`#8E5660`)
+| Compound | Sizes | Price | Subtitle |
+|----------|-------|-------|----------|
+| GHK-Cu | 50mg | $35-50 | Copper Tripeptide Complex — GHK-Cu Chelate |
+| Epithalon | 10mg | $30-45 | Synthetic Tetrapeptide — Ala-Glu-Asp-Gly |
+| Thymosin Alpha-1 | 5mg | $40-55 | Thymic Peptide — Immune Modulation Sequence |
+
+### Dermal Research (`#4A6B5F`)
+| Compound | Sizes | Price | Subtitle |
+|----------|-------|-------|----------|
+| GHK-Cu | 50mg | $35-50 | Copper Tripeptide Complex — GHK-Cu Chelate |
+| PT-141 | 10mg | $30-40 | Synthetic Melanocortin Analog |
+| Epithalon | 10mg | $30-45 | Synthetic Tetrapeptide — Ala-Glu-Asp-Gly |
+
+### Research Blends (`#474C50`)
+| Compound | Sizes | Price | Subtitle |
+|----------|-------|-------|----------|
+| BPC-157 + TB-500 | 10mg | $55-70 | Dual Peptide Research Formulation |
+| CJC-1295 + Ipamorelin | 10mg | $50-65 | Dual Secretagogue Research Blend |
+
+## Data Model
+
+```typescript
+interface Product {
+  slug: string;
+  name: string;
+  technicalSubtitle: string;
+  scientificDescription: string;       // 1-line, mechanisms only
+  categories: CategorySlug[];
+  primaryCategory: CategorySlug;
+  researchFocus: string[];             // Bullet points — pathways, NOT benefits
+  studiesAvailable: Citation[];
+  casNumber: string;
+  molecularWeight: string;
+  sequence?: string;
+  purity: string;
+  form: string;
+  variants: { size: string; price: number; sku: string }[];
+  coa: { batchNumber: string; testingLab: string; accreditation: string; testDate: string; purityPct: number; methods: string[]; pdfUrl: string };
+  storage: string;
+  tags?: string[];
+  image: string;
+}
+
+type CategorySlug = 'metabolic' | 'tissue-repair' | 'cognitive' | 'inflammation' | 'cellular' | 'dermal' | 'blends';
+```
+
+## Expansion Plan
+- Launch: 15-20 SKUs across all 7 categories
+- Month 2: 40-50 SKUs
+- Month 3+: 60-90 SKUs
+- AVOID: semaglutide, tirzepatide, retatrutide, Melanotan II
