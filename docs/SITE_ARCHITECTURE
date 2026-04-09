@@ -1,0 +1,105 @@
+# Navigate Peptides — Site Architecture
+
+## Navigation (Client-Specified)
+
+Four items: **Compounds** | **Research** | **Quality** | **About**
+Plus: "Request Access" CTA button.
+
+## 1. Compounds
+
+**Flow:** `/compounds` → `/compounds/[category]` → `/compounds/[category]/[slug]`
+
+### Categories (7)
+| Category | Slug | Color |
+|----------|------|-------|
+| Metabolic Research | metabolic | #2F4666 |
+| Tissue Repair Research | tissue-repair | #9C843E |
+| Cognitive Research | cognitive | #5E507F |
+| Inflammation Research | inflammation | #4A141C |
+| Cellular Research | cellular | #8E5660 |
+| Dermal Research | dermal | #4A6B5F |
+| Research Blends | blends | #474C50 |
+
+### Product Detail Page (Client-Specified Structure)
+1. Product name
+2. Technical subtitle
+3. Short scientific description (1 line)
+4. Research focus (bullet points)
+5. Studies available
+6. Purity / COA information
+7. Research-use disclaimer
+
+Plus: vial photo with category color accent, product info panel, price/cart.
+
+### Product Tags
+- "Extended Half-Life" — for modified analogs
+- "Long-Acting Profile" — alternative
+- Include short technical explanation (no performance claims)
+
+## 2. Research
+
+Four subsections (client-specified):
+| Subsection | Path | Content |
+|------------|------|---------|
+| Research Intelligence | /research/intelligence | Trend analysis, market insights |
+| Research Library | /research/library | Deep-dive articles, guides |
+| Research Framework | /research/framework | Methodology, classification |
+| Emerging Research | /research/emerging | New compounds, novel mechanisms |
+
+⚠️ All research content must be purely scientific. Processor prohibits blogs/FAQs implying human use.
+
+## 3. Quality
+
+| Subsection | Path |
+|------------|------|
+| Testing & Verification | /quality/testing |
+| Lab Results (COA) | /quality/coa |
+| Manufacturing Standards | /quality/manufacturing |
+| Handling & Storage | /quality/handling |
+
+## 4. About
+
+| Subsection | Path |
+|------------|------|
+| Company | /about |
+| Standards | /about/standards |
+| Contact / Access | /about/contact |
+
+## Homepage Sections
+1. Nav bar — Logo + 4 items + Request Access
+2. Hero — Kicker, serif headline, body, CTAs, vial + info card
+3. Research Categories — 7-card grid
+4. Trust Signals — Third-Party Tested / Lab Use Only / GMP
+5. Footer — 3 columns + disclaimer + copyright
+
+## Full Route Map
+```
+/                                    → Homepage
+/compounds                           → All categories
+/compounds/[category]                → Category listing
+/compounds/[category]/[slug]         → Product detail
+/research                            → Research hub
+/research/intelligence               → Research Intelligence
+/research/library                    → Research Library
+/research/framework                  → Research Framework
+/research/emerging                   → Emerging Research
+/research/[slug]                     → Article
+/quality                             → Quality overview
+/quality/testing                     → Testing & Verification
+/quality/coa                         → COA lookup
+/quality/manufacturing               → Manufacturing Standards
+/quality/handling                    → Handling & Storage
+/about                               → Company
+/about/standards                     → Standards
+/about/contact                       → Contact / Request Access
+/cart                                → Cart
+/checkout                            → Checkout (multi-gateway, RUO checkbox)
+```
+
+## Technical Requirements
+- Next.js App Router, SSR/SSG for SEO
+- WooCommerce backend (AllayPay requires it)
+- WordPress admin for non-technical content updates
+- Mobile-first (60%+ traffic is mobile), target <3s load
+- Schema markup: Product, Article, Organization, BreadcrumbList, FAQPage
+- XML sitemap, robots.txt, canonical URLs, Open Graph tags
