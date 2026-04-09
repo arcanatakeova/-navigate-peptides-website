@@ -1,70 +1,36 @@
-# Navigate Peptides — Website Project
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## What Is This
+## Getting Started
 
-Navigate Peptides is a premium biotech-style research peptide e-commerce website. This repo contains the Next.js frontend that connects to a WooCommerce backend via headless API.
-
-The site should feel minimal, controlled, and high-end — like a biotech company, not a supplement store. Everything is research-positioned. No health claims, no consumer language, no lifestyle marketing.
-
-## Quick Start
+First, run the development server:
 
 ```bash
-npm install
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-## Repo Structure
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-```
-├── CLAUDE.md                    ← Claude Code instructions (READ FIRST)
-├── README.md                    ← You are here
-├── docs/
-│   ├── BRAND_AND_DESIGN.md      ← Design system, colors, typography, components
-│   ├── COMPLIANCE.md            ← ⚠️ FDA + processor content rules (CRITICAL)
-│   ├── SITE_ARCHITECTURE.md     ← Routes, nav structure, page requirements
-│   ├── PRODUCT_CATALOG.md       ← All SKUs, data model, pricing, categories
-│   ├── PAYMENT_PROCESSING.md    ← Processor stack, gateway integration, BRAM
-│   ├── CONTENT_STRATEGY.md      ← Research hub, SEO, compliant content approach
-│   ├── COMPETITIVE_INTEL.md     ← Competitor analysis, positioning
-│   └── MARKET_INTEL.md          ← Market size, FDA timeline, trends
-├── src/
-│   ├── app/                     ← Next.js App Router pages
-│   ├── components/              ← React components
-│   ├── lib/                     ← API clients, utilities
-│   └── styles/                  ← Global CSS, Tailwind config
-├── public/                      ← Static assets, product images
-└── package.json
-```
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## Tech Stack
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-- **Frontend:** Next.js (App Router) + Tailwind CSS
-- **Backend:** WooCommerce (headless, via REST API)
-- **Payments:** AllayPay/NMI (primary), Coinbase Commerce (crypto), Paycron (ACH)
-- **Fonts:** Playfair Display, Inter, JetBrains Mono
-- **Hosting:** Vercel
-- **CMS:** WordPress/WooCommerce admin for non-technical content updates
+## Learn More
 
-## Key Constraints
+To learn more about Next.js, take a look at the following resources:
 
-1. **Compliance is the #1 priority.** Read `docs/COMPLIANCE.md` before writing any text. The payment processor audits every page before approving the merchant account. FDA has shut down vendors for language violations.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-2. **No health claims anywhere.** Not in copy, not in meta tags, not in alt text, not in code comments that render. Describe mechanisms and pathways only.
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-3. **Payment processor requires WooCommerce.** AllayPay's NMI plugin requires a WooCommerce backend. The checkout either redirects to WooCommerce-hosted checkout or uses NMI's Collect.js tokenization on the Next.js side.
+## Deploy on Vercel
 
-4. **No paid advertising.** LegitScript certification is unavailable for RUO vendors, which blocks Google Ads and Meta Ads. Organic SEO is the only scalable traffic channel. Every page must be optimized.
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-5. **Site must be fully compliant before first transaction.** Mastercard's MMP program requires pre-transaction website scanning. No grace period.
-
-## Design Direction
-
-Dark, matte, scientific. Seven research categories each with a unique color. See `docs/BRAND_AND_DESIGN.md` for the full design system including exact hex codes, typography, and component patterns from the client-approved mockup.
-
-## Navigation
-
-Four items: **Compounds** | **Research** | **Quality** | **About**
-
-## Owner
-
-Built for Navigate Peptides by [your name/studio].
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
