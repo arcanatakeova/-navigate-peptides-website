@@ -55,78 +55,160 @@ remove_action('woocommerce_single_product_summary', 'woocommerce_template_single
  * Custom product tabs
  * ----------------------------------------------------------------*/
 add_filter('woocommerce_product_tabs', function ($tabs) {
-    // Remove default tabs
+    // Remove ALL default tabs — replace with Stephie's 3-tab structure
     unset($tabs['reviews']);
+    unset($tabs['additional_information']);
 
-    // Rename description tab
+    // Tab 1: Research Overview (replaces Description)
     if (isset($tabs['description'])) {
-        $tabs['description']['title'] = __('Research Context', 'navigate-peptides');
+        $tabs['description']['title']    = __('Research Overview', 'navigate-peptides');
         $tabs['description']['priority'] = 10;
+        $tabs['description']['callback'] = 'nav_research_overview_tab';
+    } else {
+        $tabs['research_overview'] = [
+            'title'    => __('Research Overview', 'navigate-peptides'),
+            'priority' => 10,
+            'callback' => 'nav_research_overview_tab',
+        ];
     }
 
-    // Add Research Focus tab
-    $tabs['research_focus'] = [
-        'title'    => __('Research Focus', 'navigate-peptides'),
+    // Tab 2: Technical Specifications
+    $tabs['technical_specs'] = [
+        'title'    => __('Technical Specifications', 'navigate-peptides'),
         'priority' => 20,
-        'callback' => 'nav_research_focus_tab',
+        'callback' => 'nav_technical_specs_tab',
     ];
 
-    // Add COA tab
-    $tabs['coa'] = [
-        'title'    => __('Certificate of Analysis', 'navigate-peptides'),
+    // Tab 3: Batch Verification
+    $tabs['batch_verification'] = [
+        'title'    => __('Batch Verification', 'navigate-peptides'),
         'priority' => 30,
-        'callback' => 'nav_coa_tab',
+        'callback' => 'nav_batch_verification_tab',
     ];
 
     return $tabs;
 });
 
-function nav_research_focus_tab(): void {
+/**
+ * Tab 1: Research Overview
+ * Compound description + research focus bullet points.
+ */
+function nav_research_overview_tab(): void {
     global $product;
+
+    echo '<div class="nav-tab-content">';
+    echo '<h2>' . esc_html__('Research Overview', 'navigate-peptides') . '</h2>';
+
+    // Product description
+    $desc = $product->get_description();
+    if ($desc) {
+        echo '<div class="nav-tab-content__text">' . wp_kses_post(wpautop($desc)) . '</div>';
+    }
+
+    echo '<p class="nav-tab-content__ruo">';
+    echo esc_html__('This compound is classified within structured research frameworks and is supplied for controlled laboratory environments.', 'navigate-peptides');
+    echo '</p>';
+
+    // Research focus
     $focus = get_post_meta($product->get_id(), '_nav_research_focus', true);
     if ($focus) {
-        echo '<div class="nav-research-focus">';
-        echo '<h2>' . esc_html__('Research Focus', 'navigate-peptides') . '</h2>';
-        echo '<ul class="nav-research-focus__list">';
-        $items = explode("\n", $focus);
+        echo '<h3>' . esc_html__('Research Focus', 'navigate-peptides') . '</h3>';
+        echo '<ul class="nav-tab-content__list">';
+        $items = array_filter(array_map('trim', explode("\n", $focus)));
         foreach ($items as $item) {
-            $item = trim($item);
-            if ($item) {
-                echo '<li>' . esc_html($item) . '</li>';
-            }
+            echo '<li>' . esc_html($item) . '</li>';
         }
         echo '</ul>';
-        echo '</div>';
-    } else {
-        echo '<p class="nav-text-muted">' . esc_html__('Research focus data is being prepared for this compound.', 'navigate-peptides') . '</p>';
     }
+
+    echo '</div>';
 }
 
-function nav_coa_tab(): void {
+/**
+ * Tab 2: Technical Specifications
+ * CAS, MW, sequence, form, storage, purity — in a structured grid.
+ */
+function nav_technical_specs_tab(): void {
     global $product;
+
+    $specs = [
+        'Molecular Structure' => get_post_meta($product->get_id(), '_nav_sequence', true),
+        'Molecular Weight'    => get_post_meta($product->get_id(), '_nav_molecular_weight', true),
+        'CAS Number'          => get_post_meta($product->get_id(), '_nav_cas_number', true),
+        'Form'                => get_post_meta($product->get_id(), '_nav_form', true),
+        'Purity'              => get_post_meta($product->get_id(), '_nav_purity', true),
+        'Storage'             => get_post_meta($product->get_id(), '_nav_storage', true),
+    ];
+
+    echo '<div class="nav-tab-content">';
+    echo '<h2>' . esc_html__('Technical Specifications', 'navigate-peptides') . '</h2>';
+    echo '<div class="nav-tab-specs">';
+
+    foreach ($specs as $label => $value) {
+        if (!$value) $value = __('Available', 'navigate-peptides');
+        echo '<div class="nav-tab-specs__row">';
+        echo '<span class="nav-tab-specs__label">' . esc_html($label) . '</span>';
+        echo '<span class="nav-tab-specs__value">' . esc_html($value) . '</span>';
+        echo '</div>';
+    }
+
+    echo '</div>';
+
+    // Additional notes
+    echo '<div class="nav-tab-specs__notes">';
+    echo '<div class="nav-tab-specs__note"><span>Analytical Data</span><span>' . esc_html__('Available upon request', 'navigate-peptides') . '</span></div>';
+    echo '<div class="nav-tab-specs__note"><span>Stability Profile</span><span>' . esc_html__('Controlled conditions required', 'navigate-peptides') . '</span></div>';
+    echo '<div class="nav-tab-specs__note"><span>Reconstitution</span><span>' . esc_html__('Laboratory handling required', 'navigate-peptides') . '</span></div>';
+    echo '</div>';
+    echo '</div>';
+}
+
+/**
+ * Tab 3: Batch Verification
+ * COA data, batch number, testing lab, download link.
+ */
+function nav_batch_verification_tab(): void {
+    global $product;
+
     $coa_url = get_post_meta($product->get_id(), '_nav_coa_pdf', true);
     $batch   = get_post_meta($product->get_id(), '_nav_batch_number', true);
     $lab     = get_post_meta($product->get_id(), '_nav_testing_lab', true);
     $purity  = get_post_meta($product->get_id(), '_nav_purity', true);
 
-    echo '<div class="nav-coa-tab">';
-    echo '<h2>' . esc_html__('Certificate of Analysis', 'navigate-peptides') . '</h2>';
+    echo '<div class="nav-tab-content">';
+    echo '<h2>' . esc_html__('Batch Verification', 'navigate-peptides') . '</h2>';
 
-    if ($batch || $lab || $purity) {
-        echo '<div class="nav-coa-tab__specs">';
-        if ($batch) echo '<div class="nav-coa-tab__row"><span class="nav-coa-tab__label">Batch</span><span class="nav-coa-tab__value">' . esc_html($batch) . '</span></div>';
-        if ($lab) echo '<div class="nav-coa-tab__row"><span class="nav-coa-tab__label">Testing Lab</span><span class="nav-coa-tab__value">' . esc_html($lab) . '</span></div>';
-        if ($purity) echo '<div class="nav-coa-tab__row"><span class="nav-coa-tab__label">Purity</span><span class="nav-coa-tab__value">' . esc_html($purity) . '</span></div>';
-        echo '</div>';
-    }
-
+    // COA Download Button
     if ($coa_url) {
-        echo '<a href="' . esc_url($coa_url) . '" class="nav-btn nav-btn--outline" target="_blank" rel="noopener">';
-        echo esc_html__('Download COA (PDF)', 'navigate-peptides');
+        echo '<a href="' . esc_url($coa_url) . '" class="nav-tab-coa-btn" target="_blank" rel="noopener">';
+        echo esc_html__('View Certificate of Analysis', 'navigate-peptides');
+        echo ' <span>→</span>';
         echo '</a>';
-    } else {
-        echo '<p class="nav-text-muted">' . esc_html__('COA will be available once this batch has completed third-party testing.', 'navigate-peptides') . '</p>';
     }
+
+    // Batch details
+    if ($batch || $lab || $purity) {
+        echo '<div class="nav-tab-specs" style="margin-top:24px;">';
+        if ($batch) echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">Batch Number</span><span class="nav-tab-specs__value">' . esc_html($batch) . '</span></div>';
+        if ($purity) echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">Verified Purity</span><span class="nav-tab-specs__value">' . esc_html($purity) . '</span></div>';
+        if ($lab) echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">Testing Laboratory</span><span class="nav-tab-specs__value">' . esc_html($lab) . '</span></div>';
+        echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">Methods</span><span class="nav-tab-specs__value">HPLC, Mass Spectrometry</span></div>';
+        echo '</div>';
+    } else {
+        echo '<p class="nav-text-muted">' . esc_html__('Batch verification data will be available once third-party testing is complete.', 'navigate-peptides') . '</p>';
+    }
+
+    // Additional links matching mockup
+    echo '<div class="nav-tab-links">';
+    echo '<a href="' . esc_url(home_url('/quality/testing/')) . '" class="nav-tab-link">Research Classification <span>→</span></a>';
+    echo '<a href="' . esc_url(home_url('/quality/handling/')) . '" class="nav-tab-link">Handling &amp; Storage <span>→</span></a>';
+    echo '</div>';
+
+    // Disclaimer
+    echo '<div class="nav-tab-disclaimer">';
+    echo '<p>' . esc_html__('This product is supplied for research purposes only.', 'navigate-peptides') . '</p>';
+    echo '<p>' . esc_html__('Not for human or veterinary use.', 'navigate-peptides') . '</p>';
+    echo '</div>';
 
     echo '</div>';
 }

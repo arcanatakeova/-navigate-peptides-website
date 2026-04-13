@@ -7,8 +7,8 @@
         <div class="nav-footer__grid">
             <div class="nav-footer__col">
                 <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-footer__logo">
-                    <span class="nav-header__logo-mark">NP</span>
-                    <span class="nav-header__logo-text"><?php bloginfo('name'); ?></span>
+                    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-footer__logo-icon"><path d="M14 2L2 26h24L14 2z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 20c4-6 8-6 12 0" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+                    <span class="nav-footer__logo-name"><?php bloginfo('name'); ?></span>
                 </a>
                 <p class="nav-footer__tagline">
                     Research peptide compounds with verified certificates of analysis.
