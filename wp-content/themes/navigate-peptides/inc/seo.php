@@ -36,8 +36,10 @@ add_action('wp_head', function () {
  */
 add_action('wp_head', function () {
     if (!is_singular('product')) return;
+    if (!function_exists('wc_get_product')) return;
 
-    global $product;
+    global $post;
+    $product = wc_get_product($post);
     if (!$product) return;
 
     $terms = get_the_terms($product->get_id(), 'product_cat');
