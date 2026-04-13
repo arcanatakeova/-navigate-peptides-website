@@ -844,3 +844,126 @@
 .nav-product-single__disclaimer {
     border-radius: var(--nav-radius-xl, 16px);
 }
+
+/* ==========================================================================
+   CHECKOUT — Navigate Peptides Layout
+   ========================================================================== */
+.nav-checkout-wrapper {
+    padding: var(--nav-gap-2xl, 64px) 0;
+}
+
+.nav-checkout-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--nav-gap-xl, 40px);
+    max-width: var(--nav-container-max, 1280px);
+    margin: 0 auto;
+    padding: 0 var(--nav-container-px, 24px);
+}
+
+@media (min-width: 1024px) {
+    .nav-checkout-grid {
+        grid-template-columns: 1.2fr 0.8fr;
+    }
+}
+
+.nav-checkout-section {
+    margin-bottom: var(--nav-gap-xl, 40px);
+}
+
+.nav-checkout-section h3 {
+    font-size: 20px;
+    margin-bottom: var(--nav-gap-md, 16px);
+}
+
+.nav-checkout-order-review {
+    position: sticky;
+    top: 96px;
+    padding: var(--nav-gap-lg, 24px);
+    border: 1px solid var(--nav-glass-border, rgba(234, 234, 234, 0.1));
+    border-radius: var(--nav-radius-xl, 16px);
+    background: var(--nav-glass-bg, rgba(26, 42, 36, 0.65));
+    backdrop-filter: blur(var(--nav-glass-blur-sm, 8px));
+    -webkit-backdrop-filter: blur(var(--nav-glass-blur-sm, 8px));
+}
+
+.nav-checkout-order-review h3 {
+    font-size: 20px;
+    margin-bottom: var(--nav-gap-md, 16px);
+}
+
+.nav-checkout-disclaimer {
+    margin-top: var(--nav-gap-md, 16px);
+    padding: var(--nav-gap-md, 16px);
+    border: 1px solid var(--nav-border-subtle, rgba(234, 234, 234, 0.08));
+    border-radius: var(--nav-radius-md, 8px);
+}
+
+.nav-checkout-disclaimer p {
+    font-family: var(--nav-font-mono, monospace);
+    font-size: 11px;
+    color: var(--nav-text-muted, #6b7975);
+    line-height: 1.6;
+}
+
+/* ==========================================================================
+   CART — Responsive Table
+   ========================================================================== */
+@media (max-width: 767px) {
+    .woocommerce-cart-form table,
+    .woocommerce-cart-form thead,
+    .woocommerce-cart-form tbody,
+    .woocommerce-cart-form th,
+    .woocommerce-cart-form td,
+    .woocommerce-cart-form tr {
+        display: block;
+    }
+
+    .woocommerce-cart-form thead {
+        display: none;
+    }
+
+    .woocommerce-cart-form .woocommerce-cart-form__cart-item {
+        position: relative;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--nav-border-subtle, rgba(234, 234, 234, 0.08));
+    }
+
+    .woocommerce-cart-form td {
+        padding: 4px 0;
+        border: none;
+    }
+
+    .woocommerce-cart-form td::before {
+        content: attr(data-title);
+        font-family: var(--nav-font-mono, monospace);
+        font-size: 11px;
+        color: var(--nav-text-muted, #6b7975);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .woocommerce-cart-form .product-remove {
+        position: absolute;
+        top: 16px;
+        right: 0;
+    }
+
+    .woocommerce-cart-form .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-top: 16px;
+    }
+
+    .woocommerce-cart-form .coupon {
+        display: flex;
+        gap: 8px;
+    }
+
+    .woocommerce-cart-form .coupon input {
+        flex: 1;
+    }
+}

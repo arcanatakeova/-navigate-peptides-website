@@ -345,6 +345,8 @@ add_action('woocommerce_review_order_before_submit', function () {
 });
 
 add_action('woocommerce_checkout_process', function () {
+    // Nonce verification is handled by WooCommerce core checkout form processing.
+    // phpcs:ignore WordPress.Security.NonceVerification.Missing
     if (empty($_POST['nav_ruo_acknowledgment'])) {
         wc_add_notice(
             __('You must acknowledge the research-use-only agreement before completing your order.', 'navigate-peptides'),

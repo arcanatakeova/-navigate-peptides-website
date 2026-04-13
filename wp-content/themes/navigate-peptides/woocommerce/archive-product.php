@@ -91,7 +91,7 @@ $cat_color     = $is_category ? nav_get_category_color($current_cat->slug) : '#4
                         <div class="nav-product-card__accent"></div>
                         <div class="nav-product-card__image">
                             <?php if (has_post_thumbnail()) : ?>
-                                <?php the_post_thumbnail('product-card'); ?>
+                                <?php echo wp_get_attachment_image(get_post_thumbnail_id(), 'product-card', false, ['loading' => 'lazy']); ?>
                             <?php else : ?>
                                 <div class="nav-product-card__placeholder">
                                     <span><?php echo esc_html(mb_strtoupper(mb_substr(get_the_title(), 0, 3))); ?></span>
