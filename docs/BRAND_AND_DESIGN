@@ -1,0 +1,119 @@
+# Navigate Peptides — Brand & Design System
+
+> Source of truth: Client Direction page + approved mockups. Do not deviate.
+
+## Design Philosophy
+
+Premium biotech-style brand. Minimal, controlled, high-end. Strong scientific credibility. A knowledge authority, not just a supplier. Dark, matte, low-saturation throughout.
+
+## Colors
+
+### Base
+```css
+--nav-brand-green: #2A3B36;        /* Primary brand — backgrounds, panels */
+```
+
+### Text
+```css
+--nav-text-primary: #EAEAEA;        /* Primary text */
+--nav-text-secondary: #A8B0AD;      /* Secondary/supporting */
+```
+
+### Category Colors (Client-Approved Final)
+
+One color per category. Same color for: vial cap band, mg text, thin accent line, site badges.
+
+| Category | Color Name | HEX |
+|----------|-----------|-----|
+| Metabolic Research | Deep Cognitive Blue | `#2F4666` |
+| Tissue Repair Research | Repair Gold | `#9C843E` |
+| Cognitive Research | Longevity Violet | `#5E507F` |
+| Inflammation Research | Advanced Wine | `#4A141C` |
+| Cellular Research | Cellular Rose | `#8E5660` |
+| Dermal Research | Dermal Green | `#4A6B5F` |
+| Research Blends | Elite Graphite | `#474C50` |
+
+### Color Rules
+- One color per category — never mix
+- No gradients
+- Matte / low saturation only
+- Consistent across vial, product page accent, category card, catalog tag
+
+### Full CSS Variables
+```css
+:root {
+  --nav-bg-primary: #1a2a24;
+  --nav-bg-secondary: #2A3B36;
+  --nav-bg-card: #1f302a;
+  --nav-text-primary: #EAEAEA;
+  --nav-text-secondary: #A8B0AD;
+  --nav-text-muted: #6b7975;
+  --nav-border-subtle: rgba(234, 234, 234, 0.08);
+  --nav-border-medium: rgba(234, 234, 234, 0.15);
+  --nav-cat-metabolic: #2F4666;
+  --nav-cat-tissue: #9C843E;
+  --nav-cat-cognitive: #5E507F;
+  --nav-cat-inflammation: #4A141C;
+  --nav-cat-cellular: #8E5660;
+  --nav-cat-dermal: #4A6B5F;
+  --nav-cat-blends: #474C50;
+  --nav-accent: #9C843E;
+}
+```
+
+## Typography
+
+```css
+:root {
+  --nav-font-display: 'Playfair Display', Georgia, serif;     /* Hero headlines */
+  --nav-font-body: 'Inter', -apple-system, sans-serif;        /* Body, UI, nav */
+  --nav-font-mono: 'JetBrains Mono', 'SF Mono', monospace;    /* CAS numbers, batch IDs */
+}
+```
+
+### Patterns
+- **Kicker labels:** All-caps Inter, wide letter-spacing, accent color, left-border line
+- **Hero headline:** Large Playfair Display, warm white
+- **Section headings:** All-caps Inter, centered, wide tracking
+- **Body text:** Inter, secondary text color
+- **Technical data:** JetBrains Mono
+- **Buttons:** All-caps Inter, outlined (not filled), letter-spaced
+
+## Components
+
+### Navigation
+```
+[◇ NAVIGATE PEPTIDES]    Compounds    Research    Quality    About    [Request Access]
+```
+
+### Hero (Homepage)
+- Left: Kicker → Serif headline → Body text → Two outlined CTAs
+- Right: Product vial photo (dark, moody) + Product Info overlay card
+
+### Category Cards (7-card grid)
+Each: illustration, title, description, "VIEW" button, category color accent
+
+### Trust Signals (3 items, centered with icons)
+1. THIRD-PARTY TESTED
+2. LABORATORY USE ONLY
+3. GMP COMPLIANT MANUFACTURING
+
+### Buttons
+Outlined only. Not filled. ~4px radius. Uppercase, letter-spaced.
+
+### Footer
+Three columns (Company, Research Directory, Resources) + RUO disclaimer + copyright
+
+## Imagery
+- Product photography: dark, moody lighting, category color on cap band
+- Category illustrations: molecular structures, microscopy, cellular imagery
+- Icons: simple line-art, thin stroke
+- NO stock lab photos. NO human imagery. NO before/after.
+
+## Spacing & Radius
+```css
+--nav-radius-sm: 4px;
+--nav-radius-md: 6px;
+--nav-radius-lg: 8px;
+```
+Almost rectangular — sharp and controlled.

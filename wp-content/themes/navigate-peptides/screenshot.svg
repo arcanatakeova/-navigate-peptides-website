@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <rect width="1200" height="900" fill="#2A3B36"/>
+  <rect x="0" y="0" width="1200" height="72" fill="#1a2a24"/>
+  <rect x="48" y="16" width="36" height="36" rx="4" fill="none" stroke="rgba(234,234,234,0.15)" stroke-width="1"/>
+  <text x="58" y="40" font-family="monospace" font-size="12" font-weight="700" fill="#EAEAEA">NP</text>
+  <text x="96" y="42" font-family="Georgia" font-size="18" font-weight="600" fill="#EAEAEA">Navigate Peptides</text>
+  <text x="310" y="42" font-family="sans-serif" font-size="14" fill="#A8B0AD">Compounds</text>
+  <text x="420" y="42" font-family="sans-serif" font-size="14" fill="#A8B0AD">Research</text>
+  <text x="520" y="42" font-family="sans-serif" font-size="14" fill="#A8B0AD">Quality</text>
+  <text x="600" y="42" font-family="sans-serif" font-size="14" fill="#A8B0AD">About</text>
+  <text x="48" y="240" font-family="monospace" font-size="11" letter-spacing="3" fill="#A8B0AD">RESEARCH PEPTIDE COMPOUNDS</text>
+  <text x="48" y="310" font-family="Georgia" font-size="48" font-weight="600" fill="#EAEAEA">Advancing Peptide</text>
+  <text x="48" y="370" font-family="Georgia" font-size="48" font-weight="600" fill="#EAEAEA">Research Through</text>
+  <text x="48" y="430" font-family="Georgia" font-size="48" font-weight="600" fill="#EAEAEA">Precision and Purity</text>
+  <rect x="48" y="480" width="180" height="44" rx="4" fill="#EAEAEA"/>
+  <text x="90" y="508" font-family="sans-serif" font-size="13" font-weight="600" fill="#2A3B36">BROWSE COMPOUNDS</text>
+  <rect x="244" y="480" width="200" height="44" rx="4" fill="none" stroke="rgba(234,234,234,0.15)" stroke-width="1"/>
+  <text x="270" y="508" font-family="sans-serif" font-size="13" font-weight="500" fill="#EAEAEA">VIEW QUALITY STANDARDS</text>
+  <!-- Category cards -->
+  <rect x="48" y="600" width="270" height="160" rx="8" fill="#1a2a24" stroke="rgba(234,234,234,0.15)" stroke-width="1"/>
+  <rect x="48" y="600" width="270" height="4" rx="0" fill="#2F4666"/>
+  <rect x="336" y="600" width="270" height="160" rx="8" fill="#1a2a24" stroke="rgba(234,234,234,0.15)" stroke-width="1"/>
+  <rect x="336" y="600" width="270" height="4" rx="0" fill="#9C843E"/>
+  <rect x="624" y="600" width="270" height="160" rx="8" fill="#1a2a24" stroke="rgba(234,234,234,0.15)" stroke-width="1"/>
+  <rect x="624" y="600" width="270" height="4" rx="0" fill="#5E507F"/>
+  <rect x="912" y="600" width="270" height="160" rx="8" fill="#1a2a24" stroke="rgba(234,234,234,0.15)" stroke-width="1"/>
+  <rect x="912" y="600" width="270" height="4" rx="0" fill="#4A141C"/>
+  <!-- Footer disclaimer -->
+  <text x="600" y="870" text-anchor="middle" font-family="monospace" font-size="10" fill="#6b7975">All products sold on this website are intended for research and identification purposes only.</text>
+</svg>

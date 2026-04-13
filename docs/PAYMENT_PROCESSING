@@ -1,0 +1,109 @@
+# Navigate Peptides — Payment Processing
+
+> ⚠️ #1 operational risk. Standard processors WILL ban peptide merchants. The site must be fully compliant before the merchant account activates — Mastercard MMP requires pre-transaction scanning.
+
+## Processor Architecture
+
+```
+Customer Checkout
+  ├── Credit/Debit Card → AllayPay (NMI gateway) [PRIMARY]
+  ├── Cryptocurrency    → Coinbase Commerce (BTC, ETH, USDC)
+  └── eCheck/ACH        → Paycron
+```
+
+## Primary: AllayPay (NMI Gateway)
+
+- Supports peptide startups specifically, MCC 8099
+- **Gateway: Argyle's Gateway (NMI)** — startups must use this
+- **10% rolling reserve** — held 6 months, releases begin month 7
+- VAR sheet (negotiable rate card) available after 12 months clean processing
+- Minimum pricing requirements apply
+- **Requires WooCommerce** — their NMI plugin must install on WooCommerce backend
+- Approval timeline: 5-10 business days
+- Processing rates: expect 6-10% effective rate
+
+### Documentation Required for Underwriting
+- Complete Merchant Processing Agreement
+- Reserve Form (10%)
+- Government ID for each owner
+- SS4 Form (EIN verification)
+- Voided check or bank letter
+- Articles of Incorporation or Operating Agreement
+- 3 months business or personal bank statements
+- 3 months processing statements (if applicable)
+- Fulfillment Agreement (if applicable)
+- 2 years financials or tax returns (if applicable)
+
+### Website Requirements (Processor-Mandated)
+- Products MUST have scientific, technical descriptions
+- Per-product disclaimer: "All products currently listed on this site are for research purposes ONLY."
+- Sitewide disclaimer: "All products sold on this website are intended for research and identification purposes only. These products are not intended for human dosing, injection, or ingestion."
+- No health/wellness/performance/weight-loss/anti-aging/recovery claims
+- No dosage guidance, protocols, cycles, stacks
+- No testimonials describing outcomes or effects
+- No influencer, social media, or lifestyle marketing
+- No blogs, FAQs, or SEO terms implying personal or human use
+- Peptides strictly for laboratory, academic, or institutional research
+
+## Crypto: Coinbase Commerce
+
+- Zero chargebacks, no underwriting
+- BTC, ETH, USDC supported
+- WooCommerce plugin available + Node.js SDK for Next.js
+- Activate Day 1 as alternative payment method
+- Offer 10% crypto discount (industry standard)
+- No processor risk — operates independently of card networks
+
+## ACH: Paycron
+
+- eCheck/ACH only — NOT credit cards for peptide merchants
+- 99% approval rate
+- Good for high-AOV orders ($150+)
+- Secondary payment rail, not primary
+
+## Processors That Will NOT Work
+
+- ❌ Stripe — will freeze funds
+- ❌ PayPal — will freeze funds
+- ❌ Square — will freeze funds
+- ❌ Shopify Payments — will freeze funds
+- ❌ Corepay — no longer supports RUO peptide vendors (requires LegitScript + clinical model as of April 2024)
+
+## Chargeback Prevention (Critical)
+
+Visa VAMP program (Jan 2026): "Excessive" threshold at **0.9%** dispute ratio.
+
+Required tools:
+- Verifi CDRN (pre-dispute resolution, doesn't count toward VAMP ratio)
+- Rapid Dispute Resolution (RDR)
+- Clear billing descriptor matching "Navigate Peptides" exactly
+- 3D Secure v2 (supported by NMI)
+
+## Integration Architecture
+
+### Option A: WooCommerce-Hosted Checkout (Simplest)
+Next.js frontend → Cart API → Redirect to WooCommerce checkout page
+- Full AllayPay/NMI plugin compatibility
+- All payment gateways work through WooCommerce plugins
+- Easiest to maintain
+
+### Option B: Headless Checkout (More Complex)
+Next.js frontend → NMI Collect.js tokenization → WooCommerce Store API for order
+- Better UX (no redirect)
+- Requires NMI JavaScript SDK integration
+- Coinbase Commerce via Next.js API routes
+- Custom failover logic needed
+
+### Recommended: Start with Option A, migrate to B later.
+
+## Fund Protection
+- Separate business bank account for peptide revenue
+- 30-day cash reserve for potential processor holds
+- Diversify: target 60% card, 25% crypto, 15% ACH
+- Budget for 6-10% effective processing cost
+
+## LegitScript
+
+NOT available for RUO vendors. Their October 2025 guidance flags "research chemicals" with RUO disclaimers as red flags. AllayPay works without it.
+
+If business pivots to clinical/telehealth: LegitScript becomes available ($975 app + $2,150/year), unlocks Google Ads, Meta Ads, and better processor terms.
