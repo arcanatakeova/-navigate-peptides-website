@@ -200,6 +200,15 @@ add_action('woocommerce_product_options_general_product_data', function () {
         'placeholder' => 'https://...',
     ]);
 
+    woocommerce_wp_text_input([
+        'id'          => '_nav_3d_model_url',
+        'label'       => __('3D Model URL (.glb)', 'navigate-peptides'),
+        'type'        => 'url',
+        'placeholder' => 'https://example.com/models/vial.glb',
+        'description' => __('Interactive 3D vial model. Leave blank to use product image.', 'navigate-peptides'),
+        'desc_tip'    => true,
+    ]);
+
     echo '</div>';
 });
 
@@ -216,6 +225,7 @@ add_action('woocommerce_process_product_meta', function ($post_id) {
         '_nav_batch_number',
         '_nav_testing_lab',
         '_nav_coa_pdf',
+        '_nav_3d_model_url',
     ];
 
     foreach ($fields as $field) {

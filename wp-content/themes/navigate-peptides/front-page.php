@@ -114,12 +114,17 @@ $theme_uri = get_template_directory_uri();
                     </div>
                 </div>
 
+                <!-- COA Link -->
+                <a href="<?php echo esc_url(home_url('/quality/coa/')); ?>" class="nav-info-panel__coa-link">
+                    COA &amp; Analytical Data
+                </a>
+
                 <!-- Storage -->
                 <div class="nav-info-panel__footer">
-                    <div class="nav-info-panel__row">
-                        <span class="nav-info-panel__label">Storage</span>
-                        <span class="nav-info-panel__value">Store cold at 2-8°C.<br>Protect from light and moisture.</span>
-                    </div>
+                    <div class="nav-info-panel__section-label">Storage</div>
+                    <p class="nav-info-panel__storage">
+                        Store cold at 2-8°C.<br>Protect from light and moisture.
+                    </p>
                     <div class="nav-info-panel__mfg">
                         Manufactured in a GMP-Compliant Facility
                     </div>

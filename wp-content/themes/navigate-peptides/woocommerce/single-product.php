@@ -44,10 +44,32 @@ while (have_posts()) : the_post();
     <div class="nav-container">
         <div class="nav-product-single__grid">
 
-            <!-- Left: Product Image -->
+            <!-- Left: Product Image / 3D Model -->
             <div class="nav-product-single__media">
                 <div class="nav-product-single__image">
-                    <?php if (has_post_thumbnail()) : ?>
+                    <?php
+                    // Check for 3D model GLB file
+                    $glb_url = get_post_meta($product->get_id(), '_nav_3d_model_url', true);
+                    ?>
+                    <?php if ($glb_url) : ?>
+                        <model-viewer
+                            src="<?php echo esc_url($glb_url); ?>"
+                            alt="<?php echo esc_attr(get_the_title()); ?> — 3D interactive model"
+                            auto-rotate
+                            camera-controls
+                            rotation-per-second="10deg"
+                            camera-orbit="20deg 75deg 105%"
+                            environment-image="neutral"
+                            shadow-intensity="0.4"
+                            exposure="1.1"
+                            style="width:100%;height:100%;min-height:400px;"
+                            loading="eager"
+                        >
+                            <?php if (has_post_thumbnail()) : ?>
+                                <img slot="poster" src="<?php echo esc_url(get_the_post_thumbnail_url(null, 'product-hero')); ?>" alt="<?php the_title_attribute(); ?>">
+                            <?php endif; ?>
+                        </model-viewer>
+                    <?php elseif (has_post_thumbnail()) : ?>
                         <?php the_post_thumbnail('product-hero'); ?>
                     <?php else : ?>
                         <div class="nav-product-single__placeholder">
