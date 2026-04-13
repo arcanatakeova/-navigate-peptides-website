@@ -16,7 +16,7 @@
     <div class="nav-container nav-header__inner">
 
         <!-- Logo -->
-        <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-header__logo" aria-label="<?php bloginfo('name'); ?> — Home">
+        <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-header__logo" aria-label="<?php echo esc_attr(get_bloginfo('name')); ?> — Home">
             <?php if (has_custom_logo()) : ?>
                 <?php the_custom_logo(); ?>
             <?php else : ?>

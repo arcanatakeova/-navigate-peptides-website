@@ -21,13 +21,17 @@ get_header();
             <?php
             // Use Contact Form 7 or WPForms shortcode if available
             $cf7_form = get_post_meta(get_the_ID(), '_nav_contact_form_shortcode', true);
-            if ($cf7_form) {
-                echo do_shortcode($cf7_form);
-            } else {
+            if ($cf7_form && preg_match('/^\[contact-form-7\s/', $cf7_form)) {
+                echo do_shortcode(wp_kses($cf7_form, []));
+            } elseif (!$cf7_form) {
             ?>
             <form class="nav-form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                 <input type="hidden" name="action" value="nav_contact_form">
                 <?php wp_nonce_field('nav_contact_nonce', 'nav_nonce'); ?>
+                <div aria-hidden="true" style="position:absolute;left:-9999px;">
+                    <label for="nav-website">Website</label>
+                    <input type="text" id="nav-website" name="nav_hp_field" tabindex="-1" autocomplete="off">
+                </div>
 
                 <div class="nav-form__row nav-form__row--2">
                     <div class="nav-form__field">

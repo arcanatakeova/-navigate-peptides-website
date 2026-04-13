@@ -8,7 +8,7 @@
             <div class="nav-footer__col">
                 <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-footer__logo">
                     <span class="nav-header__logo-mark">NP</span>
-                    <span class="nav-header__logo-text"><?php bloginfo('name'); ?></span>
+                    <span class="nav-header__logo-text"><?php echo esc_html(get_bloginfo('name')); ?></span>
                 </a>
                 <p class="nav-footer__tagline">
                     Research peptide compounds with verified certificates of analysis.
@@ -76,7 +76,7 @@
 
         <!-- Bottom Bar -->
         <div class="nav-footer__bottom">
-            <p>&copy; <?php echo esc_html(date('Y')); ?> <?php bloginfo('name'); ?>. All rights reserved.</p>
+            <p>&copy; <?php echo esc_html(date('Y')); ?> <?php echo esc_html(get_bloginfo('name')); ?>. All rights reserved.</p>
             <p class="nav-footer__ruo">Research Use Only</p>
         </div>
     </div>

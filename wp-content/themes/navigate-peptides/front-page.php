@@ -165,7 +165,7 @@ $theme_uri = get_template_directory_uri();
             ?>
                 <a href="<?php echo esc_url($link); ?>" class="nav-cat-icon-card" style="--cat-color: <?php echo esc_attr($cat['color']); ?>">
                     <div class="nav-cat-icon-card__icon">
-                        <?php echo $cat['icon']; ?>
+                        <?php echo wp_kses($cat['icon'], ['svg' => ['viewbox' => [], 'fill' => [], 'stroke' => [], 'stroke-width' => [], 'xmlns' => []], 'path' => ['d' => [], 'stroke-linecap' => [], 'stroke-linejoin' => [], 'fill' => [], 'stroke' => [], 'stroke-width' => []], 'circle' => ['cx' => [], 'cy' => [], 'r' => [], 'fill' => [], 'stroke' => []]]); ?>
                     </div>
                     <h3 class="nav-cat-icon-card__title"><?php echo esc_html($cat['name']); ?></h3>
                     <span class="nav-cat-icon-card__btn">View</span>

@@ -128,9 +128,10 @@ add_action('send_headers', function () {
     if (!is_admin()) {
         header('X-Content-Type-Options: nosniff');
         header('X-Frame-Options: SAMEORIGIN');
-        header('X-XSS-Protection: 1; mode=block');
         header('Referrer-Policy: strict-origin-when-cross-origin');
         header("Permissions-Policy: camera=(), microphone=(), geolocation=()");
+        header("Content-Security-Policy: default-src 'self'; script-src 'self' https://ajax.googleapis.com https://fonts.googleapis.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self' " . esc_url(admin_url()) . ";");
+        header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
     }
 });
 
@@ -222,7 +223,62 @@ function nav_icon(string $name, string $class = ''): string {
 }
 
 /* ------------------------------------------------------------------
- * 11. Excerpt Length
+ * 11. Contact Form Handler
+ * ----------------------------------------------------------------*/
+add_action('admin_post_nopriv_nav_contact_form', 'nav_handle_contact_form');
+add_action('admin_post_nav_contact_form', 'nav_handle_contact_form');
+
+function nav_handle_contact_form(): void {
+    if (
+        !isset($_POST['nav_nonce'])
+        || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nav_nonce'])), 'nav_contact_nonce')
+    ) {
+        wp_die(
+            esc_html__('Security check failed. Please go back and try again.', 'navigate-peptides'),
+            esc_html__('Forbidden', 'navigate-peptides'),
+            ['response' => 403]
+        );
+    }
+
+    // Honeypot check — bots fill hidden fields
+    if (!empty($_POST['nav_hp_field'])) {
+        wp_safe_redirect(add_query_arg('contact', 'success', wp_get_referer() ?: home_url('/')));
+        exit;
+    }
+
+    $first_name   = sanitize_text_field(wp_unslash($_POST['first_name'] ?? ''));
+    $last_name    = sanitize_text_field(wp_unslash($_POST['last_name'] ?? ''));
+    $email        = sanitize_email(wp_unslash($_POST['email'] ?? ''));
+    $organization = sanitize_text_field(wp_unslash($_POST['organization'] ?? ''));
+    $inquiry_type = sanitize_text_field(wp_unslash($_POST['inquiry_type'] ?? 'general'));
+    $message      = sanitize_textarea_field(wp_unslash($_POST['message'] ?? ''));
+
+    if (!$first_name || !$last_name || !$email || !$message) {
+        wp_safe_redirect(add_query_arg('contact', 'missing', wp_get_referer() ?: home_url('/')));
+        exit;
+    }
+
+    if (!is_email($email)) {
+        wp_safe_redirect(add_query_arg('contact', 'invalid', wp_get_referer() ?: home_url('/')));
+        exit;
+    }
+
+    $admin_email = get_option('admin_email');
+    $subject     = sprintf('[Navigate Peptides] %s inquiry from %s %s', ucfirst($inquiry_type), $first_name, $last_name);
+    $body        = sprintf(
+        "Name: %s %s\nEmail: %s\nOrganization: %s\nInquiry Type: %s\n\nMessage:\n%s",
+        $first_name, $last_name, $email, $organization, $inquiry_type, $message
+    );
+    $headers     = ['Reply-To: ' . $email];
+
+    wp_mail($admin_email, $subject, $body, $headers);
+
+    wp_safe_redirect(add_query_arg('contact', 'success', wp_get_referer() ?: home_url('/')));
+    exit;
+}
+
+/* ------------------------------------------------------------------
+ * 12. Excerpt Length
  * ----------------------------------------------------------------*/
 add_filter('excerpt_length', fn() => 20);
 add_filter('excerpt_more', fn() => '&hellip;');
