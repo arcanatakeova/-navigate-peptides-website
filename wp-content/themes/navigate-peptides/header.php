@@ -12,6 +12,21 @@
 <body <?php body_class('nav-body'); ?>>
 <?php wp_body_open(); ?>
 
+<!-- Announcement Bar — editable via Customizer or filter -->
+<?php
+$announcement = apply_filters('navigate_announcement_text', 'Free shipping on research orders over $150 — All compounds include Certificate of Analysis');
+if ($announcement) :
+?>
+<div class="nav-announcement" id="nav-announcement">
+    <div class="nav-container">
+        <p><?php echo esc_html($announcement); ?></p>
+    </div>
+    <button class="nav-announcement__close" aria-label="Close announcement" onclick="this.parentElement.remove();document.documentElement.style.setProperty('--nav-announcement-h','0px');">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+</div>
+<?php endif; ?>
+
 <header class="nav-header" id="nav-header">
     <div class="nav-container nav-header__inner">
 
