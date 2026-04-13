@@ -312,10 +312,11 @@ add_action('woocommerce_process_product_meta', function ($post_id) {
 
     foreach ($fields as $field) {
         if (isset($_POST[$field])) {
+            $is_url = in_array($field, ['_nav_coa_pdf', '_nav_3d_model_url'], true);
             update_post_meta(
                 $post_id,
                 $field,
-                $field === '_nav_coa_pdf'
+                $is_url
                     ? esc_url_raw(wp_unslash($_POST[$field]))
                     : sanitize_textarea_field(wp_unslash($_POST[$field]))
             );
@@ -369,6 +370,78 @@ add_action('woocommerce_after_cart_table', function () {
  * ----------------------------------------------------------------*/
 add_filter('woocommerce_product_single_add_to_cart_text', fn() => __('Add to Cart', 'navigate-peptides'));
 add_filter('woocommerce_product_add_to_cart_text', fn() => __('Add to Cart', 'navigate-peptides'));
+
+/* ------------------------------------------------------------------
+ * Prohibited Term Validation (Admin Product Save)
+ * Warns admins when product content contains compliance-risk language.
+ * ----------------------------------------------------------------*/
+add_action('woocommerce_process_product_meta', function ($post_id) {
+    $prohibited_terms = [
+        'dose', 'dosing', 'dosage', 'protocol', 'cycle', 'stack',
+        'inject', 'injection', 'subcutaneous', 'intramuscular',
+        'healing', 'recovery', 'anti-aging', 'fat loss', 'weight loss',
+        'muscle growth', 'clinically proven', 'FDA approved',
+        'pharmaceutical grade', 'treatment', 'therapy', 'patients',
+        'wellness', 'before and after', 'testimonial',
+    ];
+
+    $fields_to_check = [
+        'post_title'  => get_the_title($post_id),
+        'description' => get_post_field('post_content', $post_id),
+        'excerpt'     => get_post_field('post_excerpt', $post_id),
+    ];
+
+    // Also check custom meta fields
+    $meta_keys = ['_nav_technical_subtitle', '_nav_research_focus'];
+    foreach ($meta_keys as $key) {
+        $val = get_post_meta($post_id, $key, true);
+        if ($val) {
+            $fields_to_check[$key] = $val;
+        }
+    }
+
+    $found = [];
+    foreach ($fields_to_check as $field => $content) {
+        if (empty($content)) continue;
+        $content_lower = strtolower($content);
+        foreach ($prohibited_terms as $term) {
+            if (strpos($content_lower, $term) !== false) {
+                $found[] = sprintf('%s (in %s)', $term, str_replace('_', ' ', $field));
+            }
+        }
+    }
+
+    if (! empty($found)) {
+        set_transient(
+            'nav_compliance_warning_' . $post_id,
+            $found,
+            30
+        );
+    }
+}, 20);
+
+add_action('admin_notices', function () {
+    $screen = get_current_screen();
+    if (! $screen || $screen->id !== 'product') return;
+
+    global $post;
+    if (! $post) return;
+
+    $warnings = get_transient('nav_compliance_warning_' . $post->ID);
+    if (! $warnings) return;
+
+    delete_transient('nav_compliance_warning_' . $post->ID);
+
+    echo '<div class="notice notice-warning is-dismissible">';
+    echo '<p><strong>Compliance Warning:</strong> The following prohibited terms were detected in this product. These terms may cause the payment processor to reject the merchant account or trigger FDA enforcement.</p>';
+    echo '<ul style="list-style:disc;padding-left:20px;">';
+    foreach ($warnings as $w) {
+        echo '<li>' . esc_html($w) . '</li>';
+    }
+    echo '</ul>';
+    echo '<p>Review <code>docs/COMPLIANCE</code> for the full list of prohibited language.</p>';
+    echo '</div>';
+});
 
 /* ------------------------------------------------------------------
  * Breadcrumb customization

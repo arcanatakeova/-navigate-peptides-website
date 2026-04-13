@@ -19,6 +19,26 @@ get_header();
     <div class="nav-container nav-section--center">
         <div class="nav-contact-form">
             <?php
+            // Success / error messages
+            if (isset($_GET['sent']) && $_GET['sent'] === '1') : ?>
+                <div class="nav-form-success">
+                    <p>Your inquiry has been submitted. Our team will respond within 1-2 business days.</p>
+                </div>
+            <?php elseif (isset($_GET['error'])) :
+                $error_messages = [
+                    'required' => 'Please fill in all required fields.',
+                    'email'    => 'Please enter a valid email address.',
+                    'rate'     => 'Please wait before submitting another inquiry.',
+                ];
+                $error_key = sanitize_text_field(wp_unslash($_GET['error']));
+                $error_msg = $error_messages[$error_key] ?? 'An error occurred. Please try again.';
+            ?>
+                <div class="nav-form-error">
+                    <p><?php echo esc_html($error_msg); ?></p>
+                </div>
+            <?php endif; ?>
+
+            <?php
             // Use Contact Form 7 or WPForms shortcode if available
             $cf7_form = get_post_meta(get_the_ID(), '_nav_contact_form_shortcode', true);
             if ($cf7_form) {
@@ -28,6 +48,12 @@ get_header();
             <form class="nav-form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                 <input type="hidden" name="action" value="nav_contact_form">
                 <?php wp_nonce_field('nav_contact_nonce', 'nav_nonce'); ?>
+
+                <!-- Honeypot anti-spam field -->
+                <div style="position:absolute;left:-9999px;" aria-hidden="true">
+                    <label for="nav-website-hp">Leave this empty</label>
+                    <input type="text" id="nav-website-hp" name="nav_website" tabindex="-1" autocomplete="off">
+                </div>
 
                 <div class="nav-form__row nav-form__row--2">
                     <div class="nav-form__field">

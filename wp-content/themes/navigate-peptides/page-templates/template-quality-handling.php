@@ -29,14 +29,14 @@ get_header();
                 </ul>
             </div>
             <div class="nav-info-card">
-                <h3 class="nav-info-card__title">Reconstitution Protocol</h3>
+                <h3 class="nav-info-card__title">Laboratory Dissolution Protocol</h3>
                 <ul class="nav-info-card__list">
-                    <li>Use bacteriostatic water or sterile water for reconstitution</li>
-                    <li>Add solvent slowly along the vial wall — do not agitate</li>
-                    <li>Allow lyophilized powder to dissolve naturally (2-5 minutes)</li>
-                    <li>Gently swirl if needed — never shake or vortex</li>
-                    <li>Calculate concentration based on total solvent volume added</li>
-                    <li>Document reconstitution date and concentration</li>
+                    <li>In laboratory preparation, add appropriate solvent slowly along the vial wall</li>
+                    <li>Allow lyophilized compound to dissolve under controlled conditions (2-5 minutes)</li>
+                    <li>Gently swirl if needed — do not agitate or vortex</li>
+                    <li>Record concentration based on total solvent volume for experimental documentation</li>
+                    <li>Document preparation date, solvent used, and final concentration in laboratory records</li>
+                    <li>For research use only — all handling must follow institutional laboratory protocols</li>
                 </ul>
             </div>
         </div>
