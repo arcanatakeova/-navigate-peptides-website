@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <rect width="400" height="400" fill="#1a2a24"/>
+  <!-- Two overlapping hexagons (blend motif) -->
+  <path d="M160 120L200 100L240 120L240 160L200 180L160 160Z" stroke="#474C50" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M160 220L200 200L240 220L240 260L200 280L160 260Z" stroke="#474C50" stroke-width="2" stroke-linejoin="round" opacity="0.7"/>
+  <!-- Connecting bonds -->
+  <path d="M200 180V200" stroke="#474C50" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M160 160L150 175L160 220" stroke="#474C50" stroke-width="1" opacity="0.4" stroke-linecap="round"/>
+  <path d="M240 160L250 175L240 220" stroke="#474C50" stroke-width="1" opacity="0.4" stroke-linecap="round"/>
+  <!-- Molecular nodes -->
+  <circle cx="200" cy="100" r="4" fill="#474C50" opacity="0.4"/>
+  <circle cx="200" cy="280" r="4" fill="#474C50" opacity="0.4"/>
+  <circle cx="200" cy="190" r="5" fill="#474C50" opacity="0.3"/>
+  <!-- Side chain indicators -->
+  <path d="M140 140L120 140" stroke="#474C50" stroke-width="1" opacity="0.3" stroke-linecap="round"/>
+  <path d="M260 140L280 140" stroke="#474C50" stroke-width="1" opacity="0.3" stroke-linecap="round"/>
+  <circle cx="115" cy="140" r="3" fill="#474C50" opacity="0.2"/>
+  <circle cx="285" cy="140" r="3" fill="#474C50" opacity="0.2"/>
+  <!-- Bottom label line -->
+  <path d="M150 320H250" stroke="#474C50" stroke-width="0.8" opacity="0.2"/>
+</svg>

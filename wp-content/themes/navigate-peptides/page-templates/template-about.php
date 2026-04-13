@@ -17,6 +17,14 @@ get_header();
 
 <section class="nav-section">
     <div class="nav-container">
+        <!-- Visual: Research vials -->
+        <div class="nav-about-visual">
+            <picture>
+                <source srcset="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-three-vials.webp'); ?>" type="image/webp">
+                <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-three-vials.png'); ?>" alt="Navigate Peptides research vials with certificates of analysis" loading="lazy" width="1200" height="400">
+            </picture>
+        </div>
+
         <div class="nav-about-grid">
             <div class="nav-about-grid__content">
                 <div class="nav-content">

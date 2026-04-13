@@ -26,6 +26,8 @@ add_action('wp_head', function () {
         if ($logo_url) {
             $schema['logo'] = $logo_url;
         }
+    } else {
+        $schema['logo'] = get_template_directory_uri() . '/assets/images/logo.svg';
     }
 
     echo '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . '</script>' . "\n";

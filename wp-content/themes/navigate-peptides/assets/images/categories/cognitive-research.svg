@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <rect width="400" height="400" fill="#1a2a24"/>
+  <!-- Brain / neural network motif -->
+  <circle cx="200" cy="180" r="80" stroke="#5E507F" stroke-width="2"/>
+  <!-- Neural pathways -->
+  <path d="M160 160C180 140 220 140 240 160" stroke="#5E507F" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M150 190C170 170 230 170 250 190" stroke="#5E507F" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M160 210C180 230 220 230 240 210" stroke="#5E507F" stroke-width="1.5" opacity="0.5" stroke-linecap="round"/>
+  <!-- Synaptic nodes -->
+  <circle cx="160" cy="160" r="4" fill="#5E507F" opacity="0.6"/>
+  <circle cx="240" cy="160" r="4" fill="#5E507F" opacity="0.6"/>
+  <circle cx="200" cy="140" r="3" fill="#5E507F" opacity="0.4"/>
+  <circle cx="200" cy="220" r="3" fill="#5E507F" opacity="0.4"/>
+  <!-- Stem -->
+  <path d="M200 260V320" stroke="#5E507F" stroke-width="2" stroke-linecap="round"/>
+  <path d="M185 280L200 260L215 280" stroke="#5E507F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+</svg>

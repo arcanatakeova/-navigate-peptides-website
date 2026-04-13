@@ -1,30 +1,91 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <!-- Background -->
   <rect width="1200" height="900" fill="#2A3B36"/>
-  <rect x="0" y="0" width="1200" height="72" fill="#1a2a24"/>
-  <rect x="48" y="16" width="36" height="36" rx="4" fill="none" stroke="rgba(234,234,234,0.15)" stroke-width="1"/>
-  <text x="58" y="40" font-family="monospace" font-size="12" font-weight="700" fill="#EAEAEA">NP</text>
-  <text x="96" y="42" font-family="Georgia" font-size="18" font-weight="600" fill="#EAEAEA">Navigate Peptides</text>
-  <text x="310" y="42" font-family="sans-serif" font-size="14" fill="#A8B0AD">Compounds</text>
-  <text x="420" y="42" font-family="sans-serif" font-size="14" fill="#A8B0AD">Research</text>
-  <text x="520" y="42" font-family="sans-serif" font-size="14" fill="#A8B0AD">Quality</text>
-  <text x="600" y="42" font-family="sans-serif" font-size="14" fill="#A8B0AD">About</text>
-  <text x="48" y="240" font-family="monospace" font-size="11" letter-spacing="3" fill="#A8B0AD">RESEARCH PEPTIDE COMPOUNDS</text>
-  <text x="48" y="310" font-family="Georgia" font-size="48" font-weight="600" fill="#EAEAEA">Advancing Peptide</text>
-  <text x="48" y="370" font-family="Georgia" font-size="48" font-weight="600" fill="#EAEAEA">Research Through</text>
-  <text x="48" y="430" font-family="Georgia" font-size="48" font-weight="600" fill="#EAEAEA">Precision and Purity</text>
-  <rect x="48" y="480" width="180" height="44" rx="4" fill="#EAEAEA"/>
-  <text x="90" y="508" font-family="sans-serif" font-size="13" font-weight="600" fill="#2A3B36">BROWSE COMPOUNDS</text>
-  <rect x="244" y="480" width="200" height="44" rx="4" fill="none" stroke="rgba(234,234,234,0.15)" stroke-width="1"/>
-  <text x="270" y="508" font-family="sans-serif" font-size="13" font-weight="500" fill="#EAEAEA">VIEW QUALITY STANDARDS</text>
+
+  <!-- Header -->
+  <rect x="0" y="0" width="1200" height="72" fill="#1a2a24" opacity="0.97"/>
+
+  <!-- Logo: Molecular hexagon mark -->
+  <g transform="translate(48, 16)">
+    <svg viewBox="0 0 32 32" width="36" height="36" fill="none">
+      <path d="M16 3L27.3 9.5V22.5L16 29L4.7 22.5V9.5L16 3Z" stroke="#EAEAEA" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M10 13L16 9L22 13" stroke="#EAEAEA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M10 13V19L16 23L22 19V13" stroke="#EAEAEA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="16" cy="16" r="2" fill="#EAEAEA" opacity="0.6"/>
+      <path d="M16 7V12" stroke="#EAEAEA" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M13.5 9.5L16 7L18.5 9.5" stroke="#EAEAEA" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </g>
+  <text x="96" y="32" font-family="Georgia" font-size="16" font-weight="600" fill="#EAEAEA">Navigate</text>
+  <text x="96" y="48" font-family="sans-serif" font-size="11" font-weight="400" fill="#A8B0AD" letter-spacing="0.5">Peptides</text>
+
+  <!-- Nav items -->
+  <text x="350" y="42" font-family="sans-serif" font-size="14" fill="#A8B0AD">Compounds</text>
+  <text x="460" y="42" font-family="sans-serif" font-size="14" fill="#A8B0AD">Research</text>
+  <text x="550" y="42" font-family="sans-serif" font-size="14" fill="#A8B0AD">Quality</text>
+  <text x="630" y="42" font-family="sans-serif" font-size="14" fill="#A8B0AD">About</text>
+
+  <!-- CTA button -->
+  <rect x="1020" y="20" width="140" height="32" rx="4" fill="#EAEAEA"/>
+  <text x="1048" y="41" font-family="sans-serif" font-size="11" font-weight="600" fill="#2A3B36">Request Access</text>
+
+  <!-- Hero section -->
+  <text x="48" y="200" font-family="monospace" font-size="11" letter-spacing="3" fill="#9C843E">PRECISION PEPTIDE RESEARCH</text>
+  <text x="48" y="260" font-family="Georgia" font-size="52" font-weight="600" fill="#EAEAEA">Engineered.</text>
+  <text x="48" y="320" font-family="Georgia" font-size="52" font-style="italic" font-weight="400" fill="#EAEAEA">Intelligent.</text>
+  <text x="48" y="370" font-family="sans-serif" font-size="16" fill="#A8B0AD">Premium peptides for research applications.</text>
+
+  <!-- Hero badges -->
+  <circle cx="58" cy="410" r="6" stroke="#9C843E" stroke-width="1.5" fill="none"/>
+  <text x="72" y="414" font-family="sans-serif" font-size="12" fill="#A8B0AD">Third-Party Tested</text>
+  <circle cx="218" cy="410" r="6" stroke="#9C843E" stroke-width="1.5" fill="none"/>
+  <text x="232" y="414" font-family="sans-serif" font-size="12" fill="#A8B0AD">COA Verified</text>
+
+  <!-- Hero CTA buttons -->
+  <rect x="48" y="440" width="180" height="44" rx="4" fill="#EAEAEA"/>
+  <text x="86" y="468" font-family="sans-serif" font-size="13" font-weight="600" fill="#2A3B36">View Compounds</text>
+  <rect x="244" y="440" width="220" height="44" rx="4" fill="none" stroke="rgba(234,234,234,0.2)" stroke-width="1"/>
+  <text x="272" y="468" font-family="sans-serif" font-size="13" font-weight="500" fill="#EAEAEA">Quality &amp; Verification</text>
+
+  <!-- 3D Vial area (center right) -->
+  <rect x="560" y="120" width="320" height="400" rx="12" fill="#1a2a24" opacity="0.5"/>
+  <text x="720" y="330" text-anchor="middle" font-family="monospace" font-size="11" fill="#A8B0AD" opacity="0.5">3D Interactive Model</text>
+
+  <!-- Product info panel (far right) -->
+  <rect x="920" y="120" width="240" height="400" rx="12" fill="rgba(26,42,36,0.65)" stroke="rgba(234,234,234,0.1)" stroke-width="1"/>
+  <text x="940" y="155" font-family="sans-serif" font-size="11" font-weight="700" letter-spacing="1" fill="#EAEAEA">PRODUCT INFORMATION</text>
+  <text x="940" y="180" font-family="monospace" font-size="10" fill="#6b7975">Compound</text>
+  <text x="1080" y="180" font-family="sans-serif" font-size="10" fill="#EAEAEA">BPC-157</text>
+  <text x="940" y="200" font-family="monospace" font-size="10" fill="#6b7975">Purity</text>
+  <text x="1080" y="200" font-family="sans-serif" font-size="10" fill="#EAEAEA">≥99%</text>
+  <text x="940" y="220" font-family="monospace" font-size="10" fill="#6b7975">Form</text>
+  <text x="1080" y="220" font-family="sans-serif" font-size="10" fill="#EAEAEA">Lyophilized</text>
+
   <!-- Category cards -->
-  <rect x="48" y="600" width="270" height="160" rx="8" fill="#1a2a24" stroke="rgba(234,234,234,0.15)" stroke-width="1"/>
-  <rect x="48" y="600" width="270" height="4" rx="0" fill="#2F4666"/>
-  <rect x="336" y="600" width="270" height="160" rx="8" fill="#1a2a24" stroke="rgba(234,234,234,0.15)" stroke-width="1"/>
-  <rect x="336" y="600" width="270" height="4" rx="0" fill="#9C843E"/>
-  <rect x="624" y="600" width="270" height="160" rx="8" fill="#1a2a24" stroke="rgba(234,234,234,0.15)" stroke-width="1"/>
-  <rect x="624" y="600" width="270" height="4" rx="0" fill="#5E507F"/>
-  <rect x="912" y="600" width="270" height="160" rx="8" fill="#1a2a24" stroke="rgba(234,234,234,0.15)" stroke-width="1"/>
-  <rect x="912" y="600" width="270" height="4" rx="0" fill="#4A141C"/>
+  <rect x="48" y="570" width="270" height="200" rx="12" fill="#1a2a24" stroke="rgba(234,234,234,0.1)" stroke-width="1"/>
+  <rect x="48" y="570" width="270" height="4" fill="#2F4666"/>
+  <rect x="48" y="574" width="270" height="100" fill="#1a2a24" opacity="0.8"/>
+  <text x="68" y="700" font-family="Georgia" font-size="16" fill="#EAEAEA">Metabolic Research</text>
+  <text x="68" y="720" font-family="sans-serif" font-size="11" fill="#A8B0AD">Pathway modulation</text>
+
+  <rect x="336" y="570" width="270" height="200" rx="12" fill="#1a2a24" stroke="rgba(234,234,234,0.1)" stroke-width="1"/>
+  <rect x="336" y="570" width="270" height="4" fill="#9C843E"/>
+  <rect x="336" y="574" width="270" height="100" fill="#1a2a24" opacity="0.8"/>
+  <text x="356" y="700" font-family="Georgia" font-size="16" fill="#EAEAEA">Tissue Repair Research</text>
+  <text x="356" y="720" font-family="sans-serif" font-size="11" fill="#A8B0AD">Regeneration mechanisms</text>
+
+  <rect x="624" y="570" width="270" height="200" rx="12" fill="#1a2a24" stroke="rgba(234,234,234,0.1)" stroke-width="1"/>
+  <rect x="624" y="570" width="270" height="4" fill="#5E507F"/>
+  <rect x="624" y="574" width="270" height="100" fill="#1a2a24" opacity="0.8"/>
+  <text x="644" y="700" font-family="Georgia" font-size="16" fill="#EAEAEA">Cognitive Research</text>
+  <text x="644" y="720" font-family="sans-serif" font-size="11" fill="#A8B0AD">Neuroprotective pathways</text>
+
+  <rect x="912" y="570" width="270" height="200" rx="12" fill="#1a2a24" stroke="rgba(234,234,234,0.1)" stroke-width="1"/>
+  <rect x="912" y="570" width="270" height="4" fill="#4A141C"/>
+  <rect x="912" y="574" width="270" height="100" fill="#1a2a24" opacity="0.8"/>
+  <text x="932" y="700" font-family="Georgia" font-size="16" fill="#EAEAEA">Inflammation Research</text>
+  <text x="932" y="720" font-family="sans-serif" font-size="11" fill="#A8B0AD">Immune signaling</text>
+
   <!-- Footer disclaimer -->
   <text x="600" y="870" text-anchor="middle" font-family="monospace" font-size="10" fill="#6b7975">All products sold on this website are intended for research and identification purposes only.</text>
 </svg>
