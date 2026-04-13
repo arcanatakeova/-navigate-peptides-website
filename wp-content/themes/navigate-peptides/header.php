@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Google model-viewer for 3D vials -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
     <?php wp_head(); ?>
 </head>
 <body <?php body_class('nav-body'); ?>>
@@ -18,8 +20,17 @@
             <?php if (has_custom_logo()) : ?>
                 <?php the_custom_logo(); ?>
             <?php else : ?>
-                <span class="nav-header__logo-mark">NP</span>
-                <span class="nav-header__logo-text"><?php bloginfo('name'); ?></span>
+                <span class="nav-header__logo-icon">
+                    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-icon" style="width:24px;height:24px;">
+                        <path d="M14 2L2 26h24L14 2z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <path d="M8 20c4-6 8-6 12 0" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span class="nav-header__logo-text-group">
+                    <span class="nav-header__logo-name">Navigate</span>
+                    <span class="nav-header__logo-divider"></span>
+                    <span class="nav-header__logo-name nav-header__logo-name--light">Peptides</span>
+                </span>
             <?php endif; ?>
         </a>
 
