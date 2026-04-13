@@ -7,7 +7,7 @@
         <div class="nav-footer__grid">
             <div class="nav-footer__col">
                 <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-footer__logo">
-                    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-footer__logo-icon"><path d="M14 2L2 26h24L14 2z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 20c4-6 8-6 12 0" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+                    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-footer__logo-icon"><path d="M16 3L27.3 9.5V22.5L16 29L4.7 22.5V9.5L16 3Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M10 13L16 9L22 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 13V19L16 23L22 19V13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="16" r="2" fill="currentColor" opacity="0.6"/></svg>
                     <span class="nav-footer__logo-name"><?php bloginfo('name'); ?></span>
                 </a>
                 <p class="nav-footer__tagline">

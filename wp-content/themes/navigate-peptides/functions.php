@@ -39,6 +39,9 @@ add_action('after_setup_theme', function () {
         'flex-width'  => true,
     ]);
 
+    // Site icon (favicon) support
+    add_theme_support('site-icon');
+
     // WooCommerce
     add_theme_support('woocommerce');
     add_theme_support('wc-product-gallery-zoom');
@@ -227,7 +230,22 @@ function nav_icon(string $name, string $class = ''): string {
 }
 
 /* ------------------------------------------------------------------
- * 11. Excerpt Length
+ * 11. Category Placeholder Images
+ * ----------------------------------------------------------------*/
+
+/**
+ * Get the placeholder SVG URL for a product category.
+ */
+function nav_get_category_placeholder(string $slug): string {
+    $path = '/assets/images/categories/' . $slug . '.svg';
+    if (file_exists(NAV_THEME_DIR . $path)) {
+        return NAV_THEME_URI . $path;
+    }
+    return NAV_THEME_URI . '/assets/images/product-placeholder.svg';
+}
+
+/* ------------------------------------------------------------------
+ * 12. Excerpt Length
  * ----------------------------------------------------------------*/
 add_filter('excerpt_length', fn() => 20);
 add_filter('excerpt_more', fn() => '&hellip;');

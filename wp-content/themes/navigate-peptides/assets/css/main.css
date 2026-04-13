@@ -1034,6 +1034,28 @@ h1, h2, h3, h4, h5, h6 {
     height: 6px;
 }
 
+.nav-category-card__visual {
+    height: 160px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--nav-bg-dark);
+}
+
+.nav-category-card__visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.7;
+    transition: opacity var(--nav-duration) var(--nav-ease), transform var(--nav-duration) var(--nav-ease);
+}
+
+.nav-category-card:hover .nav-category-card__visual img {
+    opacity: 1;
+    transform: scale(1.03);
+}
+
 .nav-category-card__body {
     padding: var(--nav-gap-lg);
 }
@@ -1247,6 +1269,29 @@ h1, h2, h3, h4, h5, h6 {
 /* ==========================================================================
    ABOUT GRID
    ========================================================================== */
+/* ---------- About / Quality Visual Banner ---------- */
+.nav-about-visual {
+    margin-bottom: var(--nav-gap-2xl);
+    border-radius: var(--nav-radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--nav-border-subtle);
+    max-height: 320px;
+}
+
+.nav-about-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 0.85;
+}
+
+@media (max-width: 767px) {
+    .nav-about-visual {
+        max-height: 200px;
+    }
+}
+
 .nav-about-grid {
     display: grid;
     gap: var(--nav-gap-2xl);

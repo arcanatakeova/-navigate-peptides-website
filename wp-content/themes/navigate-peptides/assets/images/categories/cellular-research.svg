@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <rect width="400" height="400" fill="#1a2a24"/>
+  <!-- Cell membrane -->
+  <circle cx="200" cy="200" r="100" stroke="#8E5660" stroke-width="2"/>
+  <!-- Nucleus -->
+  <circle cx="200" cy="200" r="40" stroke="#8E5660" stroke-width="1.5"/>
+  <circle cx="200" cy="200" r="15" fill="#8E5660" opacity="0.2"/>
+  <!-- Organelles -->
+  <ellipse cx="160" cy="150" rx="12" ry="8" stroke="#8E5660" stroke-width="1" opacity="0.5" transform="rotate(-30 160 150)"/>
+  <ellipse cx="250" cy="170" rx="10" ry="6" stroke="#8E5660" stroke-width="1" opacity="0.5" transform="rotate(20 250 170)"/>
+  <ellipse cx="150" cy="240" rx="10" ry="7" stroke="#8E5660" stroke-width="1" opacity="0.5" transform="rotate(15 150 240)"/>
+  <!-- Membrane proteins -->
+  <circle cx="200" cy="100" r="3" fill="#8E5660" opacity="0.4"/>
+  <circle cx="280" cy="160" r="3" fill="#8E5660" opacity="0.4"/>
+  <circle cx="120" cy="200" r="3" fill="#8E5660" opacity="0.4"/>
+  <circle cx="260" cy="270" r="3" fill="#8E5660" opacity="0.4"/>
+  <!-- Cytoskeleton lines -->
+  <path d="M160 200L140 180" stroke="#8E5660" stroke-width="0.8" opacity="0.3"/>
+  <path d="M240 200L260 220" stroke="#8E5660" stroke-width="0.8" opacity="0.3"/>
+</svg>

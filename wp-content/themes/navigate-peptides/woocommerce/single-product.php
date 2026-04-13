@@ -71,12 +71,13 @@ while (have_posts()) : the_post();
                         </model-viewer>
                     <?php elseif (has_post_thumbnail()) : ?>
                         <?php the_post_thumbnail('product-hero'); ?>
-                    <?php else : ?>
-                        <div class="nav-product-single__placeholder">
-                            <div class="nav-product-single__placeholder-circle">
-                                <span><?php echo esc_html(mb_strtoupper(mb_substr(get_the_title(), 0, 3))); ?></span>
-                            </div>
-                        </div>
+                    <?php else :
+                        $cat_slug_img = $cat ? $cat->slug : '';
+                        $cat_svg_path = NAV_THEME_URI . '/assets/images/categories/' . $cat_slug_img . '.svg';
+                        $generic_svg  = NAV_THEME_URI . '/assets/images/product-placeholder.svg';
+                        $hero_src = $cat_slug_img ? $cat_svg_path : $generic_svg;
+                    ?>
+                        <img src="<?php echo esc_url($hero_src); ?>" alt="<?php the_title_attribute(); ?>" class="nav-product-single__placeholder-img" width="800" height="800">
                     <?php endif; ?>
                 </div>
                 <?php if ($product->get_gallery_image_ids()) : ?>
