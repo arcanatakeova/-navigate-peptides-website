@@ -2163,3 +2163,116 @@ a:focus-visible {
         page-break-before: always;
     }
 }
+
+/* ---------- Form Success / Error Messages ---------- */
+.nav-form-success,
+.nav-form-error {
+    padding: var(--nav-gap-md) var(--nav-gap-lg);
+    border-radius: var(--nav-radius-md);
+    margin-bottom: var(--nav-gap-lg);
+    border: 1px solid;
+}
+
+.nav-form-success {
+    background: rgba(74, 107, 95, 0.15);
+    border-color: rgba(74, 107, 95, 0.4);
+}
+
+.nav-form-success p {
+    color: #7cc9a8;
+    margin: 0;
+}
+
+.nav-form-error {
+    background: rgba(74, 20, 28, 0.15);
+    border-color: rgba(74, 20, 28, 0.4);
+}
+
+.nav-form-error p {
+    color: #e08a95;
+    margin: 0;
+}
+
+/* ---------- COA Results ---------- */
+.nav-coa-results {
+    margin-top: var(--nav-gap-xl);
+}
+
+.nav-coa-results__title {
+    font-family: var(--nav-font-display);
+    font-size: 1.25rem;
+    color: var(--nav-text-primary);
+    margin-bottom: var(--nav-gap-lg);
+}
+
+.nav-coa-results__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--nav-gap-lg);
+}
+
+.nav-coa-result-card {
+    background: var(--nav-bg-card);
+    border: 1px solid var(--nav-border-subtle);
+    border-radius: var(--nav-radius-md);
+    padding: var(--nav-gap-lg);
+    transition: border-color var(--nav-transition);
+}
+
+.nav-coa-result-card:hover {
+    border-color: var(--nav-border-medium);
+}
+
+.nav-coa-result-card__name {
+    font-family: var(--nav-font-display);
+    font-size: 1.125rem;
+    color: var(--nav-text-primary);
+    margin: 0 0 var(--nav-gap-md);
+}
+
+.nav-coa-result-card__meta {
+    font-size: 0.875rem;
+    color: var(--nav-text-secondary);
+    margin: var(--nav-gap-xs) 0;
+    font-family: var(--nav-font-mono);
+}
+
+.nav-coa-result-card__meta span {
+    color: var(--nav-text-muted);
+    margin-right: var(--nav-gap-sm);
+}
+
+.nav-coa-no-results {
+    margin-top: var(--nav-gap-lg);
+    padding: var(--nav-gap-lg);
+    background: var(--nav-bg-card);
+    border: 1px solid var(--nav-border-subtle);
+    border-radius: var(--nav-radius-md);
+    text-align: center;
+}
+
+.nav-coa-no-results p {
+    color: var(--nav-text-secondary);
+    margin: 0;
+}
+
+/* ---------- RUO Checkbox Styling ---------- */
+.nav-ruo-checkbox {
+    margin: var(--nav-gap-md) 0;
+}
+
+.nav-ruo-checkbox label {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--nav-gap-sm);
+    font-size: 0.8125rem;
+    color: var(--nav-text-secondary);
+    line-height: 1.5;
+    cursor: pointer;
+}
+
+.nav-ruo-checkbox input[type="checkbox"] {
+    margin-top: 3px;
+    flex-shrink: 0;
+    accent-color: var(--nav-accent);
+}

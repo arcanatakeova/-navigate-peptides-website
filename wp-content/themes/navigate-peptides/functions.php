@@ -122,6 +122,11 @@ require_once NAV_THEME_DIR . '/inc/seo.php';
 require_once NAV_THEME_DIR . '/inc/custom-types.php';
 
 /* ------------------------------------------------------------------
+ * 6b. Contact Form Handler
+ * ----------------------------------------------------------------*/
+require_once NAV_THEME_DIR . '/inc/contact.php';
+
+/* ------------------------------------------------------------------
  * 7. Security Headers
  * ----------------------------------------------------------------*/
 add_action('send_headers', function () {
