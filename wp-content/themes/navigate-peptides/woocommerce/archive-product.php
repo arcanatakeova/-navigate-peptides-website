@@ -62,7 +62,7 @@ $cat_color     = $is_category ? nav_get_category_color($current_cat->slug) : '#4
                 <a href="<?php echo esc_url($link); ?>" class="nav-category-card" style="--cat-color: <?php echo esc_attr($cat['color']); ?>">
                     <div class="nav-category-card__bar"></div>
                     <div class="nav-category-card__visual">
-                        <img src="<?php echo esc_url(NAV_THEME_URI . '/assets/images/categories/' . $cat['slug'] . '.svg'); ?>" alt="<?php echo esc_attr($cat['name']); ?> illustration" loading="lazy" width="400" height="400">
+                        <img src="<?php echo esc_url(nav_get_category_placeholder($cat['slug'])); ?>" alt="<?php echo esc_attr($cat['name']); ?> illustration" loading="lazy" width="400" height="400">
                     </div>
                     <div class="nav-category-card__body">
                         <h3 class="nav-category-card__title"><?php echo esc_html($cat['name']); ?></h3>
@@ -96,14 +96,10 @@ $cat_color     = $is_category ? nav_get_category_color($current_cat->slug) : '#4
                             <?php if (has_post_thumbnail()) : ?>
                                 <?php echo wp_get_attachment_image(get_post_thumbnail_id(), 'product-card', false, ['loading' => 'lazy']); ?>
                             <?php else :
-                                // Use category-specific SVG if available, otherwise generic placeholder
                                 $terms = get_the_terms($product->get_id(), 'product_cat');
                                 $cat_slug = ($terms && !is_wp_error($terms)) ? $terms[0]->slug : '';
-                                $cat_svg = NAV_THEME_URI . '/assets/images/categories/' . $cat_slug . '.svg';
-                                $fallback_svg = NAV_THEME_URI . '/assets/images/product-placeholder.svg';
-                                $placeholder_src = $cat_slug ? $cat_svg : $fallback_svg;
                             ?>
-                                <img src="<?php echo esc_url($placeholder_src); ?>" alt="<?php the_title_attribute(); ?>" class="nav-product-card__placeholder-img" loading="lazy" width="400" height="400">
+                                <img src="<?php echo esc_url(nav_get_category_placeholder($cat_slug)); ?>" alt="<?php the_title_attribute(); ?>" class="nav-product-card__placeholder-img" loading="lazy" width="400" height="400">
                             <?php endif; ?>
                         </div>
                         <div class="nav-product-card__body">
