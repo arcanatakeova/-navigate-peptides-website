@@ -1309,6 +1309,10 @@ h1, h2, h3, h4, h5, h6 {
     gap: var(--nav-gap-lg);
 }
 
+.nav-about-grid__content {
+    min-width: 0;
+}
+
 /* ==========================================================================
    CONTENT (Rich Text)
    ========================================================================== */
@@ -2419,6 +2423,10 @@ a:focus-visible {
 /* ==========================================================================
    ARTICLE — Single Post / Research Article
    ========================================================================== */
+.nav-article {
+    display: block;
+}
+
 .nav-article__meta {
     display: flex;
     align-items: center;
@@ -2661,5 +2669,31 @@ a:focus-visible {
 
 .nav-section__link:hover {
     color: var(--nav-text-primary);
+}
+
+/* ==========================================================================
+   SEARCH FORM
+   ========================================================================== */
+.nav-search-form {
+    display: flex;
+    gap: var(--nav-gap-sm);
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.nav-search-form .nav-form-input {
+    flex: 1;
+}
+
+.screen-reader-text {
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    height: 1px;
+    width: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    word-wrap: normal !important;
 }
 
