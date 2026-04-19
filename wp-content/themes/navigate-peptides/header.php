@@ -42,7 +42,7 @@ if ($announcement) :
     <div class="nav-container">
         <p><?php echo esc_html($announcement); ?></p>
     </div>
-    <button class="nav-announcement__close" id="nav-announcement-close" aria-label="Close announcement" type="button">
+    <button class="nav-announcement__close" id="nav-announcement-close" aria-label="<?php esc_attr_e('Close announcement', 'navigate-peptides'); ?>" type="button">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
     </button>
 </div>

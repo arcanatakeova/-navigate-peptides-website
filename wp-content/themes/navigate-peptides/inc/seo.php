@@ -94,6 +94,43 @@ function nav_seo_scrub(string $text): string {
 }
 
 /**
+ * Is a competing SEO plugin active? When one is, our meta/OG/Twitter/JSON-LD
+ * emitters bail — otherwise every page ships duplicate tags, which Google
+ * treats as a conflict signal (last one wins, and order is plugin-dependent).
+ * Detected via constants/classes the major plugins define on load.
+ */
+function nav_seo_has_competing_plugin(): bool {
+    static $has = null;
+    if ($has !== null) return $has;
+    $has = defined('WPSEO_VERSION')                    // Yoast SEO
+        || defined('WPSEO_FILE')
+        || class_exists('RankMath', false)             // Rank Math
+        || defined('RANK_MATH_VERSION')
+        || defined('AIOSEO_VERSION')                   // All in One SEO
+        || defined('AIOSEO_PHP_VERSION_DIR')
+        || defined('SEOPRESS_VERSION')                 // SEOPress
+        || defined('THE_SEO_FRAMEWORK_VERSION');       // The SEO Framework
+    return (bool) apply_filters('nav_seo_has_competing_plugin', $has);
+}
+
+/**
+ * Append the paged suffix (/page/N/) to a canonical URL when the current
+ * request is page 2+ of a paginated archive or search. Without this, page
+ * 2 of a category would canonical to page 1 — Google deduplicates and the
+ * later pages drop out of the index.
+ */
+function nav_seo_maybe_append_paged(string $url): string {
+    if (!$url) return $url;
+    $paged = (int) get_query_var('paged');
+    if ($paged < 2) return $url;
+    // get_pagenum_link() respects the site's permalink structure + any
+    // query string already present, so it's the safe way to build page-N
+    // URLs for any archive type.
+    $paged_url = get_pagenum_link($paged, false);
+    return $paged_url ?: $url;
+}
+
+/**
  * Get the canonical URL for the current request.
  * Handles singular, category, tag, search, paged archives, and front page.
  */
@@ -109,23 +146,23 @@ function nav_seo_canonical_url(): string {
         $term = get_queried_object();
         if ($term && isset($term->term_id)) {
             $link = get_term_link($term);
-            if (!is_wp_error($link) && $link) return $link;
+            if (!is_wp_error($link) && $link) return nav_seo_maybe_append_paged($link);
         }
     }
     if (is_post_type_archive()) {
         $link = get_post_type_archive_link(get_post_type());
-        if ($link) return $link;
+        if ($link) return nav_seo_maybe_append_paged($link);
     }
     if (is_search()) {
-        return home_url('/?s=' . urlencode(get_search_query()));
+        return nav_seo_maybe_append_paged(home_url('/?s=' . urlencode(get_search_query())));
     }
     if (is_home()) {
         $posts_page = get_permalink(get_option('page_for_posts'));
-        return $posts_page ?: home_url('/');
+        return nav_seo_maybe_append_paged($posts_page ?: home_url('/'));
     }
     // Fallback: reconstruct from request path without misusing add_query_arg.
     $request = $GLOBALS['wp']->request ?? '';
-    return home_url('/' . ltrim((string) $request, '/'));
+    return nav_seo_maybe_append_paged(home_url('/' . ltrim((string) $request, '/')));
 }
 
 /**
@@ -293,6 +330,7 @@ function nav_seo_is_noindex(): bool {
  * Title tag — customize document_title_parts
  * ----------------------------------------------------------------*/
 add_filter('document_title_parts', function (array $parts) {
+    if (nav_seo_has_competing_plugin()) return $parts;
     // Home: "Navigate Peptides — Precision Peptide Research"
     if (is_front_page()) {
         return [
@@ -347,6 +385,7 @@ add_filter('document_title_separator', fn() => '|');
  * Meta description, robots, canonical, prev/next, preconnect
  * ----------------------------------------------------------------*/
 add_action('wp_head', function () {
+    if (nav_seo_has_competing_plugin()) return;
     // Description
     $desc = nav_seo_description();
     if ($desc) {
@@ -388,6 +427,7 @@ add_action('wp_head', function () {
  * Open Graph + Twitter Card
  * ----------------------------------------------------------------*/
 add_action('wp_head', function () {
+    if (nav_seo_has_competing_plugin()) return;
     $title = wp_get_document_title();
     $desc  = nav_seo_description();
     $url   = nav_seo_canonical_url();
@@ -477,6 +517,7 @@ add_action('wp_head', function () {
  * JSON-LD: Organization + WebSite (sitewide, priority 5)
  * ----------------------------------------------------------------*/
 add_action('wp_head', function () {
+    if (nav_seo_has_competing_plugin()) return;
     $home       = home_url('/');
     $logo_url   = '';
 
@@ -536,6 +577,7 @@ add_action('wp_head', function () {
  * JSON-LD: BreadcrumbList — emits on every non-home page.
  * ----------------------------------------------------------------*/
 add_action('wp_head', function () {
+    if (nav_seo_has_competing_plugin()) return;
     if (is_front_page()) return;
 
     $items = [];
@@ -614,6 +656,7 @@ add_action('wp_head', function () {
  * Emits a Navigate-flavored Product schema with compound properties.
  * ----------------------------------------------------------------*/
 add_action('wp_head', function () {
+    if (nav_seo_has_competing_plugin()) return;
     if (!is_singular('product') || !function_exists('wc_get_product')) return;
 
     $product = wc_get_product(get_the_ID());
@@ -731,6 +774,7 @@ add_filter('woocommerce_structured_data_product', function ($markup) {
  * JSON-LD: Article (single research post)
  * ----------------------------------------------------------------*/
 add_action('wp_head', function () {
+    if (nav_seo_has_competing_plugin()) return;
     if (!is_singular('post')) return;
 
     $url       = get_permalink();
@@ -805,6 +849,7 @@ add_action('wp_head', function () {
  * JSON-LD: CollectionPage (product category + research archives)
  * ----------------------------------------------------------------*/
 add_action('wp_head', function () {
+    if (nav_seo_has_competing_plugin()) return;
     if (!is_product_category() && !is_shop() && !is_post_type_archive('product')
         && !is_category() && !is_tax()) {
         return;

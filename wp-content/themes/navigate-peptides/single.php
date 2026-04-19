@@ -29,11 +29,11 @@ while (have_posts()) : the_post();
     <section class="nav-page-hero">
         <div class="nav-container">
             <!-- Breadcrumbs -->
-            <nav class="nav-breadcrumb nav-breadcrumb--inline" aria-label="Breadcrumb">
-                <a href="<?php echo esc_url(home_url('/')); ?>">Home</a>
+            <nav class="nav-breadcrumb nav-breadcrumb--inline" aria-label="<?php esc_attr_e('Breadcrumb', 'navigate-peptides'); ?>">
+                <a href="<?php echo esc_url(home_url('/')); ?>"><?php esc_html_e('Home', 'navigate-peptides'); ?></a>
                 <span class="nav-breadcrumb__sep">/</span>
                 <?php if ($is_research) : ?>
-                    <a href="<?php echo esc_url(home_url('/research/')); ?>">Research</a>
+                    <a href="<?php echo esc_url(home_url('/research/')); ?>"><?php esc_html_e('Research', 'navigate-peptides'); ?></a>
                     <?php if ($primary_term) : ?>
                         <span class="nav-breadcrumb__sep">/</span>
                         <a href="<?php echo esc_url(get_term_link($primary_term)); ?>"><?php echo esc_html($primary_term->name); ?></a>
@@ -69,7 +69,15 @@ while (have_posts()) : the_post();
                     <?php echo esc_html(get_the_date()); ?>
                 </time>
                 <span class="nav-article__meta-sep">·</span>
-                <span><?php echo esc_html($reading_time); ?> min read</span>
+                <span>
+                    <?php
+                    printf(
+                        /* translators: %s: estimated reading time in minutes */
+                        esc_html(_n('%s min read', '%s min read', $reading_time, 'navigate-peptides')),
+                        esc_html(number_format_i18n($reading_time))
+                    );
+                    ?>
+                </span>
             </div>
         </div>
     </section>
@@ -92,10 +100,10 @@ while (have_posts()) : the_post();
 
             <!-- Prev / Next Navigation -->
             <?php if ($prev_post || $next_post) : ?>
-                <nav class="nav-article-nav" aria-label="Article navigation">
+                <nav class="nav-article-nav" aria-label="<?php esc_attr_e('Article navigation', 'navigate-peptides'); ?>">
                     <?php if ($prev_post) : ?>
                         <a href="<?php echo esc_url(get_permalink($prev_post)); ?>" class="nav-article-nav__link nav-article-nav__link--prev">
-                            <span class="nav-article-nav__label">← Previous</span>
+                            <span class="nav-article-nav__label"><?php esc_html_e('← Previous', 'navigate-peptides'); ?></span>
                             <span class="nav-article-nav__title"><?php echo esc_html(get_the_title($prev_post)); ?></span>
                         </a>
                     <?php else : ?>
@@ -104,7 +112,7 @@ while (have_posts()) : the_post();
 
                     <?php if ($next_post) : ?>
                         <a href="<?php echo esc_url(get_permalink($next_post)); ?>" class="nav-article-nav__link nav-article-nav__link--next">
-                            <span class="nav-article-nav__label">Next →</span>
+                            <span class="nav-article-nav__label"><?php esc_html_e('Next →', 'navigate-peptides'); ?></span>
                             <span class="nav-article-nav__title"><?php echo esc_html(get_the_title($next_post)); ?></span>
                         </a>
                     <?php endif; ?>
@@ -136,7 +144,7 @@ while (have_posts()) : the_post();
         <section class="nav-section nav-section--dark">
             <div class="nav-container">
                 <div class="nav-section__header">
-                    <h2 class="nav-section__title-caps">Related Articles</h2>
+                    <h2 class="nav-section__title-caps"><?php esc_html_e('Related Articles', 'navigate-peptides'); ?></h2>
                 </div>
                 <div class="nav-post-grid">
                     <?php while ($related->have_posts()) : $related->the_post(); ?>
@@ -151,7 +159,7 @@ while (have_posts()) : the_post();
                                     <a href="<?php the_permalink(); ?>"><?php echo esc_html(get_the_title()); ?></a>
                                 </h3>
                                 <p class="nav-post-card__excerpt"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 18)); ?></p>
-                                <a href="<?php the_permalink(); ?>" class="nav-post-card__link">Read more →</a>
+                                <a href="<?php the_permalink(); ?>" class="nav-post-card__link"><?php esc_html_e('Read more →', 'navigate-peptides'); ?></a>
                             </div>
                         </article>
                     <?php endwhile; wp_reset_postdata(); ?>

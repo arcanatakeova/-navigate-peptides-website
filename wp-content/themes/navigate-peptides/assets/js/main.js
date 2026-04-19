@@ -223,8 +223,15 @@
     document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
         anchor.addEventListener('click', function (e) {
             var href = this.getAttribute('href');
-            if (href === '#') return;
-            var target = document.querySelector(href);
+            if (href === '#' || href.length < 2) return;
+            // querySelector throws SyntaxError on CSS-invalid hashes like
+            // #2col or #foo:bar. Swallow so navigation isn't cancelled.
+            var target = null;
+            try {
+                target = document.querySelector(href);
+            } catch (_) {
+                return;
+            }
             if (target) {
                 e.preventDefault();
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -309,9 +316,37 @@
     if (minicart) {
         if (minicartClose) minicartClose.addEventListener('click', window.navMinicartClose);
         if (minicartScrim) minicartScrim.addEventListener('click', window.navMinicartClose);
+
+        // Focus trap: when the drawer is open, Tab cycles focusable
+        // children of .nav-minicart__panel. Without this, Tab escapes the
+        // drawer into the page behind the scrim — a WCAG 2.4.3 focus-order
+        // failure for modal dialogs.
+        var minicartPanel = minicart.querySelector('.nav-minicart__panel');
+        var FOCUSABLE_SEL = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && minicart.getAttribute('aria-hidden') === 'false') {
+            if (minicart.getAttribute('aria-hidden') !== 'false') return;
+            if (e.key === 'Escape') {
                 window.navMinicartClose();
+                return;
+            }
+            if (e.key !== 'Tab' || !minicartPanel) return;
+            var nodes = minicartPanel.querySelectorAll(FOCUSABLE_SEL);
+            if (!nodes.length) return;
+            var first = nodes[0];
+            var last  = nodes[nodes.length - 1];
+            var active = document.activeElement;
+            if (e.shiftKey && active === first) {
+                last.focus();
+                e.preventDefault();
+            } else if (!e.shiftKey && active === last) {
+                first.focus();
+                e.preventDefault();
+            } else if (!minicartPanel.contains(active)) {
+                // Focus started outside the panel (e.g. user clicked scrim,
+                // then hit Tab) — pull it back in.
+                first.focus();
+                e.preventDefault();
             }
         });
     }

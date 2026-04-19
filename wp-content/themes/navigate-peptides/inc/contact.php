@@ -171,7 +171,7 @@ function nav_handle_contact_form(): void {
     $ack_subject = __('We received your inquiry — Navigate Peptides', 'navigate-peptides');
     $site_name   = get_bloginfo('name');
     $ack_body = sprintf(
-        /* translators: 1: first name, 2: inquiry type label, 3: site name */
+        /* translators: 1: first name, 2: inquiry type label (lowercased), 3: submitted message body, 4: site name */
         __("Hi %1\$s,\n\nThanks for reaching out. We've received your %2\$s and our team will respond within one business day.\n\nA summary of your submission is below for your records:\n\n%3\$s\n\n— The %4\$s team\n\nAll products sold on this website are intended for research and identification purposes only. These products are not intended for human dosing, injection, or ingestion.", 'navigate-peptides'),
         $first_name,
         strtolower($inquiry_label),
