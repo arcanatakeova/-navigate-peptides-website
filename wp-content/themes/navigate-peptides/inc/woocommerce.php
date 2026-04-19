@@ -348,7 +348,10 @@ add_action('woocommerce_review_order_before_submit', function () {
 add_action('woocommerce_checkout_process', function () {
     // Nonce verification is handled by WooCommerce core checkout form processing.
     // phpcs:ignore WordPress.Security.NonceVerification.Missing
-    if (empty($_POST['nav_ruo_acknowledgment'])) {
+    $ack = isset($_POST['nav_ruo_acknowledgment'])
+        ? sanitize_text_field(wp_unslash($_POST['nav_ruo_acknowledgment']))
+        : '';
+    if (empty($ack)) {
         wc_add_notice(
             __('You must acknowledge the research-use-only agreement before completing your order.', 'navigate-peptides'),
             'error'
@@ -427,7 +430,10 @@ add_action('woocommerce_process_product_meta', function ($post_id) {
  * server-side validation intact so no unacknowledged order ever posts.
  * ----------------------------------------------------------------*/
 add_action('woocommerce_after_checkout_validation', function ($data, $errors) {
-    if (empty($_POST['nav_ruo_acknowledgment'])) {
+    $ack = isset($_POST['nav_ruo_acknowledgment'])
+        ? sanitize_text_field(wp_unslash($_POST['nav_ruo_acknowledgment']))
+        : '';
+    if (empty($ack)) {
         $errors->add(
             'nav_ruo_required',
             __('You must acknowledge the research-use-only agreement before completing your order. If the checkbox is missing from your checkout, contact support.', 'navigate-peptides')

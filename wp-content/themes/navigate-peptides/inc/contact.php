@@ -164,6 +164,29 @@ function nav_handle_contact_form(): void {
         exit;
     }
 
+    // Send an auto-acknowledgment to the submitter so they have a record
+    // of their inquiry in their own inbox. Failure here is non-blocking —
+    // the admin notification already landed, which is what matters; we
+    // just log the ack failure for diagnostic visibility.
+    $ack_subject = __('We received your inquiry — Navigate Peptides', 'navigate-peptides');
+    $site_name   = get_bloginfo('name');
+    $ack_body = sprintf(
+        /* translators: 1: first name, 2: inquiry type label, 3: site name */
+        __("Hi %1\$s,\n\nThanks for reaching out. We've received your %2\$s and our team will respond within one business day.\n\nA summary of your submission is below for your records:\n\n%3\$s\n\n— The %4\$s team\n\nAll products sold on this website are intended for research and identification purposes only. These products are not intended for human dosing, injection, or ingestion.", 'navigate-peptides'),
+        $first_name,
+        strtolower($inquiry_label),
+        $message,
+        $site_name
+    );
+    $ack_headers = [
+        'Content-Type: text/plain; charset=UTF-8',
+        sprintf('From: %s <%s>', $site_name, $to),
+    ];
+    $ack_sent = wp_mail($email, $ack_subject, $ack_body, $ack_headers);
+    if (!$ack_sent) {
+        error_log(sprintf('[nav_contact] auto-ack failed for %s', $email));
+    }
+
     wp_safe_redirect(add_query_arg('sent', '1', nav_get_contact_url()));
     exit;
 }

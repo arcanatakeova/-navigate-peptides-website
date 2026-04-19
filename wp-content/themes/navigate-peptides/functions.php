@@ -464,23 +464,36 @@ function nav_get_product_category_color($product = null): string {
  * Use via nav_kses_svg($svg_string).
  */
 function nav_svg_allowed_html(): array {
+    // Base attributes that every SVG element can carry.
     $svg_attrs = [
         'xmlns' => true, 'viewbox' => true, 'fill' => true,
         'stroke' => true, 'stroke-width' => true, 'stroke-linecap' => true,
         'stroke-linejoin' => true, 'stroke-miterlimit' => true,
+        'stroke-dasharray' => true, 'stroke-dashoffset' => true, 'stroke-opacity' => true,
+        'fill-opacity' => true, 'fill-rule' => true, 'clip-path' => true,
+        'mask' => true, 'opacity' => true, 'transform' => true,
+        'vector-effect' => true, 'pointer-events' => true,
         'width' => true, 'height' => true, 'class' => true, 'style' => true,
-        'aria-hidden' => true, 'role' => true, 'focusable' => true,
+        'aria-hidden' => true, 'aria-label' => true, 'role' => true, 'focusable' => true,
     ];
     return [
         'svg'      => $svg_attrs,
         'path'     => array_merge($svg_attrs, ['d' => true]),
-        'circle'   => array_merge($svg_attrs, ['cx' => true, 'cy' => true, 'r' => true, 'opacity' => true]),
+        'circle'   => array_merge($svg_attrs, ['cx' => true, 'cy' => true, 'r' => true]),
+        'ellipse'  => array_merge($svg_attrs, ['cx' => true, 'cy' => true, 'rx' => true, 'ry' => true]),
         'rect'     => array_merge($svg_attrs, ['x' => true, 'y' => true, 'rx' => true, 'ry' => true]),
         'line'     => array_merge($svg_attrs, ['x1' => true, 'y1' => true, 'x2' => true, 'y2' => true]),
         'polyline' => array_merge($svg_attrs, ['points' => true]),
         'polygon'  => array_merge($svg_attrs, ['points' => true]),
-        'g'        => array_merge($svg_attrs, ['transform' => true, 'opacity' => true]),
+        'g'        => $svg_attrs,
+        'use'      => array_merge($svg_attrs, ['href' => true, 'xlink:href' => true, 'x' => true, 'y' => true]),
         'defs'     => $svg_attrs,
+        'symbol'   => array_merge($svg_attrs, ['id' => true]),
+        'clippath' => array_merge($svg_attrs, ['id' => true]),
+        'mask'     => array_merge($svg_attrs, ['id' => true, 'maskunits' => true]),
+        'lineargradient' => array_merge($svg_attrs, ['id' => true, 'x1' => true, 'y1' => true, 'x2' => true, 'y2' => true, 'gradientunits' => true]),
+        'radialgradient' => array_merge($svg_attrs, ['id' => true, 'cx' => true, 'cy' => true, 'r' => true, 'fx' => true, 'fy' => true, 'gradientunits' => true]),
+        'stop'     => array_merge($svg_attrs, ['offset' => true, 'stop-color' => true, 'stop-opacity' => true]),
         'title'    => ['id' => true],
         'desc'     => ['id' => true],
     ];

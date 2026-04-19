@@ -14,6 +14,18 @@
          pinned at 4.0.0. crossorigin + no-referrer reduce CDN fingerprinting. -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <?php endif; ?>
+
+    <!-- JS-required UI elements — hide their entry-point buttons when JS is
+         disabled so visitors don't click dead controls. -->
+    <noscript>
+        <style>
+            .nav-announcement__close,
+            .nav-header__search-toggle,
+            .nav-search-form__close { display: none !important; }
+            .nav-header__search { max-height: none; }
+            .nav-header__search[aria-hidden="true"] { max-height: none; }
+        </style>
+    </noscript>
     <?php wp_head(); ?>
 </head>
 <body <?php body_class('nav-body'); ?>>
