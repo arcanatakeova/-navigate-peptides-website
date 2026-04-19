@@ -16,6 +16,8 @@
 <body <?php body_class('nav-body'); ?>>
 <?php wp_body_open(); ?>
 
+<a class="nav-skip-link" href="#main-content"><?php esc_html_e('Skip to content', 'navigate-peptides'); ?></a>
+
 <!-- Announcement Bar — editable via Customizer or filter -->
 <?php
 $announcement = apply_filters('navigate_announcement_text', 'Free shipping on research orders over $150 — All compounds include Certificate of Analysis');
