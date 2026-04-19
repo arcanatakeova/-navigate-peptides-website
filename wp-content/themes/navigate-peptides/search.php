@@ -60,7 +60,7 @@ $total_results = $GLOBALS['wp_query']->found_posts;
                                 <span class="nav-post-card__tag"><?php echo esc_html($post_type_label); ?></span>
                             <?php endif; ?>
                             <h3 class="nav-post-card__title">
-                                <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                                <a href="<?php the_permalink(); ?>"><?php echo esc_html(get_the_title()); ?></a>
                             </h3>
                             <p class="nav-post-card__excerpt"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 22)); ?></p>
                             <a href="<?php the_permalink(); ?>" class="nav-post-card__link">View →</a>

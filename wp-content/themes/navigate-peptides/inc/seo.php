@@ -29,6 +29,61 @@ define('NAV_SEO_TWITTER_HANDLE', '@navigatepeptides');
 define('NAV_SEO_DEFAULT_DESC', 'Research-grade peptide compounds with third-party verified certificates of analysis. Supplied for controlled laboratory environments. All products intended for research and identification purposes only.');
 
 /**
+ * JSON-LD script encoder — forces HEX escaping so user-controllable strings
+ * containing </script>, &, quotes, or angle brackets can never break out of
+ * the <script type="application/ld+json"> context. Defence-in-depth XSS.
+ */
+function nav_seo_json_ld(array $schema): string {
+    $flags = JSON_UNESCAPED_SLASHES
+        | JSON_HEX_TAG
+        | JSON_HEX_AMP
+        | JSON_HEX_APOS
+        | JSON_HEX_QUOT;
+    $json = wp_json_encode($schema, $flags);
+    if ($json === false) {
+        return '';
+    }
+    return '<script type="application/ld+json">' . $json . '</script>' . "\n";
+}
+
+/**
+ * Compliance scrubber for user-editable strings that flow into meta
+ * description and schema descriptions. The admin-save scanner warns but
+ * does not block; this is a belt-and-braces final pass.
+ *
+ * Replaces flagged keywords with neutral synonyms rather than stripping
+ * them outright — preserves sentence structure so fallbacks aren't needed.
+ */
+function nav_seo_scrub(string $text): string {
+    if ($text === '') return $text;
+
+    // Pairs: prohibited pattern => compliant replacement.
+    // Case-insensitive; \b boundaries to avoid partial matches.
+    $map = [
+        '/\bdos(?:e|ing|age)\b/i'          => 'reconstitution concentration',
+        '/\binject(?:ion|ing|ions)?\b/i'   => 'laboratory handling',
+        '/\bsubcutaneous\b/i'              => 'laboratory application',
+        '/\bintramuscular\b/i'             => 'laboratory application',
+        '/\bheal(?:ing|s)?\b/i'            => 'pathway modulation',
+        '/\brecover(?:y|ing)?\b/i'         => 'pathway response',
+        '/\btreat(?:ment|s|ing)?\b/i'      => 'investigation',
+        '/\btherap(?:y|ies|eutic)\b/i'     => 'investigational',
+        '/\bpatients?\b/i'                 => 'research subjects',
+        '/\bwellness\b/i'                  => 'molecular research',
+        '/\bperformance\b/i'               => 'mechanism',
+        '/\banti[- ]aging\b/i'             => 'longevity pathway',
+        '/\b(fat|weight)[- ]loss\b/i'      => 'metabolic pathway research',
+        '/\bpharmaceutical grade\b/i'      => 'research grade',
+        '/\bbefore and after\b/i'          => 'pre- and post-study',
+        '/\btestimonial\b/i'               => 'research citation',
+        '/\bcure[sd]?\b/i'                 => 'investigational',
+        '/\bbenefits?\b/i'                 => 'mechanisms',
+        '/\bprotocol\b/i'                  => 'procedure',
+    ];
+    return (string) preg_replace(array_keys($map), array_values($map), $text);
+}
+
+/**
  * Get the canonical URL for the current request.
  * Handles singular, category, tag, search, paged archives, and front page.
  */
@@ -37,24 +92,30 @@ function nav_seo_canonical_url(): string {
         return home_url('/');
     }
     if (is_singular()) {
-        return get_permalink();
+        $permalink = get_permalink();
+        return $permalink ?: home_url('/');
     }
     if (is_category() || is_tag() || is_tax()) {
         $term = get_queried_object();
         if ($term && isset($term->term_id)) {
-            return get_term_link($term);
+            $link = get_term_link($term);
+            if (!is_wp_error($link) && $link) return $link;
         }
     }
     if (is_post_type_archive()) {
-        return get_post_type_archive_link(get_post_type());
+        $link = get_post_type_archive_link(get_post_type());
+        if ($link) return $link;
     }
     if (is_search()) {
         return home_url('/?s=' . urlencode(get_search_query()));
     }
     if (is_home()) {
-        return get_permalink(get_option('page_for_posts')) ?: home_url('/');
+        $posts_page = get_permalink(get_option('page_for_posts'));
+        return $posts_page ?: home_url('/');
     }
-    return home_url(add_query_arg([], $GLOBALS['wp']->request ?? ''));
+    // Fallback: reconstruct from request path without misusing add_query_arg.
+    $request = $GLOBALS['wp']->request ?? '';
+    return home_url('/' . ltrim((string) $request, '/'));
 }
 
 /**
@@ -67,9 +128,12 @@ function nav_seo_trim(string $text, int $words = 30): string {
 }
 
 /**
- * Meta description per page type. Compliance-safe defaults.
+ * Meta description per page type. Compliance-safe defaults + scrub pass.
+ * Never returns an empty string — falls back to NAV_SEO_DEFAULT_DESC.
  */
 function nav_seo_description(): string {
+    $desc = '';
+
     // Single product: compound-specific scientific description
     if (is_singular('product') && function_exists('wc_get_product')) {
         $product = wc_get_product(get_the_ID());
@@ -96,55 +160,47 @@ function nav_seo_description(): string {
                     $title
                 );
             }
-            return $desc;
         }
-    }
-
-    // Product category archive
-    if (is_product_category()) {
+    } elseif (is_product_category()) {
         $term = get_queried_object();
         if ($term) {
             if (!empty($term->description)) {
-                return nav_seo_trim($term->description, 30);
+                $desc = nav_seo_trim($term->description, 30);
+            } else {
+                $desc = sprintf(
+                    '%s peptide compounds for scientific investigation. Every batch includes molecular identity verification, HPLC purity data, and a lot-specific certificate of analysis. Research-use only.',
+                    $term->name
+                );
             }
-            return sprintf(
-                '%s peptide compounds for scientific investigation. Every batch includes molecular identity verification, HPLC purity data, and a lot-specific certificate of analysis. Research-use only.',
-                $term->name
-            );
         }
-    }
-
-    // Single research post
-    if (is_singular('post')) {
+    } elseif (is_singular('post')) {
         $excerpt = get_the_excerpt();
         if ($excerpt) {
-            return nav_seo_trim($excerpt, 28);
+            $desc = nav_seo_trim($excerpt, 28);
         }
-    }
-
-    // Any page with a manual meta field override
-    if (is_singular()) {
+    } elseif (is_singular()) {
         $manual = get_post_meta(get_the_ID(), '_nav_meta_description', true);
         if ($manual) {
-            return nav_seo_trim($manual, 30);
+            $desc = nav_seo_trim($manual, 30);
+        } else {
+            $excerpt = get_the_excerpt();
+            if ($excerpt) $desc = nav_seo_trim($excerpt, 28);
         }
-        $excerpt = get_the_excerpt();
-        if ($excerpt) {
-            return nav_seo_trim($excerpt, 28);
-        }
+    } elseif (is_post_type_archive('post') || is_home()) {
+        $desc = 'Mechanism deep-dives, emerging research, and analytical methodology for research peptide compounds. Purely scientific content — no human-use framing.';
+    } elseif (is_search()) {
+        $desc = sprintf(
+            'Search results for %s — Navigate Peptides research compounds and analytical resources.',
+            get_search_query()
+        );
     }
 
-    // Research archive
-    if (is_post_type_archive('post') || is_home()) {
-        return 'Mechanism deep-dives, emerging research, and analytical methodology for research peptide compounds. Purely scientific content — no human-use framing.';
+    // Final safety net — compliance keyword scrub + non-empty guarantee.
+    $desc = nav_seo_scrub($desc);
+    if (trim($desc) === '') {
+        $desc = NAV_SEO_DEFAULT_DESC;
     }
-
-    // Search
-    if (is_search()) {
-        return sprintf('Search results for %s — Navigate Peptides research compounds and analytical resources.', get_search_query());
-    }
-
-    return NAV_SEO_DEFAULT_DESC;
+    return $desc;
 }
 
 /**
@@ -200,7 +256,7 @@ function nav_seo_og_image(): array {
 function nav_seo_is_noindex(): bool {
     if (is_404() || is_search()) return true;
 
-    // Noindex anything with a ?reply_to= or utm_* sorts of query params
+    // Noindex deep paginated archives — they're mostly duplicate content.
     $paged = (int) get_query_var('paged');
     if ($paged > 5) return true;
 
@@ -425,9 +481,7 @@ add_action('wp_head', function () {
         'sameAs'      => apply_filters('nav_seo_same_as', []),
     ];
 
-    echo '<script type="application/ld+json">' .
-        wp_json_encode($organization, JSON_UNESCAPED_SLASHES) .
-        '</script>' . "\n";
+    echo nav_seo_json_ld($organization);
 
     // WebSite + SearchAction (sitelinks searchbox)
     $website = [
@@ -449,9 +503,7 @@ add_action('wp_head', function () {
         ],
     ];
 
-    echo '<script type="application/ld+json">' .
-        wp_json_encode($website, JSON_UNESCAPED_SLASHES) .
-        '</script>' . "\n";
+    echo nav_seo_json_ld($website);
 }, 5);
 
 /* ------------------------------------------------------------------
@@ -528,9 +580,7 @@ add_action('wp_head', function () {
         'itemListElement' => $items,
     ];
 
-    echo '<script type="application/ld+json">' .
-        wp_json_encode($schema, JSON_UNESCAPED_SLASHES) .
-        '</script>' . "\n";
+    echo nav_seo_json_ld($schema);
 }, 9);
 
 /* ------------------------------------------------------------------
@@ -544,7 +594,8 @@ add_action('wp_head', function () {
     if (!$product) return;
 
     $url       = get_permalink($product->get_id());
-    $sku       = $product->get_sku() ?: 'NAV-' . $product->get_id();
+    $raw_sku   = $product->get_sku();
+    $sku       = $raw_sku ?: 'NAV-' . $product->get_id();
     $cas       = get_post_meta($product->get_id(), '_nav_cas_number', true);
     $mw        = get_post_meta($product->get_id(), '_nav_molecular_weight', true);
     $sequence  = get_post_meta($product->get_id(), '_nav_sequence', true);
@@ -569,19 +620,25 @@ add_action('wp_head', function () {
 
     $subtitle = get_post_meta($product->get_id(), '_nav_technical_subtitle', true);
 
+    // Description: run through compliance scrub so risky short_description
+    // text never ships in the Product schema (matches meta description path).
+    $raw_desc = $product->get_short_description()
+        ?: $product->get_description()
+        ?: ($subtitle ?: 'Research-grade peptide compound for laboratory investigation.');
+    $description = nav_seo_scrub(nav_seo_trim($raw_desc, 60));
+    if (trim($description) === '') {
+        $description = 'Research-grade peptide compound for laboratory investigation.';
+    }
+
     $schema = [
         '@context'    => 'https://schema.org',
         '@type'       => 'Product',
         '@id'         => $url . '#product',
         'name'        => $product->get_name(),
         'sku'         => $sku,
-        'mpn'         => $sku,
         'url'         => $url,
         'image'       => $image_url,
-        'description' => nav_seo_trim(
-            $product->get_short_description() ?: $product->get_description() ?: ($subtitle ?: 'Research-grade peptide compound.'),
-            60
-        ),
+        'description' => $description,
         'brand'       => [
             '@type' => 'Brand',
             'name'  => NAV_SEO_SITE_NAME,
@@ -592,6 +649,7 @@ add_action('wp_head', function () {
             'url'             => $url,
             'priceCurrency'   => get_woocommerce_currency(),
             'price'           => (string) $product->get_price(),
+            'priceValidUntil' => gmdate('Y-m-d', strtotime('+1 year')),
             'availability'    => $product->is_in_stock()
                 ? 'https://schema.org/InStock'
                 : 'https://schema.org/OutOfStock',
@@ -600,6 +658,12 @@ add_action('wp_head', function () {
         ],
     ];
 
+    // Only include MPN when admin supplied a SKU — Google Merchant requires
+    // MPN to be manufacturer-assigned, not our synthesized fallback.
+    if ($raw_sku) {
+        $schema['mpn'] = $raw_sku;
+    }
+
     if ($additional) {
         $schema['additionalProperty'] = $additional;
     }
@@ -607,10 +671,22 @@ add_action('wp_head', function () {
     // Disambiguating description — compliance reminder embedded in schema
     $schema['disambiguatingDescription'] = 'For research and identification purposes only. Not for human or veterinary use.';
 
-    echo '<script type="application/ld+json">' .
-        wp_json_encode($schema, JSON_UNESCAPED_SLASHES) .
-        '</script>' . "\n";
+    echo nav_seo_json_ld($schema);
 }, 10);
+
+/* ------------------------------------------------------------------
+ * Suppress WooCommerce's own Product schema on single product pages —
+ * we emit a richer, compliance-scrubbed one at priority 10 above.
+ * Leaving Woo's schema in place causes Google to see two Product nodes
+ * with different shapes, which trips warnings in rich-result testing.
+ * ----------------------------------------------------------------*/
+add_filter('woocommerce_structured_data_type_for_page', function ($type) {
+    if (is_singular('product')) {
+        // Return false-y to skip Woo's default Product emitter.
+        return '';
+    }
+    return $type;
+});
 
 /* ------------------------------------------------------------------
  * Scrub WooCommerce's default Product schema for compliance.
@@ -636,9 +712,20 @@ add_action('wp_head', function () {
     $published = get_the_date('c');
     $modified  = get_the_modified_date('c');
 
-    $author_id    = (int) get_post_field('post_author', get_the_ID());
-    $author_name  = $author_id ? get_the_author_meta('display_name', $author_id) : NAV_SEO_SITE_NAME;
-    $author_url   = $author_id ? get_author_posts_url($author_id) : home_url('/');
+    $author_id = (int) get_post_field('post_author', get_the_ID());
+
+    // If post_author is 0 (imported / orphaned content), attribute to the
+    // Organization rather than synthesizing a Person named after the site.
+    if ($author_id > 0) {
+        $author = [
+            '@type' => 'Person',
+            'name'  => get_the_author_meta('display_name', $author_id) ?: NAV_SEO_SITE_NAME,
+            'url'   => get_author_posts_url($author_id),
+        ];
+    } else {
+        error_log('[nav_seo] article ' . get_the_ID() . ' has no author; attributing to Organization');
+        $author = ['@id' => home_url('/') . '#organization'];
+    }
 
     $image_url = '';
     if (has_post_thumbnail()) {
@@ -648,11 +735,14 @@ add_action('wp_head', function () {
         $image_url = get_template_directory_uri() . '/assets/images/hero-three-vials.png';
     }
 
+    // Guard against empty description — Google's Article guidelines require it.
     $desc = nav_seo_description();
+    if (trim($desc) === '') $desc = NAV_SEO_DEFAULT_DESC;
 
-    // Estimate word count and reading time from content
-    $content      = get_post_field('post_content', get_the_ID());
-    $word_count   = str_word_count(wp_strip_all_tags($content));
+    // Strip Gutenberg block comments before counting so wordCount isn't inflated.
+    $raw_content  = (string) get_post_field('post_content', get_the_ID());
+    $stripped     = preg_replace('/<!--\s*\/?wp:[^>]*-->/', '', $raw_content);
+    $word_count   = str_word_count(wp_strip_all_tags((string) $stripped));
     $reading_time = max(1, (int) round($word_count / 200));
 
     $schema = [
@@ -665,11 +755,7 @@ add_action('wp_head', function () {
         'image'            => $image_url,
         'datePublished'    => $published,
         'dateModified'     => $modified,
-        'author'           => [
-            '@type' => 'Person',
-            'name'  => $author_name,
-            'url'   => $author_url,
-        ],
+        'author'           => $author,
         'publisher'        => ['@id' => home_url('/') . '#organization'],
         'wordCount'        => $word_count,
         'timeRequired'     => 'PT' . $reading_time . 'M',
@@ -686,9 +772,7 @@ add_action('wp_head', function () {
         $schema['keywords'] = implode(', ', wp_list_pluck($tags, 'name'));
     }
 
-    echo '<script type="application/ld+json">' .
-        wp_json_encode($schema, JSON_UNESCAPED_SLASHES) .
-        '</script>' . "\n";
+    echo nav_seo_json_ld($schema);
 }, 11);
 
 /* ------------------------------------------------------------------
@@ -702,21 +786,25 @@ add_action('wp_head', function () {
 
     $term = get_queried_object();
     $url  = nav_seo_canonical_url();
+    if (!$url) return;  // Don't emit a schema with an empty @id.
+
     $name = $term && isset($term->name) ? $term->name : 'Compounds';
+
+    // Include paged suffix in @id so page 2, 3, ... don't collide with page 1.
+    $paged = max(1, (int) get_query_var('paged'));
+    $id    = $url . '#collection' . ($paged > 1 ? '-' . $paged : '');
 
     $schema = [
         '@context'    => 'https://schema.org',
         '@type'       => 'CollectionPage',
-        '@id'         => $url . '#collection',
+        '@id'         => $id,
         'url'         => $url,
         'name'        => $name,
         'description' => nav_seo_description(),
         'isPartOf'    => ['@id' => home_url('/') . '#website'],
     ];
 
-    echo '<script type="application/ld+json">' .
-        wp_json_encode($schema, JSON_UNESCAPED_SLASHES) .
-        '</script>' . "\n";
+    echo nav_seo_json_ld($schema);
 }, 12);
 
 /* ------------------------------------------------------------------
@@ -837,11 +925,23 @@ add_action('save_post', function (int $post_id) {
 
 /* ------------------------------------------------------------------
  * Preload hero images on single product + homepage for LCP.
+ * Prefers WebP — matches the <picture> source order in templates.
  * ----------------------------------------------------------------*/
 add_action('wp_head', function () {
     if (is_front_page()) {
-        $hero = get_template_directory_uri() . '/assets/images/vial-ghkcu-single.png';
-        echo '<link rel="preload" as="image" href="' . esc_url($hero) . '" fetchpriority="high">' . "\n";
+        $theme_dir = get_template_directory();
+        $theme_uri = get_template_directory_uri();
+        // Prefer webp when the file exists on disk (tested via realpath, not HTTP).
+        $webp = $theme_dir . '/assets/images/vial-ghkcu-single.webp';
+        if (file_exists($webp)) {
+            echo '<link rel="preload" as="image" type="image/webp" href="' .
+                esc_url($theme_uri . '/assets/images/vial-ghkcu-single.webp') .
+                '" fetchpriority="high">' . "\n";
+        } else {
+            echo '<link rel="preload" as="image" href="' .
+                esc_url($theme_uri . '/assets/images/vial-ghkcu-single.png') .
+                '" fetchpriority="high">' . "\n";
+        }
         return;
     }
 

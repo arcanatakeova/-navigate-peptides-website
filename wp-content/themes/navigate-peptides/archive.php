@@ -84,7 +84,7 @@ $all_categories  = get_terms([
                                 </a>
                             <?php endif; ?>
                             <h3 class="nav-post-card__title">
-                                <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                                <a href="<?php the_permalink(); ?>"><?php echo esc_html(get_the_title()); ?></a>
                             </h3>
                             <p class="nav-post-card__meta">
                                 <time datetime="<?php echo esc_attr(get_the_date('c')); ?>">

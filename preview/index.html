@@ -386,9 +386,38 @@
     </div>
 </footer>
 
-<div class="preview-banner">Static preview &middot; homepage</div>
+<div class="preview-banner" id="preview-banner">Static preview &middot; homepage</div>
 
 <script src="../wp-content/themes/navigate-peptides/assets/js/main.js"></script>
+
+<script>
+  // Sanity check: if the theme stylesheets didn't load (paths drift, file moved)
+  // a page-wide warning is shown so the design review isn't silently broken.
+  (function () {
+    var banner = document.getElementById('preview-banner');
+    if (!banner) return;
+
+    function checkStyles() {
+      // window.getComputedStyle on body reads --nav-bg-primary, set in main.css.
+      var bg = getComputedStyle(document.body)
+        .getPropertyValue('--nav-bg-primary')
+        .trim();
+      if (!bg) {
+        banner.textContent = '⚠ Theme CSS failed to load — check paths in <link> tags';
+        banner.style.color = '#FFB3B3';
+        banner.style.background = 'rgba(74, 20, 28, 0.95)';
+        banner.style.borderColor = '#8B3A3A';
+        document.documentElement.style.background = '#1a0e0e';
+      }
+    }
+
+    if (document.readyState === 'complete') {
+      checkStyles();
+    } else {
+      window.addEventListener('load', checkStyles);
+    }
+  })();
+</script>
 
 </body>
 </html>

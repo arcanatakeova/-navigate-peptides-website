@@ -135,11 +135,27 @@ require_once NAV_THEME_DIR . '/inc/contact.php';
 add_action('send_headers', function () {
     if (is_admin()) return;
 
+    // Bail cleanly if another plugin already flushed headers — header() would
+    // warn silently otherwise.
+    if (headers_sent($sent_file, $sent_line)) {
+        error_log(sprintf('[nav_security] headers already sent at %s:%d', $sent_file, $sent_line));
+        return;
+    }
+
     header('X-Content-Type-Options: nosniff');
     header('X-Frame-Options: SAMEORIGIN');
     header('Referrer-Policy: strict-origin-when-cross-origin');
     header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
     header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+
+    // form-action must stay same-origin. If admin_url()'s host differs from
+    // home_url()'s (unusual — implies a filter messing with admin URLs), drop
+    // the extra origin rather than trust it.
+    $admin_host = wp_parse_url(admin_url(), PHP_URL_HOST);
+    $site_host  = wp_parse_url(home_url(), PHP_URL_HOST);
+    $form_action = ($admin_host && $admin_host === $site_host)
+        ? "'self' " . esc_url(admin_url())
+        : "'self'";
 
     // 'unsafe-inline' on style-src: required by Woo + theme inline <style>.
     // ajax.googleapis.com: Google <model-viewer> CDN in header.php.
@@ -152,7 +168,7 @@ add_action('send_headers', function () {
         . "connect-src 'self'; "
         . "frame-ancestors 'self'; "
         . "base-uri 'self'; "
-        . "form-action 'self' " . esc_url(admin_url()) . ";";
+        . "form-action {$form_action};";
     header('Content-Security-Policy: ' . $csp);
 });
 
@@ -188,6 +204,37 @@ add_action('widgets_init', function () {
 /* ------------------------------------------------------------------
  * 10. Helper Functions
  * ----------------------------------------------------------------*/
+
+/**
+ * Canonical URL for the "Contact / Request Access" page.
+ *
+ * Resolves (in order):
+ *   1. A page saved in the `nav_contact_page_id` option (Customizer-editable)
+ *   2. A page with slug 'contact' (matches WP's default page finder)
+ *   3. The hardcoded default /about/contact/
+ *
+ * Lets marketing rename the slug without breaking header / footer / CTAs.
+ */
+function nav_get_contact_url(): string {
+    $cached = wp_cache_get('nav_contact_url', 'navigate-peptides');
+    if ($cached) return $cached;
+
+    $page_id = (int) get_option('nav_contact_page_id', 0);
+    if ($page_id && get_post_status($page_id) === 'publish') {
+        $url = get_permalink($page_id);
+    } else {
+        $page = get_page_by_path('about/contact');
+        if ($page) {
+            $url = get_permalink($page);
+        } else {
+            $page = get_page_by_path('contact');
+            $url = $page ? get_permalink($page) : home_url('/about/contact/');
+        }
+    }
+
+    wp_cache_set('nav_contact_url', $url, 'navigate-peptides', 300);
+    return $url;
+}
 
 /**
  * Get category color by slug.

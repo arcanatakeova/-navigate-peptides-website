@@ -51,7 +51,7 @@ while (have_posts()) : the_post();
                 <span class="nav-kicker"><?php echo esc_html(get_post_type_object(get_post_type())->labels->singular_name ?? 'Article'); ?></span>
             <?php endif; ?>
 
-            <h1 class="nav-page-hero__title"><?php the_title(); ?></h1>
+            <h1 class="nav-page-hero__title"><?php echo esc_html(get_the_title()); ?></h1>
 
             <?php if (has_excerpt()) : ?>
                 <p class="nav-page-hero__subtitle"><?php echo esc_html(get_the_excerpt()); ?></p>
@@ -141,7 +141,7 @@ while (have_posts()) : the_post();
                             <?php endif; ?>
                             <div class="nav-post-card__body">
                                 <h3 class="nav-post-card__title">
-                                    <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                                    <a href="<?php the_permalink(); ?>"><?php echo esc_html(get_the_title()); ?></a>
                                 </h3>
                                 <p class="nav-post-card__excerpt"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 18)); ?></p>
                                 <a href="<?php the_permalink(); ?>" class="nav-post-card__link">Read more →</a>

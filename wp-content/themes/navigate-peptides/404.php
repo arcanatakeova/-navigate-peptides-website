@@ -70,7 +70,7 @@ get_header();
         <div class="nav-section--center" style="margin-top:64px;">
             <div class="nav-cta-actions nav-cta-actions--center">
                 <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-btn nav-btn--primary">Return Home</a>
-                <a href="<?php echo esc_url(home_url('/about/contact/')); ?>" class="nav-btn nav-btn--outline">Contact Support</a>
+                <a href="<?php echo esc_url(nav_get_contact_url()); ?>" class="nav-btn nav-btn--outline">Contact Support</a>
             </div>
         </div>
     </div>

@@ -108,7 +108,7 @@ if ($announcement) :
                         <a href="<?php echo esc_url(home_url('/about/')); ?>">About</a>
                         <ul class="sub-menu">
                             <li><a href="<?php echo esc_url(home_url('/about/standards/')); ?>">Standards</a></li>
-                            <li><a href="<?php echo esc_url(home_url('/about/contact/')); ?>">Contact</a></li>
+                            <li><a href="<?php echo esc_url(nav_get_contact_url()); ?>">Contact</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -131,7 +131,7 @@ if ($announcement) :
                 </a>
             <?php endif; ?>
 
-            <a href="<?php echo esc_url(home_url('/about/contact/')); ?>" class="nav-btn nav-btn--primary nav-header__cta">
+            <a href="<?php echo esc_url(nav_get_contact_url()); ?>" class="nav-btn nav-btn--primary nav-header__cta">
                 Request Access
             </a>
 
@@ -162,7 +162,7 @@ if ($announcement) :
                 ]);
             }
             ?>
-            <a href="<?php echo esc_url(home_url('/about/contact/')); ?>" class="nav-btn nav-btn--primary nav-btn--full">
+            <a href="<?php echo esc_url(nav_get_contact_url()); ?>" class="nav-btn nav-btn--primary nav-btn--full">
                 Request Access
             </a>
         </div>

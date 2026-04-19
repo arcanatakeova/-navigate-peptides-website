@@ -29,14 +29,14 @@ get_header();
                 </ul>
             </div>
             <div class="nav-info-card">
-                <h3 class="nav-info-card__title">Laboratory Dissolution Protocol</h3>
+                <h3 class="nav-info-card__title">Laboratory Preparation Procedure</h3>
                 <ul class="nav-info-card__list">
                     <li>In laboratory preparation, add appropriate solvent slowly along the vial wall</li>
                     <li>Allow lyophilized compound to dissolve under controlled conditions (2-5 minutes)</li>
                     <li>Gently swirl if needed — do not agitate or vortex</li>
                     <li>Record concentration based on total solvent volume for experimental documentation</li>
                     <li>Document preparation date, solvent used, and final concentration in laboratory records</li>
-                    <li>For research use only — all handling must follow institutional laboratory protocols</li>
+                    <li>For research use only — all handling must follow institutional laboratory procedures</li>
                 </ul>
             </div>
         </div>

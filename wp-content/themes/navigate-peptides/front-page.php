@@ -22,7 +22,7 @@ $theme_uri = get_template_directory_uri();
                 <em class="nav-hero__title-italic">Intelligent.</em>
             </h1>
             <p class="nav-hero__subtitle">
-                Premium peptides for research applications.
+                Research-grade peptide compounds for controlled laboratory investigation.
             </p>
             <ul class="nav-hero__badges">
                 <li>
@@ -242,7 +242,7 @@ $theme_uri = get_template_directory_uri();
             <a href="<?php echo esc_url(home_url('/compounds/')); ?>" class="nav-btn nav-btn--primary">
                 View Compounds
             </a>
-            <a href="<?php echo esc_url(home_url('/about/contact/')); ?>" class="nav-btn nav-btn--outline">
+            <a href="<?php echo esc_url(nav_get_contact_url()); ?>" class="nav-btn nav-btn--outline">
                 Request Access
             </a>
         </div>

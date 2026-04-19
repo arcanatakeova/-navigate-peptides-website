@@ -81,7 +81,7 @@
                 <ul class="nav-footer__links">
                     <li><a href="<?php echo esc_url(home_url('/about/')); ?>">About</a></li>
                     <li><a href="<?php echo esc_url(home_url('/about/standards/')); ?>">Standards</a></li>
-                    <li><a href="<?php echo esc_url(home_url('/about/contact/')); ?>">Contact / Request Access</a></li>
+                    <li><a href="<?php echo esc_url(nav_get_contact_url()); ?>">Contact / Request Access</a></li>
                 </ul>
             </div>
         </div>

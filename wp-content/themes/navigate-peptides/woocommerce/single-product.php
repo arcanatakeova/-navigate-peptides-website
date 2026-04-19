@@ -97,7 +97,7 @@ while (have_posts()) : the_post();
                 <?php endif; ?>
 
                 <!-- 1. Product Name -->
-                <h1 class="nav-product-single__title"><?php the_title(); ?></h1>
+                <h1 class="nav-product-single__title"><?php echo esc_html(get_the_title()); ?></h1>
 
                 <!-- 2. Technical Subtitle -->
                 <?php if ($subtitle) : ?>

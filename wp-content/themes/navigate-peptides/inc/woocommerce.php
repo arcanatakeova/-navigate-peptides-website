@@ -204,10 +204,10 @@ function nav_batch_verification_tab(): void {
     echo '<a href="' . esc_url(home_url('/quality/handling/')) . '" class="nav-tab-link">Handling &amp; Storage <span>→</span></a>';
     echo '</div>';
 
-    // Disclaimer
+    // Disclaimer — processor-mandated verbatim text, do not paraphrase
     echo '<div class="nav-tab-disclaimer">';
-    echo '<p>' . esc_html__('This product is supplied for research purposes only.', 'navigate-peptides') . '</p>';
-    echo '<p>' . esc_html__('Not for human or veterinary use.', 'navigate-peptides') . '</p>';
+    echo '<p>' . esc_html(nav_get_disclaimer('product')) . '</p>';
+    echo '<p>' . esc_html(nav_get_disclaimer('sitewide')) . '</p>';
     echo '</div>';
 
     echo '</div>';
