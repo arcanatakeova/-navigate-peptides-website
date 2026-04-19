@@ -19,15 +19,9 @@ function nav_get_disclaimer(string $key): string {
         'sitewide' => 'All products sold on this website are intended for research and identification purposes only. These products are not intended for human dosing, injection, or ingestion.',
     ];
     if (!isset($disclaimers[$key])) {
-        // Processor-mandated text must never silently disappear. Warn loudly
-        // so a typo surfaces in logs / WP_DEBUG instead of stripping the
-        // disclaimer from the rendered page.
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            trigger_error(
-                sprintf('nav_get_disclaimer(): unknown key "%s"', $key),
-                E_USER_WARNING
-            );
-        }
+        // Processor-mandated text must never silently disappear. error_log
+        // (always) rather than trigger_error (which can escalate to a fatal
+        // on hosts configured with strict WP_DEBUG handling).
         error_log(sprintf('[nav_compliance] unknown disclaimer key: %s', $key));
         // Fall back to the sitewide disclaimer so the page stays compliant.
         return $disclaimers['sitewide'];

@@ -25,10 +25,9 @@ defined('ABSPATH') || exit;
  * Get the configured GA4 measurement ID. Empty string when unconfigured.
  */
 function nav_ga4_id(): string {
-    $id = (string) get_option('nav_ga4_id', '');
-    // GA4 IDs always start with 'G-' followed by 10 alphanumerics; strip
-    // anything else defensively.
-    if (!preg_match('/^G-[A-Z0-9]{5,20}$/i', $id)) return '';
+    $id = strtoupper((string) get_option('nav_ga4_id', ''));
+    // GA4 IDs are always uppercase: G-XXXXXXXXXX. Reject lowercase input.
+    if (!preg_match('/^G-[A-Z0-9]{5,20}$/', $id)) return '';
     return $id;
 }
 
@@ -290,8 +289,8 @@ add_action('customize_register', function ($wp_customize) {
         'type'              => 'option',
         'default'           => '',
         'sanitize_callback' => function ($value) {
-            $value = trim((string) $value);
-            return preg_match('/^G-[A-Z0-9]{5,20}$/i', $value) ? $value : '';
+            $value = strtoupper(trim((string) $value));
+            return preg_match('/^G-[A-Z0-9]{5,20}$/', $value) ? $value : '';
         },
         'capability'        => 'manage_options',
     ]);

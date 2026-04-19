@@ -23,7 +23,7 @@ get_header();
                 <ul class="nav-info-card__list">
                     <li>Lyophilized peptides: Store at -20°C for long-term stability</li>
                     <li>Reconstituted peptides: Store at 2-8°C, use within 30 days</li>
-                    <li>Avoid repeated freeze-thaw cycles</li>
+                    <li>Avoid repeated freeze-thaw transitions</li>
                     <li>Keep away from direct light exposure</li>
                     <li>Store in original nitrogen-flushed vials until reconstitution</li>
                 </ul>

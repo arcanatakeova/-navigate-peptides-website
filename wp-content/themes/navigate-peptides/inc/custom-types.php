@@ -86,13 +86,17 @@ function nav_backfill_default_terms(): void {
 }
 
 add_action('after_switch_theme', 'nav_backfill_default_terms');
-// If WC activates after the theme, fire once more so product categories exist.
-add_action('woocommerce_init', function () {
-    if (!get_option('nav_product_terms_seeded')) {
-        nav_backfill_default_terms();
-        update_option('nav_product_terms_seeded', 1, false);
-    }
-});
+// If WC activates after the theme, fire once more so product categories
+// exist. Hook on init:20 — product_cat registers at init:8 in WC core;
+// woocommerce_init is too early so taxonomy_exists() would return false.
+// Also: only flip the seeded flag when we actually seeded, so a race
+// doesn't permanently prevent retry.
+add_action('init', function () {
+    if (get_option('nav_product_terms_seeded')) return;
+    if (!taxonomy_exists('product_cat')) return;
+    nav_backfill_default_terms();
+    update_option('nav_product_terms_seeded', 1, false);
+}, 20);
 
 /**
  * Flush rewrite rules on theme activation.

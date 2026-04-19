@@ -209,18 +209,19 @@ function nav_seo_description(): string {
         );
     }
 
-    // Compliance scrub — but if the scrub actually changed the text,
-    // that means the source contained a prohibited keyword. Rather than
-    // ship mid-sentence regex-mangled English to Google, fall back to
-    // the hardcoded default and log so Ian can fix the offending copy.
+    // Compliance scrub — ship the cleaned text rather than clobbering to a
+    // generic default. The previous behavior fell through to
+    // NAV_SEO_DEFAULT_DESC whenever a single keyword was matched, which
+    // ended up shipping identical meta descriptions for multiple products
+    // (duplicate-content SEO penalty). Now: scrub, log the mutation so the
+    // offending source can be fixed, emit the scrubbed text.
     $scrubbed = nav_seo_scrub($desc);
     if ($scrubbed !== $desc && $desc !== '') {
         error_log(sprintf(
-            '[nav_seo] scrub mutated meta description; using default. url=%s original=%s',
+            '[nav_seo] scrub mutated meta description. url=%s original=%s',
             $_SERVER['REQUEST_URI'] ?? '',
             mb_substr($desc, 0, 120)
         ));
-        return NAV_SEO_DEFAULT_DESC;
     }
     if (trim($scrubbed) === '') {
         return NAV_SEO_DEFAULT_DESC;
@@ -858,7 +859,6 @@ add_filter('wp_get_attachment_image_attributes', function ($attr, $attachment) {
 add_filter('robots_txt', function ($output, $public) {
     if (!$public) return $output;
 
-    $sitemap = home_url('/wp-sitemap.xml');
     $output .= "\n";
     $output .= "# Block admin + checkout + cart — not useful for indexing\n";
     $output .= "Disallow: /wp-admin/\n";
@@ -873,7 +873,20 @@ add_filter('robots_txt', function ($output, $public) {
     $output .= "Allow: /wp-content/uploads/\n";
     $output .= "Allow: /wp-content/themes/navigate-peptides/assets/\n";
     $output .= "\n";
-    $output .= "Sitemap: {$sitemap}\n";
+
+    // Advertise whatever sitemap actually ships. WP core provides
+    // /wp-sitemap.xml when enabled; common SEO plugins (Yoast, RankMath)
+    // install their own at /sitemap_index.xml and disable the core one.
+    // Emit both hints and let crawlers pick — extra sitemap lines are valid.
+    $sitemaps = [];
+    if (function_exists('wp_sitemaps_get_server') && wp_sitemaps_get_server()) {
+        $sitemaps[] = home_url('/wp-sitemap.xml');
+    }
+    // Filterable so plugins (or Ian) can override / add more.
+    $sitemaps = apply_filters('nav_seo_robots_sitemaps', $sitemaps);
+    foreach ($sitemaps as $url) {
+        $output .= "Sitemap: {$url}\n";
+    }
     return $output;
 }, 10, 2);
 

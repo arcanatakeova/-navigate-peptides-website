@@ -89,7 +89,11 @@ body {
     color: var(--nav-text-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* overflow-x: hidden on body breaks position:sticky on iOS Safari.
+       'clip' is the modern equivalent that doesn't establish a scroll
+       container, so sticky keeps working. hidden fallback for older UAs. */
     overflow-x: hidden;
+    overflow-x: clip;
 
     /* Layered atmospheric background — matches mockup's deep lab-photo feel.
        1) radial vignette + chromatic glow from upper-left
@@ -199,6 +203,17 @@ h1, h2, h3, h4, h5, h6 {
     backdrop-filter: blur(var(--nav-glass-blur-header)) saturate(1.1);
     -webkit-backdrop-filter: blur(var(--nav-glass-blur-header)) saturate(1.1);
     border-bottom: 1px solid var(--nav-border-subtle);
+}
+
+/* Admin-bar offset — so logged-in admins / shop managers don't see the
+   WP toolbar eat the top of the sticky header. */
+body.admin-bar .nav-header {
+    top: 32px;
+}
+@media screen and (max-width: 782px) {
+    body.admin-bar .nav-header {
+        top: 46px;
+    }
 }
 
 .nav-header--scrolled {
@@ -3404,8 +3419,11 @@ a:focus-visible {
     border-radius: var(--nav-radius-lg);
 }
 
-.nav-vial-fallback img,
 .nav-vial-fallback picture {
+    display: contents;
+}
+
+.nav-vial-fallback img {
     width: 100%;
     height: 100%;
     object-fit: contain;

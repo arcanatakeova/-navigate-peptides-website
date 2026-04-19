@@ -110,15 +110,38 @@ $theme_uri = get_template_directory_uri();
                     </div>
                 </div>
 
-                <!-- Batch + Purity Boxes -->
+                <!-- Batch + Purity Boxes — pulled from the GHK-Cu product's
+                     admin-editable meta so batch rotations (monthly for QA)
+                     don't leave stale values on the homepage. Falls back to
+                     'Latest' / '≥99%' when no product or meta is configured. -->
+                <?php
+                $hero_batch  = 'Latest';
+                $hero_purity = '≥99%';
+                if (function_exists('wc_get_products')) {
+                    $hero_products = wc_get_products([
+                        'limit'    => 1,
+                        'category' => ['cellular-research'],  // GHK-Cu's documented category
+                        'status'   => 'publish',
+                        'orderby'  => 'date',
+                        'order'    => 'DESC',
+                    ]);
+                    if (!empty($hero_products[0])) {
+                        $hid = $hero_products[0]->get_id();
+                        $b = get_post_meta($hid, '_nav_batch_number', true);
+                        $p = get_post_meta($hid, '_nav_purity', true);
+                        if ($b) $hero_batch  = $b;
+                        if ($p) $hero_purity = $p;
+                    }
+                }
+                ?>
                 <div class="nav-info-panel__boxes">
                     <div class="nav-info-panel__box">
-                        <span class="nav-info-panel__box-label">Batch:</span>
-                        <span class="nav-info-panel__box-value">Q247A</span>
+                        <span class="nav-info-panel__box-label"><?php esc_html_e('Batch:', 'navigate-peptides'); ?></span>
+                        <span class="nav-info-panel__box-value"><?php echo esc_html($hero_batch); ?></span>
                     </div>
                     <div class="nav-info-panel__box">
-                        <span class="nav-info-panel__box-label">Purity:</span>
-                        <span class="nav-info-panel__box-value">≥99%</span>
+                        <span class="nav-info-panel__box-label"><?php esc_html_e('Purity:', 'navigate-peptides'); ?></span>
+                        <span class="nav-info-panel__box-value"><?php echo esc_html($hero_purity); ?></span>
                     </div>
                 </div>
 

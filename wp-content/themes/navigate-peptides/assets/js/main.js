@@ -101,6 +101,13 @@
                 searchToggle.focus();
             }
         });
+        // If the user lands on a URL that already has ?s=, open the search
+        // form by default so the existing query is visible + editable.
+        try {
+            if (new URLSearchParams(window.location.search).has('s')) {
+                setSearchOpen(true);
+            }
+        } catch (e) { /* URLSearchParams unsupported — ignore */ }
     }
 
     /* ------------------------------------------------------------------
@@ -159,69 +166,55 @@
      * that pass the fragment object directly) and the parent-side pulse
      * animation.
      * ----------------------------------------------------------------*/
-    function updateCartCount(event, fragments) {
-        var countEl = document.getElementById('nav-cart-count');
-        if (!countEl) return;
-
-        // Preferred: our registered fragment key lands by selector — if WC
-        // already overwrote the span we just need to flash it.
-        var newVal = null;
-
-        if (fragments) {
-            for (var key in fragments) {
-                if (!Object.prototype.hasOwnProperty.call(fragments, key)) continue;
-                if (key.indexOf('cart-contents-count') === -1 && key.indexOf('nav-header__cart-count') === -1) continue;
-                var temp = document.createElement('div');
-                temp.innerHTML = fragments[key];
-                var countNode = temp.querySelector('[data-cart-count], .cart-contents-count');
-                if (countNode) {
-                    newVal = (countNode.textContent || '').trim();
-                    break;
-                }
-            }
-        }
-
-        if (newVal === null) {
-            // Fall back to any other matching element in the DOM (e.g. minicart).
-            var fallback = document.querySelector('[data-cart-count], .cart-contents-count:not(#nav-cart-count)');
-            if (fallback) newVal = (fallback.textContent || '').trim();
-        }
-
-        if (newVal !== null && newVal !== countEl.textContent.trim()) {
-            countEl.textContent = newVal;
-            countEl.setAttribute('data-cart-count', newVal);
-            // Pulse the badge so the user sees the update register.
-            countEl.classList.remove('is-pulse');
-            void countEl.offsetWidth;
-            countEl.classList.add('is-pulse');
-        }
+    // Pulse the cart badge after WC has finished swapping fragments into
+    // the DOM. Pulsing on `added_to_cart` loses to WC's updateFragment()
+    // which replaces the span wholesale and clobbers the animation class;
+    // pulsing on `wc_fragments_refreshed` runs AFTER the swap.
+    function pulseCartBadge() {
+        var el = document.getElementById('nav-cart-count');
+        if (!el) return;
+        el.classList.remove('is-pulse');
+        void el.offsetWidth; // force reflow so the class re-trigger restarts the keyframes
+        el.classList.add('is-pulse');
     }
 
     if (typeof jQuery !== 'undefined') {
-        jQuery(document.body).on('added_to_cart', function (e, fragments) {
-            updateCartCount(e, fragments);
+        jQuery(document.body).on('added_to_cart', function () {
+            // Wait one animation frame so WC's updateFragment() has a chance
+            // to land before we pulse.
+            requestAnimationFrame(pulseCartBadge);
         });
-        jQuery(document.body).on('removed_from_cart updated_cart_totals wc_fragments_refreshed', function () {
-            updateCartCount();
-        });
+        jQuery(document.body).on('wc_fragments_refreshed', pulseCartBadge);
     }
 
     /* ------------------------------------------------------------------
      * <model-viewer> error handler — when the GLB 404s or CORS blocks,
      * fall back to the poster image instead of leaving the user staring
      * at a frozen viewport.
+     *
+     * When the poster is a <picture>, we MUST move the <picture> element
+     * (not just the <img>), because <source> siblings carry the WebP
+     * srcset; detaching the <img> alone collapses selection to the PNG.
      * ----------------------------------------------------------------*/
     document.querySelectorAll('model-viewer').forEach(function (mv) {
-        mv.addEventListener('error', function (ev) {
-            console.warn('[nav] 3D model failed to load, showing poster', mv.src, ev);
-            var poster = mv.querySelector('img, picture img');
-            if (poster) {
-                var wrap = document.createElement('div');
-                wrap.className = 'nav-vial-fallback';
-                wrap.appendChild(poster);
-                if (mv.parentNode) mv.parentNode.replaceChild(wrap, mv);
-            }
-        });
+        var fired = false;
+        var handler = function (ev) {
+            if (fired) return;
+            fired = true;
+            mv.removeEventListener('error', handler);
+            console.warn('[nav] 3D model failed to load, showing poster', mv.src);
+
+            // Prefer <picture> so <source type=image/webp> stays attached.
+            var picture = mv.querySelector('picture');
+            var poster = picture || mv.querySelector('img');
+            if (!poster || !mv.parentNode) return;
+
+            var wrap = document.createElement('div');
+            wrap.className = 'nav-vial-fallback';
+            wrap.appendChild(poster);
+            mv.parentNode.replaceChild(wrap, mv);
+        };
+        mv.addEventListener('error', handler);
     });
 
     /* ------------------------------------------------------------------

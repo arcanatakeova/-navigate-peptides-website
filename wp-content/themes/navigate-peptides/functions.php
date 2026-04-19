@@ -60,6 +60,17 @@ add_action('after_setup_theme', function () {
 /* ------------------------------------------------------------------
  * 2. Enqueue Assets
  * ----------------------------------------------------------------*/
+/**
+ * Asset cache-bust: file mtime when it's readable, NAV_THEME_VERSION fallback.
+ * A static version string would require manual bumps after every edit and
+ * serve stale CSS from CDN/browser caches.
+ */
+function nav_asset_version(string $relative_path): string {
+    $abs = NAV_THEME_DIR . '/' . ltrim($relative_path, '/');
+    $mtime = @filemtime($abs);
+    return $mtime ? (string) $mtime : NAV_THEME_VERSION;
+}
+
 add_action('wp_enqueue_scripts', function () {
     // Google Fonts
     wp_enqueue_style(
@@ -74,7 +85,7 @@ add_action('wp_enqueue_scripts', function () {
         'nav-main',
         NAV_THEME_URI . '/assets/css/main.css',
         ['nav-google-fonts'],
-        NAV_THEME_VERSION
+        nav_asset_version('assets/css/main.css')
     );
 
     // WooCommerce overrides
@@ -83,7 +94,7 @@ add_action('wp_enqueue_scripts', function () {
             'nav-woocommerce',
             NAV_THEME_URI . '/assets/css/woocommerce.css',
             ['nav-main'],
-            NAV_THEME_VERSION
+            nav_asset_version('assets/css/woocommerce.css')
         );
     }
 
@@ -91,14 +102,20 @@ add_action('wp_enqueue_scripts', function () {
     // added_to_cart handlers and the minicart fragment-refresh path
     // run on pages where WC wouldn't otherwise enqueue them.
     $js_deps = [];
+    $force_wc_scripts = false;
     if (class_exists('WooCommerce')) {
         $js_deps = ['jquery', 'wc-cart-fragments', 'wc-add-to-cart'];
+        // Gate the force-enqueue of WC's ajax scripts to pages where they're
+        // meaningful. Research articles, blog posts, and about pages don't
+        // need cart-fragments polling / 80KB of extra JS.
+        $force_wc_scripts = is_shop() || is_product() || is_product_category()
+            || is_product_tag() || is_cart() || is_checkout() || is_front_page();
     }
     wp_enqueue_script(
         'nav-main',
         NAV_THEME_URI . '/assets/js/main.js',
         $js_deps,
-        NAV_THEME_VERSION,
+        nav_asset_version('assets/js/main.js'),
         true
     );
 
@@ -108,10 +125,14 @@ add_action('wp_enqueue_scripts', function () {
         wp_dequeue_style('woocommerce-layout');
         wp_dequeue_style('woocommerce-smallscreen');
 
-        // Force-enqueue fragment + add-to-cart scripts sitewide so the
-        // minicart stays in sync on non-product pages too.
-        wp_enqueue_script('wc-cart-fragments');
-        wp_enqueue_script('wc-add-to-cart');
+        // Only force-enqueue WC ajax scripts on pages that actually need
+        // the cart-fragments XHR. Research articles / blog posts / static
+        // pages don't render cart UI — loading ~80KB of extra JS and
+        // polling cart-fragments there was pure waste.
+        if ($force_wc_scripts) {
+            wp_enqueue_script('wc-cart-fragments');
+            wp_enqueue_script('wc-add-to-cart');
+        }
     }
 });
 
@@ -234,15 +255,21 @@ add_filter('rest_endpoints', function (array $endpoints) {
     if (is_user_logged_in() && current_user_can('list_users')) {
         return $endpoints;
     }
-    foreach (['/wp/v2/users', '/wp/v2/users/(?P<id>[\d]+)'] as $path) {
+    foreach ([
+        '/wp/v2/users',
+        '/wp/v2/users/(?P<id>[\d]+)',
+        '/wp/v2/users/me',
+    ] as $path) {
         if (isset($endpoints[$path])) unset($endpoints[$path]);
     }
     return $endpoints;
 });
 
-// Redirect /author/<slug>/ to home for anon — prevents username enumeration.
+// Redirect /author/<slug>/ to home — prevents username enumeration. Gates
+// on capability (list_users) rather than login-state so subscribers /
+// customers can't enumerate authors either.
 add_action('template_redirect', function () {
-    if (is_author() && !is_user_logged_in()) {
+    if (is_author() && !current_user_can('list_users')) {
         wp_safe_redirect(home_url('/'), 301);
         exit;
     }
