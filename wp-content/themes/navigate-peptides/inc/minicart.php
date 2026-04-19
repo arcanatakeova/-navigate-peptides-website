@@ -38,11 +38,7 @@ function nav_render_minicart(): void {
             </header>
 
             <div class="nav-minicart__body widget_shopping_cart_content">
-                <?php
-                // woocommerce_mini_cart outputs Woo's default item list +
-                // totals + buttons. Our CSS restyles the default markup.
-                woocommerce_mini_cart();
-                ?>
+                <?php woocommerce_mini_cart(); ?>
             </div>
 
             <footer class="nav-minicart__footer">
@@ -53,15 +49,23 @@ function nav_render_minicart(): void {
     <?php
 }
 
-// Render once per page in the footer.
-add_action('wp_footer', 'nav_render_minicart', 10);
+// Render once per page in the footer. Skip when the drawer would be
+// redundant (cart and checkout pages already show the full cart).
+add_action('wp_footer', function () {
+    if (function_exists('is_cart') && (is_cart() || is_checkout())) return;
+    nav_render_minicart();
+}, 10);
 
 /**
- * Refresh the drawer body via WC fragments so add/remove/update
- * reflects without a full reload. Targets the inner widget div so
- * the drawer chrome (header, close button) stays mounted.
+ * Refresh the drawer body via WC fragments so add/remove/update reflects
+ * without a full reload. Gated on wp_doing_ajax() — without the guard
+ * this filter ran on every non-AJAX page render too, double-invoking
+ * woocommerce_mini_cart() and doubling cart-totalization work per request.
  */
 add_filter('woocommerce_add_to_cart_fragments', function (array $fragments) {
+    if (!wp_doing_ajax()) {
+        return $fragments;
+    }
     ob_start();
     ?>
     <div class="widget_shopping_cart_content"><?php woocommerce_mini_cart(); ?></div>
@@ -71,31 +75,47 @@ add_filter('woocommerce_add_to_cart_fragments', function (array $fragments) {
 });
 
 /**
- * Auto-open the drawer when an item lands in the cart — server tells the
- * client via a transient flag so the next page render pops the drawer.
+ * Auto-open the drawer when an item lands in the cart. Transient keyed by
+ * nav_visitor_key() so guests (the only cohort pre-account) get the UX
+ * too — previously keyed on wp_get_session_token() which returns '' for
+ * guests, silently breaking the advertised auto-open.
  */
 add_action('woocommerce_add_to_cart', function () {
-    $token = wp_get_session_token();
-    if ($token) set_transient('nav_minicart_autoopen_' . md5($token), 1, 30);
+    set_transient(
+        'nav_minicart_autoopen_' . md5(nav_visitor_key()),
+        1,
+        5 * MINUTE_IN_SECONDS
+    );
 }, 99);
 
 add_action('wp_footer', function () {
-    $token = wp_get_session_token();
-    if (!$token) return;
-    $key = 'nav_minicart_autoopen_' . md5($token);
+    // Don't pop a drawer over pages where it would be confusing:
+    //   - Cart / checkout already show the full cart UI.
+    //   - Order-received (thankyou) shows order details; cart is empty anyway.
+    if (function_exists('is_cart') && (is_cart() || is_checkout())) return;
+    if (function_exists('is_order_received_page') && is_order_received_page()) return;
+
+    $key = 'nav_minicart_autoopen_' . md5(nav_visitor_key());
     if (!get_transient($key)) return;
     delete_transient($key);
+
+    // Bail out if the cart ended up empty (edge case — item removed mid-flow).
+    if (function_exists('WC') && WC()->cart && WC()->cart->is_empty()) return;
     ?>
     <script>
       (function () {
-        var openFn = window.navMinicartOpen;
-        if (typeof openFn === 'function') {
-            openFn();
+        function openDrawer() {
+            if (typeof window.navMinicartOpen === 'function') window.navMinicartOpen();
+        }
+        // main.js may or may not have bound its handler by the time this runs.
+        // Use document.readyState instead of betting on DOMContentLoaded —
+        // if the event has already fired, the listener never re-fires.
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', openDrawer);
         } else {
-            // main.js hasn't bound yet — queue and flush on DOMContentLoaded
-            document.addEventListener('DOMContentLoaded', function () {
-                if (typeof window.navMinicartOpen === 'function') window.navMinicartOpen();
-            });
+            // Defer one tick so main.js has a chance to attach navMinicartOpen
+            // if we raced it at scripts-in-head parse order.
+            setTimeout(openDrawer, 0);
         }
       })();
     </script>
@@ -104,19 +124,27 @@ add_action('wp_footer', function () {
 
 /**
  * Hijack the header cart link to open the drawer instead of navigating
- * to /cart/. The PHP href remains as a no-JS fallback.
+ * to /cart/. The PHP href remains as a no-JS fallback, and we only
+ * swallow PRIMARY-button clicks without modifier keys so cmd-click,
+ * middle-click, ctrl-click still open the cart in a new tab as expected.
+ * Also skipped on the cart page itself, where the user is already there.
  */
 add_action('wp_footer', function () {
+    if (function_exists('is_cart') && (is_cart() || is_checkout())) return;
     ?>
     <script>
       (function () {
         var cartLink = document.querySelector('.nav-header__cart');
         if (!cartLink) return;
         cartLink.addEventListener('click', function (e) {
-            if (typeof window.navMinicartOpen === 'function') {
-                e.preventDefault();
-                window.navMinicartOpen();
-            }
+            // Honor standard open-in-new-tab / -window modifiers.
+            if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+            // Also honor the semantic case where the user is ALREADY on
+            // the cart page — bail so the browser doesn't interrupt a
+            // same-page-anchor navigation.
+            if (typeof window.navMinicartOpen !== 'function') return;
+            e.preventDefault();
+            window.navMinicartOpen();
         });
       })();
     </script>

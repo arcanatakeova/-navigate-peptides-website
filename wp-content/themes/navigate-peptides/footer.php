@@ -105,6 +105,18 @@
         <!-- Bottom Bar -->
         <div class="nav-footer__bottom">
             <p>&copy; <?php echo esc_html(wp_date('Y')); ?> <?php echo esc_html(get_bloginfo('name')); ?>. <?php esc_html_e('All rights reserved.', 'navigate-peptides'); ?></p>
+            <nav class="nav-footer__legal" aria-label="<?php esc_attr_e('Legal', 'navigate-peptides'); ?>">
+                <?php
+                $privacy = function_exists('nav_privacy_url') ? nav_privacy_url() : '';
+                $terms   = function_exists('nav_terms_url')   ? nav_terms_url()   : '';
+                if ($privacy) : ?>
+                    <a href="<?php echo esc_url($privacy); ?>"><?php esc_html_e('Privacy', 'navigate-peptides'); ?></a>
+                <?php endif;
+                if ($terms) : ?>
+                    <a href="<?php echo esc_url($terms); ?>"><?php esc_html_e('Terms', 'navigate-peptides'); ?></a>
+                <?php endif; ?>
+                <a href="<?php echo esc_url(nav_get_contact_url()); ?>"><?php esc_html_e('Contact', 'navigate-peptides'); ?></a>
+            </nav>
             <p class="nav-footer__ruo"><?php esc_html_e('Research Use Only', 'navigate-peptides'); ?></p>
         </div>
     </div>

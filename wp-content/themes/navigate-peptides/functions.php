@@ -151,6 +151,11 @@ require_once NAV_THEME_DIR . '/inc/analytics.php';
 require_once NAV_THEME_DIR . '/inc/minicart.php';
 
 /* ------------------------------------------------------------------
+ * 6e. Cookie consent banner (gates GA4 via Consent Mode v2)
+ * ----------------------------------------------------------------*/
+require_once NAV_THEME_DIR . '/inc/consent.php';
+
+/* ------------------------------------------------------------------
  * 7. Security Headers
  * ----------------------------------------------------------------*/
 add_action('send_headers', function () {
@@ -284,6 +289,67 @@ add_action('widgets_init', function () {
 /* ------------------------------------------------------------------
  * 10. Helper Functions
  * ----------------------------------------------------------------*/
+
+/**
+ * Stable per-visitor identifier for transient keying across redirects.
+ *
+ * Previously analytics + minicart keyed on wp_get_session_token() which
+ * returns '' for anonymous guests — so the queued add_to_cart event and
+ * the drawer auto-open both silently no-op'd for logged-out users (the
+ * single largest cohort on a pre-account B2B site).
+ *
+ * Resolution order:
+ *   1. WC customer session ID (cookie-backed, survives across page loads
+ *      for guests as soon as any Woo session touchpoint fires)
+ *   2. WP auth session token (logged-in users)
+ *   3. A theme-owned 1st-party cookie set once per visitor
+ *
+ * Returned string is guaranteed non-empty + stable for the visitor.
+ */
+function nav_visitor_key(): string {
+    // Prefer WC's customer session key — Woo sets a customer cookie as soon
+    // as add_to_cart fires, so the redirect back to the product page has
+    // the same key available.
+    if (function_exists('WC') && WC()->session) {
+        $cid = (string) WC()->session->get_customer_id();
+        if ($cid !== '') return 'wc:' . $cid;
+    }
+
+    // Logged-in users get a per-session auth token.
+    $token = wp_get_session_token();
+    if ($token) return 'wp:' . $token;
+
+    // Anonymous + no Woo session yet — fall back to a 1st-party cookie.
+    // NAV_VISITOR cookie is httponly-false on purpose (some client scripts
+    // may want to read it). Rotates every 180 days.
+    if (!empty($_COOKIE['nav_visitor'])) {
+        $cookie = (string) $_COOKIE['nav_visitor'];
+        if (preg_match('/^[a-f0-9]{32}$/', $cookie)) return 'ck:' . $cookie;
+    }
+
+    if (!headers_sent()) {
+        $fresh = wp_hash(uniqid('nav_visitor_', true));
+        setcookie(
+            'nav_visitor',
+            $fresh,
+            time() + 180 * DAY_IN_SECONDS,
+            COOKIEPATH ?: '/',
+            COOKIE_DOMAIN,
+            is_ssl(),
+            false
+        );
+        // Make the fresh cookie available to subsequent code in the same request.
+        $_COOKIE['nav_visitor'] = $fresh;
+        return 'ck:' . $fresh;
+    }
+
+    // Last resort — use IP + UA hash so we at least have SOME key and
+    // don't bucket every guest together.
+    return 'fp:' . wp_hash(
+        ($_SERVER['REMOTE_ADDR'] ?? '') . '|' .
+        substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 200)
+    );
+}
 
 /**
  * Canonical URL for the "Contact / Request Access" page.

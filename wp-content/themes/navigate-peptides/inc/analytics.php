@@ -34,21 +34,36 @@ function nav_ga4_id(): string {
 
 /**
  * Emit the GA4 gtag.js snippet in <head> when configured.
- * Deliberately emitted late (priority 99) so dataLayer-pusher
- * events fired in the page can append before gtag() exists.
+ * Consent mode v2 gate — the snippet loads but analytics_storage is
+ * DENIED until the consent banner records opt-in; then the banner JS
+ * upgrades consent and gtag backfills events from the dataLayer. This
+ * keeps the site GDPR/CCPA-defensible for EU/UK/CA visitors.
  */
 add_action('wp_head', function () {
     $id = nav_ga4_id();
     if ($id === '') return;
     ?>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr($id); ?>"></script>
     <script>
+      // Consent Mode v2 — set defaults BEFORE gtag.js loads so the tag
+      // queues events instead of firing them until the visitor opts in.
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        ad_storage:             'denied',
+        ad_user_data:           'denied',
+        ad_personalization:     'denied',
+        analytics_storage:      'denied',
+        functionality_storage:  'granted',
+        security_storage:       'granted',
+        wait_for_update:        500
+      });
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr($id); ?>"></script>
+    <script>
       gtag('js', new Date());
       gtag('config', '<?php echo esc_js($id); ?>', {
-        send_page_view: true,
-        anonymize_ip: true
+        anonymize_ip: true,
+        send_page_view: true
       });
     </script>
     <?php
@@ -146,19 +161,20 @@ add_action('woocommerce_add_to_cart', function ($cart_item_key, $product_id, $qu
         'value'    => (float) $product->get_price() * (int) $quantity,
         'items'    => [nav_ga4_product_item($product, $quantity)],
     ];
-    // Use a transient keyed by session cookie so it survives the redirect.
-    $key = 'nav_ga4_atc_' . md5(wp_get_session_token() ?: (string) wp_hash(serialize($payload)));
-    set_transient($key, $payload, 60);
+    // Transient keyed by nav_visitor_key() — stable for BOTH anon guests
+    // and logged-in users, so the GA4 event survives the redirect back
+    // from the add_to_cart endpoint. TTL 15min so slow-tab-switch flows
+    // still emit. (60s was too tight — event silently vanished in the
+    // redirect gap on slow hosts.)
+    $key = 'nav_ga4_atc_' . md5(nav_visitor_key());
+    set_transient($key, $payload, 15 * MINUTE_IN_SECONDS);
 }, 10, 3);
 
 /**
  * Emit queued add_to_cart events on the next page load.
  */
 add_action('wp_footer', function () {
-    // Only check when we likely just redirected from an add.
-    $token = wp_get_session_token();
-    if (!$token) return;
-    $key = 'nav_ga4_atc_' . md5($token);
+    $key = 'nav_ga4_atc_' . md5(nav_visitor_key());
     $payload = get_transient($key);
     if (!$payload) return;
     delete_transient($key);
@@ -174,18 +190,16 @@ add_action('woocommerce_cart_item_removed', function ($cart_item_key, $cart) {
     $product = function_exists('wc_get_product') ? wc_get_product($removed['product_id'] ?? 0) : null;
     if (!$product) return;
 
-    $key = 'nav_ga4_rm_' . md5(wp_get_session_token() ?: $cart_item_key);
+    $key = 'nav_ga4_rm_' . md5(nav_visitor_key());
     set_transient($key, [
         'currency' => get_woocommerce_currency(),
         'value'    => (float) $product->get_price() * (int) ($removed['quantity'] ?? 1),
         'items'    => [nav_ga4_product_item($product, (int) ($removed['quantity'] ?? 1))],
-    ], 60);
+    ], 15 * MINUTE_IN_SECONDS);
 }, 10, 2);
 
 add_action('wp_footer', function () {
-    $token = wp_get_session_token();
-    if (!$token) return;
-    $key = 'nav_ga4_rm_' . md5($token);
+    $key = 'nav_ga4_rm_' . md5(nav_visitor_key());
     $payload = get_transient($key);
     if (!$payload) return;
     delete_transient($key);
@@ -223,10 +237,13 @@ add_action('woocommerce_thankyou', function ($order_id) {
     $order = wc_get_order($order_id);
     if (!$order) return;
 
-    // Prevent double-fire on page refresh of thank-you.
-    if ($order->get_meta('_nav_ga4_fired', true)) return;
-    $order->update_meta_data('_nav_ga4_fired', '1');
-    $order->save();
+    // Atomic de-dup: add_post_meta with $unique=true fails (returns false)
+    // if the meta row already exists. Check-then-act with get/update_meta
+    // races across tabs; this path is safe even under concurrent requests
+    // because MySQL's UNIQUE-key check on postmeta happens in a single
+    // statement.
+    $claimed = add_post_meta($order_id, '_nav_ga4_fired', '1', true);
+    if (!$claimed) return;
 
     $items = [];
     foreach ($order->get_items() as $item) {
