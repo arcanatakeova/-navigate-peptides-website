@@ -147,21 +147,36 @@ $theme_uri = get_template_directory_uri();
         </div>
         <div class="nav-category-grid nav-category-grid--7">
             <?php
+            // Per-category scientific line-art icons matching Stephie's mockup v1.
+            // Shown at 56px, stroked with the category's brand color.
             $categories = [
+                // Cognitive — stylized brain in profile
                 ['name' => 'Cognitive Research',      'slug' => 'cognitive-research',     'color' => '#5E507F',
-                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M24 4C14 4 8 12 8 20c0 5 2 9 6 12v8a4 4 0 004 4h12a4 4 0 004-4v-8c4-3 6-7 6-12 0-8-6-16-16-16z"/><path d="M18 44h12M20 36v-4l-4-4M28 36v-4l4-4M24 20v8M20 24h8"/></svg>'],
+                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M23 10c-4-4-12-2-12 6 0 2 1 3 2 4-2 2-2 6 1 8-1 2 0 5 3 6 0 3 3 5 6 4 2 2 6 2 8-1V10"/><path d="M23 14c1 0 3 1 4 3M23 22c-2 0-3 0-4 2M19 32c1-1 3-1 4-1M15 26c1-1 2-1 3 0"/></svg>'],
+
+                // Tissue Repair — overlapping suture / knit lines (cross + hairlines)
                 ['name' => 'Tissue Repair Research',  'slug' => 'tissue-repair-research', 'color' => '#9C843E',
-                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M24 8v32M8 24h32"/><path d="M18 14l6-6 6 6M30 34l-6 6-6-6M14 30l-6-6 6-6M34 18l6 6-6 6"/></svg>'],
+                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20h12v-8h4v8h12v4H26v16h-4V24H10z"/><path d="M6 14l4 4M42 14l-4 4M6 34l4-4M42 34l-4-4"/></svg>'],
+
+                // Inflammation — teardrop with inner pulse
                 ['name' => 'Inflammation Research',   'slug' => 'inflammation-research',  'color' => '#4A141C',
-                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M24 4c0 8-8 12-8 20a8 8 0 0016 0c0-8-8-12-8-20z"/><circle cx="24" cy="28" r="3"/></svg>'],
+                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6c0 0-10 12-10 20a10 10 0 0020 0c0-8-10-20-10-20z"/><path d="M19 26c0 3 2 5 5 5"/></svg>'],
+
+                // Cellular — cell with radiating field (organelles)
                 ['name' => 'Cellular Research',       'slug' => 'cellular-research',      'color' => '#8E5660',
-                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="24" cy="24" r="16"/><circle cx="24" cy="24" r="6"/><path d="M24 8v4M24 36v4M8 24h4M36 24h4M12 12l3 3M33 33l3 3M12 36l3-3M33 15l3-3"/></svg>'],
+                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="14"/><circle cx="24" cy="24" r="4"/><circle cx="18" cy="18" r="1.5"/><circle cx="31" cy="18" r="1.5"/><circle cx="30" cy="31" r="1.5"/><circle cx="17" cy="29" r="1.5"/><path d="M24 4v3M24 41v3M4 24h3M41 24h3M10 10l2 2M36 36l2 2M10 38l2-2M36 12l2-2"/></svg>'],
+
+                // Dermal — layered skin / profile with hair strands
                 ['name' => 'Dermal Research',         'slug' => 'dermal-research',        'color' => '#4A6B5F',
-                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8c0 0 4 4 4 12s-4 12-4 12"/><path d="M20 8c0 0 4 4 4 12s-4 12-4 12"/><path d="M28 8c0 0 4 4 4 12s-4 12-4 12"/><path d="M36 8c0 0 4 4 4 12s-4 12-4 12"/></svg>'],
+                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M30 10c-6-2-12 1-14 7-2 6 0 12 5 16 2 2 2 5 0 7"/><path d="M32 14c4 3 6 9 3 15-1 2-1 4 1 6"/><path d="M22 20c2 0 3 1 3 3M18 28c2 0 3 1 3 3"/></svg>'],
+
+                // Metabolic — flask with droplets (mitochondrial flow)
                 ['name' => 'Metabolic Research',      'slug' => 'metabolic-research',     'color' => '#2F4666',
-                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 44h20"/><path d="M18 4v14l-8 18a4 4 0 004 4h20a4 4 0 004-4l-8-18V4"/><path d="M16 4h16"/><path d="M14 30h20"/><circle cx="22" cy="34" r="2"/><circle cx="30" cy="32" r="1.5"/></svg>'],
+                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6h12M20 6v14L10 38a3 3 0 002.5 5h23A3 3 0 0038 38L28 20V6"/><path d="M14 30h20"/><circle cx="22" cy="35" r="1.5" fill="currentColor"/><circle cx="28" cy="33" r="1" fill="currentColor"/></svg>'],
+
+                // Research Blends — diamond / prism (multi-compound blend)
                 ['name' => 'Research Blends',         'slug' => 'research-blends',        'color' => '#474C50',
-                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 24l8-8 8 8 8-8 8 8"/><path d="M8 32l8-8 8 8 8-8 8 8"/><circle cx="16" cy="16" r="4"/><circle cx="32" cy="16" r="4"/></svg>'],
+                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M24 4L8 18 24 44 40 18 24 4z"/><path d="M8 18h32M16 18L24 4M32 18L24 4M16 18L24 44M32 18L24 44"/></svg>'],
             ];
 
             foreach ($categories as $cat) :
