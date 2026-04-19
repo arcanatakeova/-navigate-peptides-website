@@ -86,6 +86,28 @@ $cat_color     = $is_category ? nav_get_category_color($current_cat->slug) : '#4
 <!-- Products -->
 <section class="nav-section">
     <div class="nav-container">
+        <form role="search" method="get" action="<?php echo esc_url(home_url('/')); ?>" class="nav-archive-search">
+            <label for="nav-archive-search-input" class="screen-reader-text">
+                <?php esc_html_e('Search compounds by name, subtitle, or sequence', 'navigate-peptides'); ?>
+            </label>
+            <input
+                id="nav-archive-search-input"
+                type="search"
+                name="s"
+                class="nav-archive-search__input"
+                placeholder="<?php esc_attr_e('Filter by compound name, subtitle, or sequence…', 'navigate-peptides'); ?>"
+                value="<?php echo esc_attr(get_search_query()); ?>"
+                autocomplete="off"
+            >
+            <input type="hidden" name="post_type" value="product">
+            <button type="submit" class="nav-archive-search__submit" aria-label="<?php esc_attr_e('Search', 'navigate-peptides'); ?>">
+                <svg class="nav-icon nav-icon--sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+            </button>
+        </form>
+    </div>
+</section>
+<section class="nav-section nav-section--products">
+    <div class="nav-container">
         <?php if (woocommerce_product_loop()) : ?>
 
             <?php woocommerce_product_loop_start(); ?>

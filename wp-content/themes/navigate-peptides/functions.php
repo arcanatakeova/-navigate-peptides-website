@@ -87,11 +87,17 @@ add_action('wp_enqueue_scripts', function () {
         );
     }
 
-    // JavaScript
+    // JavaScript. Declaring jQuery + wc-cart-fragments as deps so our
+    // added_to_cart handlers and the minicart fragment-refresh path
+    // run on pages where WC wouldn't otherwise enqueue them.
+    $js_deps = [];
+    if (class_exists('WooCommerce')) {
+        $js_deps = ['jquery', 'wc-cart-fragments', 'wc-add-to-cart'];
+    }
     wp_enqueue_script(
         'nav-main',
         NAV_THEME_URI . '/assets/js/main.js',
-        [],
+        $js_deps,
         NAV_THEME_VERSION,
         true
     );
@@ -101,6 +107,11 @@ add_action('wp_enqueue_scripts', function () {
         wp_dequeue_style('woocommerce-general');
         wp_dequeue_style('woocommerce-layout');
         wp_dequeue_style('woocommerce-smallscreen');
+
+        // Force-enqueue fragment + add-to-cart scripts sitewide so the
+        // minicart stays in sync on non-product pages too.
+        wp_enqueue_script('wc-cart-fragments');
+        wp_enqueue_script('wc-add-to-cart');
     }
 });
 
@@ -128,6 +139,16 @@ require_once NAV_THEME_DIR . '/inc/custom-types.php';
  * 6b. Contact Form Handler
  * ----------------------------------------------------------------*/
 require_once NAV_THEME_DIR . '/inc/contact.php';
+
+/* ------------------------------------------------------------------
+ * 6c. Analytics (GA4 + WC ecommerce events)
+ * ----------------------------------------------------------------*/
+require_once NAV_THEME_DIR . '/inc/analytics.php';
+
+/* ------------------------------------------------------------------
+ * 6d. Minicart drawer
+ * ----------------------------------------------------------------*/
+require_once NAV_THEME_DIR . '/inc/minicart.php';
 
 /* ------------------------------------------------------------------
  * 7. Security Headers

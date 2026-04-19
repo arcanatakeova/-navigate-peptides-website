@@ -288,4 +288,39 @@
         }
     }, { passive: true });
 
+    /* ------------------------------------------------------------------
+     * Minicart drawer — open/close + trap
+     * ----------------------------------------------------------------*/
+    var minicart = document.getElementById('nav-minicart');
+    var minicartClose = document.getElementById('nav-minicart-close');
+    var minicartScrim = document.getElementById('nav-minicart-scrim');
+    var lastFocusBeforeCart = null;
+
+    window.navMinicartOpen = function () {
+        if (!minicart) return;
+        lastFocusBeforeCart = document.activeElement;
+        minicart.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        if (minicartClose) setTimeout(function () { minicartClose.focus(); }, 80);
+    };
+
+    window.navMinicartClose = function () {
+        if (!minicart) return;
+        minicart.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        if (lastFocusBeforeCart && typeof lastFocusBeforeCart.focus === 'function') {
+            lastFocusBeforeCart.focus();
+        }
+    };
+
+    if (minicart) {
+        if (minicartClose) minicartClose.addEventListener('click', window.navMinicartClose);
+        if (minicartScrim) minicartScrim.addEventListener('click', window.navMinicartClose);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && minicart.getAttribute('aria-hidden') === 'false') {
+                window.navMinicartClose();
+            }
+        });
+    }
+
 })();
