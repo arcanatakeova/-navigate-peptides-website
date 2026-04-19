@@ -8,7 +8,7 @@
             <div class="nav-footer__col">
                 <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-footer__logo">
                     <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-footer__logo-icon"><path d="M16 3L27.3 9.5V22.5L16 29L4.7 22.5V9.5L16 3Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M10 13L16 9L22 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 13V19L16 23L22 19V13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="16" r="2" fill="currentColor" opacity="0.6"/></svg>
-                    <span class="nav-footer__logo-name"><?php bloginfo('name'); ?></span>
+                    <span class="nav-footer__logo-name"><?php echo esc_html(get_bloginfo('name')); ?></span>
                 </a>
                 <p class="nav-footer__tagline">
                     Research peptide compounds with verified certificates of analysis.
@@ -76,7 +76,7 @@
 
         <!-- Bottom Bar -->
         <div class="nav-footer__bottom">
-            <p>&copy; <?php echo esc_html(date('Y')); ?> <?php bloginfo('name'); ?>. All rights reserved.</p>
+            <p>&copy; <?php echo esc_html(date('Y')); ?> <?php echo esc_html(get_bloginfo('name')); ?>. All rights reserved.</p>
             <p class="nav-footer__ruo">Research Use Only</p>
         </div>
     </div>

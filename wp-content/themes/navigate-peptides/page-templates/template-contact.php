@@ -39,9 +39,12 @@ get_header();
             <?php endif; ?>
 
             <?php
-            // Use Contact Form 7 or WPForms shortcode if available
-            $cf7_form = get_post_meta(get_the_ID(), '_nav_contact_form_shortcode', true);
-            if ($cf7_form) {
+            // Use Contact Form 7 or WPForms shortcode if configured.
+            // Only accept the two shortcodes we support — never execute arbitrary
+            // admin-supplied shortcodes, to prevent shortcode-as-XSS vectors.
+            $cf7_form = trim((string) get_post_meta(get_the_ID(), '_nav_contact_form_shortcode', true));
+            $allowed_shortcode = (bool) preg_match('/^\[(contact-form-7|wpforms)\b[^\]]*\]$/i', $cf7_form);
+            if ($cf7_form && $allowed_shortcode) {
                 echo do_shortcode($cf7_form);
             } else {
             ?>

@@ -43,6 +43,18 @@
     }
 
     /* ------------------------------------------------------------------
+     * Announcement Bar: dismiss
+     * ----------------------------------------------------------------*/
+    var announcementClose = document.getElementById('nav-announcement-close');
+    var announcementBar = document.getElementById('nav-announcement');
+    if (announcementClose && announcementBar) {
+        announcementClose.addEventListener('click', function () {
+            announcementBar.remove();
+            document.documentElement.style.setProperty('--nav-announcement-h', '0px');
+        });
+    }
+
+    /* ------------------------------------------------------------------
      * Header: Scroll effect — solid bg + shadow on scroll
      * ----------------------------------------------------------------*/
     var headerEl = document.querySelector('.nav-header');

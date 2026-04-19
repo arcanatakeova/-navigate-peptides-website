@@ -133,13 +133,27 @@ require_once NAV_THEME_DIR . '/inc/contact.php';
  * 7. Security Headers
  * ----------------------------------------------------------------*/
 add_action('send_headers', function () {
-    if (!is_admin()) {
-        header('X-Content-Type-Options: nosniff');
-        header('X-Frame-Options: SAMEORIGIN');
-        header('X-XSS-Protection: 1; mode=block');
-        header('Referrer-Policy: strict-origin-when-cross-origin');
-        header("Permissions-Policy: camera=(), microphone=(), geolocation=()");
-    }
+    if (is_admin()) return;
+
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: SAMEORIGIN');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
+    header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+
+    // 'unsafe-inline' on style-src: required by Woo + theme inline <style>.
+    // ajax.googleapis.com: Google <model-viewer> CDN in header.php.
+    // fonts.googleapis.com: Google Fonts CSS.
+    $csp = "default-src 'self'; "
+        . "script-src 'self' https://ajax.googleapis.com https://fonts.googleapis.com 'unsafe-inline'; "
+        . "style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; "
+        . "font-src 'self' https://fonts.gstatic.com data:; "
+        . "img-src 'self' data: https:; "
+        . "connect-src 'self'; "
+        . "frame-ancestors 'self'; "
+        . "base-uri 'self'; "
+        . "form-action 'self' " . esc_url(admin_url()) . ";";
+    header('Content-Security-Policy: ' . $csp);
 });
 
 /* ------------------------------------------------------------------
@@ -211,7 +225,38 @@ function nav_get_product_category_color($product = null): string {
 }
 
 /**
- * Render SVG icon.
+ * wp_kses allowlist for inline SVG icons.
+ * Use via nav_kses_svg($svg_string).
+ */
+function nav_svg_allowed_html(): array {
+    $svg_attrs = [
+        'xmlns' => true, 'viewbox' => true, 'fill' => true,
+        'stroke' => true, 'stroke-width' => true, 'stroke-linecap' => true,
+        'stroke-linejoin' => true, 'stroke-miterlimit' => true,
+        'width' => true, 'height' => true, 'class' => true, 'style' => true,
+        'aria-hidden' => true, 'role' => true, 'focusable' => true,
+    ];
+    return [
+        'svg'      => $svg_attrs,
+        'path'     => array_merge($svg_attrs, ['d' => true]),
+        'circle'   => array_merge($svg_attrs, ['cx' => true, 'cy' => true, 'r' => true, 'opacity' => true]),
+        'rect'     => array_merge($svg_attrs, ['x' => true, 'y' => true, 'rx' => true, 'ry' => true]),
+        'line'     => array_merge($svg_attrs, ['x1' => true, 'y1' => true, 'x2' => true, 'y2' => true]),
+        'polyline' => array_merge($svg_attrs, ['points' => true]),
+        'polygon'  => array_merge($svg_attrs, ['points' => true]),
+        'g'        => array_merge($svg_attrs, ['transform' => true, 'opacity' => true]),
+        'defs'     => $svg_attrs,
+        'title'    => ['id' => true],
+        'desc'     => ['id' => true],
+    ];
+}
+
+function nav_kses_svg(string $svg): string {
+    return wp_kses($svg, nav_svg_allowed_html());
+}
+
+/**
+ * Render SVG icon from a named set.
  */
 function nav_icon(string $name, string $class = ''): string {
     $icons = [
