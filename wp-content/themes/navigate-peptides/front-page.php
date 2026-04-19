@@ -16,10 +16,10 @@ $theme_uri = get_template_directory_uri();
 
         <!-- Left: Headline + CTA -->
         <div class="nav-hero__content">
-            <span class="nav-kicker">Precision Peptide Research</span>
+            <span class="nav-kicker"><?php esc_html_e('Precision Peptide Research', 'navigate-peptides'); ?></span>
             <h1 class="nav-hero__title">
-                <span class="nav-hero__title-line">Engineered.</span>
-                <em class="nav-hero__title-italic">Intelligent.</em>
+                <span class="nav-hero__title-line"><?php esc_html_e('Engineered.', 'navigate-peptides'); ?></span>
+                <em class="nav-hero__title-italic"><?php esc_html_e('Intelligent.', 'navigate-peptides'); ?></em>
             </h1>
             <p class="nav-hero__subtitle">
                 Research-grade peptide compounds for controlled laboratory investigation.
@@ -27,19 +27,19 @@ $theme_uri = get_template_directory_uri();
             <ul class="nav-hero__badges">
                 <li>
                     <?php echo nav_icon('check', 'nav-icon nav-icon--sm'); ?>
-                    <span>Third-Party Tested</span>
+                    <span><?php esc_html_e('Third-Party Tested', 'navigate-peptides'); ?></span>
                 </li>
                 <li>
                     <?php echo nav_icon('check', 'nav-icon nav-icon--sm'); ?>
-                    <span>COA Verified</span>
+                    <span><?php esc_html_e('COA Verified', 'navigate-peptides'); ?></span>
                 </li>
             </ul>
             <div class="nav-hero__actions">
                 <a href="<?php echo esc_url(home_url('/compounds/')); ?>" class="nav-btn nav-btn--primary">
-                    View Compounds
+                    <?php esc_html_e('View Compounds', 'navigate-peptides'); ?>
                 </a>
                 <a href="<?php echo esc_url(home_url('/quality/')); ?>" class="nav-btn nav-btn--outline">
-                    Quality &amp; Verification
+                    <?php esc_html_e('Quality & Verification', 'navigate-peptides'); ?>
                 </a>
             </div>
         </div>
@@ -124,22 +124,22 @@ $theme_uri = get_template_directory_uri();
 
                 <!-- COA Link -->
                 <a href="<?php echo esc_url(home_url('/quality/coa/')); ?>" class="nav-info-panel__coa-link">
-                    COA &amp; Analytical Data
+                    <?php esc_html_e('COA & Analytical Data', 'navigate-peptides'); ?>
                 </a>
 
                 <!-- Storage -->
                 <div class="nav-info-panel__footer">
-                    <div class="nav-info-panel__section-label">Storage</div>
+                    <div class="nav-info-panel__section-label"><?php esc_html_e('Storage', 'navigate-peptides'); ?></div>
                     <p class="nav-info-panel__storage">
-                        Store cold at 2-8°C.<br>Protect from light and moisture.
+                        <?php esc_html_e('Store cold at 2-8°C.', 'navigate-peptides'); ?><br><?php esc_html_e('Protect from light and moisture.', 'navigate-peptides'); ?>
                     </p>
                     <div class="nav-info-panel__mfg">
-                        Manufactured in a GMP-Compliant Facility
+                        <?php esc_html_e('Manufactured in a GMP-Compliant Facility', 'navigate-peptides'); ?>
                     </div>
                     <div class="nav-info-panel__brand">
                         <?php echo nav_icon('flask', 'nav-icon nav-icon--sm'); ?>
                         <span>Navigate Peptides</span>
-                        <small>Precision Peptide Research</small>
+                        <small><?php esc_html_e('Precision Peptide Research', 'navigate-peptides'); ?></small>
                     </div>
                 </div>
             </div>
@@ -151,7 +151,7 @@ $theme_uri = get_template_directory_uri();
 <section class="nav-section">
     <div class="nav-container">
         <div class="nav-section__header nav-section__header--center">
-            <h2 class="nav-section__title-caps">Research Categories</h2>
+            <h2 class="nav-section__title-caps"><?php esc_html_e('Research Categories', 'navigate-peptides'); ?></h2>
         </div>
         <div class="nav-category-grid nav-category-grid--7">
             <?php
@@ -194,8 +194,8 @@ $theme_uri = get_template_directory_uri();
                     <div class="nav-cat-icon-card__icon">
                         <?php echo nav_kses_svg($cat['icon']); ?>
                     </div>
-                    <h3 class="nav-cat-icon-card__title"><?php echo esc_html($cat['name']); ?></h3>
-                    <span class="nav-cat-icon-card__btn">View</span>
+                    <h3 class="nav-cat-icon-card__title"><?php echo esc_html(__($cat['name'], 'navigate-peptides')); ?></h3>
+                    <span class="nav-cat-icon-card__btn"><?php esc_html_e('View', 'navigate-peptides'); ?></span>
                 </a>
             <?php endforeach; ?>
         </div>
@@ -210,27 +210,27 @@ $theme_uri = get_template_directory_uri();
                 <div class="nav-trust-card__icon">
                     <?php echo nav_icon('check', 'nav-icon nav-icon--lg'); ?>
                 </div>
-                <h3 class="nav-trust-card__title">Third-Party Tested</h3>
+                <h3 class="nav-trust-card__title"><?php esc_html_e('Third-Party Tested', 'navigate-peptides'); ?></h3>
                 <p class="nav-trust-card__desc">
-                    Every batch verified for purity and composition.
+                    <?php esc_html_e('Every batch verified for purity and composition.', 'navigate-peptides'); ?>
                 </p>
             </div>
             <div class="nav-trust-card">
                 <div class="nav-trust-card__icon">
                     <?php echo nav_icon('flask', 'nav-icon nav-icon--lg'); ?>
                 </div>
-                <h3 class="nav-trust-card__title">Laboratory Use Only</h3>
+                <h3 class="nav-trust-card__title"><?php esc_html_e('Laboratory Use Only', 'navigate-peptides'); ?></h3>
                 <p class="nav-trust-card__desc">
-                    Not for human consumption. For research purposes exclusively.
+                    <?php esc_html_e('Not for human consumption. For research purposes exclusively.', 'navigate-peptides'); ?>
                 </p>
             </div>
             <div class="nav-trust-card">
                 <div class="nav-trust-card__icon">
                     <?php echo nav_icon('building', 'nav-icon nav-icon--lg'); ?>
                 </div>
-                <h3 class="nav-trust-card__title">GMP Compliant</h3>
+                <h3 class="nav-trust-card__title"><?php esc_html_e('GMP Compliant', 'navigate-peptides'); ?></h3>
                 <p class="nav-trust-card__desc">
-                    Manufactured to the highest quality standards.
+                    <?php esc_html_e('Manufactured to the highest quality standards.', 'navigate-peptides'); ?>
                 </p>
             </div>
         </div>
@@ -240,7 +240,7 @@ $theme_uri = get_template_directory_uri();
 <!-- CTA -->
 <section class="nav-section nav-section--cta">
     <div class="nav-container nav-section--center">
-        <h2 class="nav-section__title">Begin Your Research</h2>
+        <h2 class="nav-section__title"><?php esc_html_e('Begin Your Research', 'navigate-peptides'); ?></h2>
         <p class="nav-section__subtitle">
             <?php esc_html_e('Browse our full catalog directly. All compounds include batch-specific certificates of analysis and ship under controlled laboratory handling. Institutional or wholesale volumes — use the inquiry form below.', 'navigate-peptides'); ?>
         </p>

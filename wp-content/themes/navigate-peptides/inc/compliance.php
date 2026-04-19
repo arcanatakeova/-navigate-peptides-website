@@ -18,7 +18,21 @@ function nav_get_disclaimer(string $key): string {
         'product'  => 'All products currently listed on this site are for research purposes ONLY.',
         'sitewide' => 'All products sold on this website are intended for research and identification purposes only. These products are not intended for human dosing, injection, or ingestion.',
     ];
-    return $disclaimers[$key] ?? '';
+    if (!isset($disclaimers[$key])) {
+        // Processor-mandated text must never silently disappear. Warn loudly
+        // so a typo surfaces in logs / WP_DEBUG instead of stripping the
+        // disclaimer from the rendered page.
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            trigger_error(
+                sprintf('nav_get_disclaimer(): unknown key "%s"', $key),
+                E_USER_WARNING
+            );
+        }
+        error_log(sprintf('[nav_compliance] unknown disclaimer key: %s', $key));
+        // Fall back to the sitewide disclaimer so the page stays compliant.
+        return $disclaimers['sitewide'];
+    }
+    return $disclaimers[$key];
 }
 
 /**

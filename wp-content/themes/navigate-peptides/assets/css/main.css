@@ -1903,6 +1903,36 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--nav-text-muted);
 }
 
+.nav-footer__payments {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+    padding: 8px 0 18px;
+    margin-bottom: 6px;
+}
+
+.nav-footer__payments-label {
+    font-family: var(--nav-font-body);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: var(--nav-text-muted);
+}
+
+.nav-footer__payment-method {
+    font-family: var(--nav-font-body);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--nav-text-secondary);
+    padding: 4px 10px;
+    border: 1px solid rgba(234, 234, 234, 0.08);
+    border-radius: 2px;
+    background: rgba(10, 16, 14, 0.35);
+}
+
 /* ==========================================================================
    EMPTY STATE
    Primary declaration — polish rule at line ~3048 extends this.

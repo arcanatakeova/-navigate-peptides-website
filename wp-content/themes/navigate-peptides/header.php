@@ -9,8 +9,10 @@
     <link rel="icon" type="image/svg+xml" href="<?php echo esc_url(get_template_directory_uri() . '/assets/images/favicon.svg'); ?>">
     <link rel="icon" type="image/png" sizes="32x32" href="<?php echo esc_url(get_template_directory_uri() . '/assets/images/favicon.svg'); ?>">
     <meta name="theme-color" content="#2A3B36">
-    <!-- Google model-viewer for 3D vials -->
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+    <!-- Google model-viewer for 3D vials — version pinned at 4.0.0. If/when
+         Google publishes 4.0.0 hashes, add integrity=... crossorigin="anonymous"
+         here. Until then, rely on URL pin + CSP script-src allowlist. -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <?php wp_head(); ?>
 </head>
 <body <?php body_class('nav-body'); ?>>

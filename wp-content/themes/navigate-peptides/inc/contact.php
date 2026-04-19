@@ -44,11 +44,17 @@ add_action('admin_post_nav_contact_form', 'nav_handle_contact_form');
 add_action('admin_post_nopriv_nav_contact_form', 'nav_handle_contact_form');
 
 function nav_handle_contact_form(): void {
-    // Verify nonce
+    // Verify nonce — log failures so we can spot targeted CSRF attempts.
     if (
         ! isset($_POST['nav_nonce']) ||
         ! wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nav_nonce'])), 'nav_contact_nonce')
     ) {
+        error_log(sprintf(
+            '[nav_contact] nonce verification failed ip=%s ua=%s referer=%s',
+            nav_contact_client_ip(),
+            substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 200),
+            (string) ($_SERVER['HTTP_REFERER'] ?? '-')
+        ));
         wp_die(
             esc_html__('Security check failed. Please go back and try again.', 'navigate-peptides'),
             esc_html__('Error', 'navigate-peptides'),
@@ -65,7 +71,7 @@ function nav_handle_contact_form(): void {
             nav_contact_client_ip(),
             substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 200)
         ));
-        wp_safe_redirect(home_url('/about/contact/?sent=1'));
+        wp_safe_redirect(add_query_arg('sent', '1', nav_get_contact_url()));
         exit;
     }
 
@@ -79,12 +85,12 @@ function nav_handle_contact_form(): void {
 
     // Validate required fields
     if (empty($first_name) || empty($email) || empty($message)) {
-        wp_safe_redirect(home_url('/about/contact/?error=required'));
+        wp_safe_redirect(add_query_arg('error', 'required', nav_get_contact_url()));
         exit;
     }
 
     if (! is_email($email)) {
-        wp_safe_redirect(home_url('/about/contact/?error=email'));
+        wp_safe_redirect(add_query_arg('error', 'email', nav_get_contact_url()));
         exit;
     }
 
@@ -92,7 +98,7 @@ function nav_handle_contact_form(): void {
     $client_ip = nav_contact_client_ip();
     $rate_key  = 'nav_contact_' . md5($client_ip);
     if (get_transient($rate_key)) {
-        wp_safe_redirect(home_url('/about/contact/?error=rate'));
+        wp_safe_redirect(add_query_arg('error', 'rate', nav_get_contact_url()));
         exit;
     }
     set_transient($rate_key, 1, 60);
@@ -121,24 +127,43 @@ function nav_handle_contact_form(): void {
         $message
     );
 
-    $headers = [
-        'Content-Type: text/plain; charset=UTF-8',
-        sprintf('Reply-To: %s %s <%s>', $first_name, $last_name, $email),
-    ];
-
-    // Check wp_mail return — a false here means PHPMailer rejected the send
-    // (DNS, auth, plugin veto). Log and surface to the user rather than
-    // redirecting to the success banner.
-    $sent = wp_mail($to, $subject, $body, $headers);
-    if (!$sent) {
-        error_log(sprintf(
-            '[nav_contact] wp_mail failed: to=%s subject=%s email=%s',
-            $to, $subject, $email
-        ));
-        wp_safe_redirect(home_url('/about/contact/?error=send'));
+    // Admin recipient sanity — catch installs where admin_email is unset
+    // before we call wp_mail, so the error message is specific.
+    if (!is_email($to)) {
+        error_log('[nav_contact] admin_email option is not a valid email: ' . var_export($to, true));
+        wp_safe_redirect(add_query_arg('error', 'send', nav_get_contact_url()));
         exit;
     }
 
-    wp_safe_redirect(home_url('/about/contact/?sent=1'));
+    // Reply-To: scrub display-name of characters that confuse downstream
+    // MTAs and header-injection-adjacent vectors. sanitize_text_field
+    // already strips newlines, but <>@"' are still possible.
+    $reply_name = str_replace(
+        ['<', '>', '@', '"', "'", "\r", "\n", "\t"],
+        ' ',
+        trim($first_name . ' ' . $last_name)
+    );
+    $reply_name = preg_replace('/\s+/', ' ', $reply_name);
+
+    $headers = [
+        'Content-Type: text/plain; charset=UTF-8',
+        sprintf('Reply-To: %s <%s>', $reply_name, $email),
+    ];
+
+    // Check wp_mail return — a false here means PHPMailer rejected the send
+    // (DNS, auth, plugin veto). Log with enough context to diagnose and
+    // surface to the user rather than silently redirecting to "success".
+    $sent = wp_mail($to, $subject, $body, $headers);
+    if (!$sent) {
+        $last = error_get_last();
+        error_log(sprintf(
+            '[nav_contact] wp_mail failed: to=%s ip=%s type=%s last=%s',
+            $to, $client_ip, $inquiry_type, $last['message'] ?? '-'
+        ));
+        wp_safe_redirect(add_query_arg('error', 'send', nav_get_contact_url()));
+        exit;
+    }
+
+    wp_safe_redirect(add_query_arg('sent', '1', nav_get_contact_url()));
     exit;
 }
