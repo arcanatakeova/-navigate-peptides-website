@@ -43,14 +43,63 @@
     }
 
     /* ------------------------------------------------------------------
-     * Announcement Bar: dismiss
+     * Announcement Bar: dismiss + persist for 7 days via localStorage
      * ----------------------------------------------------------------*/
     var announcementClose = document.getElementById('nav-announcement-close');
     var announcementBar = document.getElementById('nav-announcement');
+    var ANN_KEY = 'nav_announcement_dismissed_until';
+
+    function hideAnnouncement() {
+        if (!announcementBar) return;
+        announcementBar.remove();
+        document.documentElement.style.setProperty('--nav-announcement-h', '0px');
+    }
+
+    // On load, honor a prior dismissal within the last 7 days.
+    try {
+        var dismissedUntil = parseInt(localStorage.getItem(ANN_KEY) || '0', 10);
+        if (dismissedUntil > Date.now()) {
+            hideAnnouncement();
+        }
+    } catch (e) { /* localStorage disabled — fall through, no persist */ }
+
     if (announcementClose && announcementBar) {
         announcementClose.addEventListener('click', function () {
-            announcementBar.remove();
-            document.documentElement.style.setProperty('--nav-announcement-h', '0px');
+            try {
+                var sevenDays = 7 * 24 * 60 * 60 * 1000;
+                localStorage.setItem(ANN_KEY, String(Date.now() + sevenDays));
+            } catch (e) { /* noop */ }
+            hideAnnouncement();
+        });
+    }
+
+    /* ------------------------------------------------------------------
+     * Header: Search toggle — expand/collapse the search form
+     * ----------------------------------------------------------------*/
+    var searchToggle = document.getElementById('nav-search-toggle');
+    var searchForm = document.getElementById('nav-search-form');
+    var searchClose = document.getElementById('nav-search-close');
+    var searchInput = document.getElementById('nav-search-input');
+    if (searchToggle && searchForm) {
+        var setSearchOpen = function (open) {
+            searchForm.setAttribute('aria-hidden', open ? 'false' : 'true');
+            searchToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            if (open && searchInput) {
+                setTimeout(function () { searchInput.focus(); }, 50);
+            }
+        };
+        searchToggle.addEventListener('click', function () {
+            var isOpen = searchForm.getAttribute('aria-hidden') === 'false';
+            setSearchOpen(!isOpen);
+        });
+        if (searchClose) {
+            searchClose.addEventListener('click', function () { setSearchOpen(false); });
+        }
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && searchForm.getAttribute('aria-hidden') === 'false') {
+                setSearchOpen(false);
+                searchToggle.focus();
+            }
         });
     }
 
@@ -102,32 +151,49 @@
 
     /* ------------------------------------------------------------------
      * WooCommerce: Update cart count via AJAX fragments
-     * Listens for multiple possible events and extracts the count from
-     * either the fragment data or common selectors, failing silently.
+     *
+     * The PHP side registers the fragment 'span.nav-header__cart-count' —
+     * Woo writes it straight into the DOM via WC core's updateFragment()
+     * without any code from us. This handler only covers cases where the
+     * selector isn't an exact match (variant carts, added_to_cart events
+     * that pass the fragment object directly) and the parent-side pulse
+     * animation.
      * ----------------------------------------------------------------*/
     function updateCartCount(event, fragments) {
         var countEl = document.getElementById('nav-cart-count');
         if (!countEl) return;
 
-        // Try fragment data first (passed by Woo's added_to_cart event)
+        // Preferred: our registered fragment key lands by selector — if WC
+        // already overwrote the span we just need to flash it.
+        var newVal = null;
+
         if (fragments) {
             for (var key in fragments) {
-                if (Object.prototype.hasOwnProperty.call(fragments, key) && key.indexOf('cart-contents-count') !== -1) {
-                    var temp = document.createElement('div');
-                    temp.innerHTML = fragments[key];
-                    var countNode = temp.querySelector('.cart-contents-count, [data-cart-count]');
-                    if (countNode) {
-                        countEl.textContent = countNode.textContent.trim();
-                        return;
-                    }
+                if (!Object.prototype.hasOwnProperty.call(fragments, key)) continue;
+                if (key.indexOf('cart-contents-count') === -1 && key.indexOf('nav-header__cart-count') === -1) continue;
+                var temp = document.createElement('div');
+                temp.innerHTML = fragments[key];
+                var countNode = temp.querySelector('[data-cart-count], .cart-contents-count');
+                if (countNode) {
+                    newVal = (countNode.textContent || '').trim();
+                    break;
                 }
             }
         }
 
-        // Fall back to DOM query
-        var fallback = document.querySelector('.cart-contents-count, [data-cart-count]');
-        if (fallback) {
-            countEl.textContent = fallback.textContent.trim();
+        if (newVal === null) {
+            // Fall back to any other matching element in the DOM (e.g. minicart).
+            var fallback = document.querySelector('[data-cart-count], .cart-contents-count:not(#nav-cart-count)');
+            if (fallback) newVal = (fallback.textContent || '').trim();
+        }
+
+        if (newVal !== null && newVal !== countEl.textContent.trim()) {
+            countEl.textContent = newVal;
+            countEl.setAttribute('data-cart-count', newVal);
+            // Pulse the badge so the user sees the update register.
+            countEl.classList.remove('is-pulse');
+            void countEl.offsetWidth;
+            countEl.classList.add('is-pulse');
         }
     }
 
@@ -139,6 +205,24 @@
             updateCartCount();
         });
     }
+
+    /* ------------------------------------------------------------------
+     * <model-viewer> error handler — when the GLB 404s or CORS blocks,
+     * fall back to the poster image instead of leaving the user staring
+     * at a frozen viewport.
+     * ----------------------------------------------------------------*/
+    document.querySelectorAll('model-viewer').forEach(function (mv) {
+        mv.addEventListener('error', function (ev) {
+            console.warn('[nav] 3D model failed to load, showing poster', mv.src, ev);
+            var poster = mv.querySelector('img, picture img');
+            if (poster) {
+                var wrap = document.createElement('div');
+                wrap.className = 'nav-vial-fallback';
+                wrap.appendChild(poster);
+                if (mv.parentNode) mv.parentNode.replaceChild(wrap, mv);
+            }
+        });
+    });
 
     /* ------------------------------------------------------------------
      * Smooth scroll for anchor links

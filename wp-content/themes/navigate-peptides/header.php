@@ -75,24 +75,24 @@ if ($announcement) :
                 ?>
                 <ul class="nav-header__menu">
                     <li class="menu-item menu-item-has-children">
-                        <a href="<?php echo esc_url(home_url('/compounds/')); ?>">Compounds</a>
+                        <a href="<?php echo esc_url(home_url('/compounds/')); ?>"><?php esc_html_e('Compounds', 'navigate-peptides'); ?></a>
                         <ul class="sub-menu">
-                            <li><a href="<?php echo esc_url(get_term_link('metabolic-research', 'product_cat')); ?>">Metabolic Research</a></li>
-                            <li><a href="<?php echo esc_url(get_term_link('tissue-repair-research', 'product_cat')); ?>">Tissue Repair Research</a></li>
-                            <li><a href="<?php echo esc_url(get_term_link('cognitive-research', 'product_cat')); ?>">Cognitive Research</a></li>
-                            <li><a href="<?php echo esc_url(get_term_link('inflammation-research', 'product_cat')); ?>">Inflammation Research</a></li>
-                            <li><a href="<?php echo esc_url(get_term_link('cellular-research', 'product_cat')); ?>">Cellular Research</a></li>
-                            <li><a href="<?php echo esc_url(get_term_link('dermal-research', 'product_cat')); ?>">Dermal Research</a></li>
-                            <li><a href="<?php echo esc_url(get_term_link('research-blends', 'product_cat')); ?>">Research Blends</a></li>
+                            <li><a href="<?php echo esc_url(nav_get_product_cat_url('metabolic-research')); ?>"><?php esc_html_e('Metabolic Research', 'navigate-peptides'); ?></a></li>
+                            <li><a href="<?php echo esc_url(nav_get_product_cat_url('tissue-repair-research')); ?>"><?php esc_html_e('Tissue Repair Research', 'navigate-peptides'); ?></a></li>
+                            <li><a href="<?php echo esc_url(nav_get_product_cat_url('cognitive-research')); ?>"><?php esc_html_e('Cognitive Research', 'navigate-peptides'); ?></a></li>
+                            <li><a href="<?php echo esc_url(nav_get_product_cat_url('inflammation-research')); ?>"><?php esc_html_e('Inflammation Research', 'navigate-peptides'); ?></a></li>
+                            <li><a href="<?php echo esc_url(nav_get_product_cat_url('cellular-research')); ?>"><?php esc_html_e('Cellular Research', 'navigate-peptides'); ?></a></li>
+                            <li><a href="<?php echo esc_url(nav_get_product_cat_url('dermal-research')); ?>"><?php esc_html_e('Dermal Research', 'navigate-peptides'); ?></a></li>
+                            <li><a href="<?php echo esc_url(nav_get_product_cat_url('research-blends')); ?>"><?php esc_html_e('Research Blends', 'navigate-peptides'); ?></a></li>
                         </ul>
                     </li>
                     <li class="menu-item menu-item-has-children">
                         <a href="<?php echo esc_url(home_url('/research/')); ?>">Research</a>
                         <ul class="sub-menu">
-                            <li><a href="<?php echo esc_url(home_url('/research/category/intelligence/')); ?>">Research Intelligence</a></li>
-                            <li><a href="<?php echo esc_url(home_url('/research/category/library/')); ?>">Research Library</a></li>
-                            <li><a href="<?php echo esc_url(home_url('/research/category/framework/')); ?>">Research Framework</a></li>
-                            <li><a href="<?php echo esc_url(home_url('/research/category/emerging/')); ?>">Emerging Research</a></li>
+                            <li><a href="<?php echo esc_url(home_url('/research/topic/intelligence/')); ?>">Research Intelligence</a></li>
+                            <li><a href="<?php echo esc_url(home_url('/research/topic/library/')); ?>">Research Library</a></li>
+                            <li><a href="<?php echo esc_url(home_url('/research/topic/framework/')); ?>">Research Framework</a></li>
+                            <li><a href="<?php echo esc_url(home_url('/research/topic/emerging/')); ?>">Emerging Research</a></li>
                         </ul>
                     </li>
                     <li class="menu-item menu-item-has-children">
@@ -117,22 +117,48 @@ if ($announcement) :
             ?>
         </nav>
 
-        <!-- Right: Account + Cart + CTA + Mobile Toggle -->
+        <!-- Right: Search + Account + Cart + CTA + Mobile Toggle -->
         <div class="nav-header__actions">
-            <?php if (class_exists('WooCommerce')) : ?>
-                <a href="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>" class="nav-header__account" aria-label="Account">
-                    <svg class="nav-icon nav-icon--sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
-                </a>
-                <a href="<?php echo esc_url(wc_get_cart_url()); ?>" class="nav-header__cart" aria-label="Shopping cart">
+            <!-- Site search — toggleable input for compound / article search -->
+            <button
+                type="button"
+                class="nav-header__search-toggle"
+                id="nav-search-toggle"
+                aria-label="<?php esc_attr_e('Open site search', 'navigate-peptides'); ?>"
+                aria-expanded="false"
+                aria-controls="nav-search-form"
+            >
+                <svg class="nav-icon nav-icon--sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+            </button>
+
+            <?php
+            // Account link — shown to all users (admin logins shouldn't break
+            // when WC is momentarily deactivated for maintenance).
+            $account_url = class_exists('WooCommerce')
+                ? (wc_get_page_permalink('myaccount') ?: home_url('/my-account/'))
+                : wp_login_url();
+            ?>
+            <a href="<?php echo esc_url($account_url); ?>" class="nav-header__account" aria-label="<?php esc_attr_e('Account', 'navigate-peptides'); ?>">
+                <svg class="nav-icon nav-icon--sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
+            </a>
+
+            <?php if (class_exists('WooCommerce')) :
+                $cart_count = WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0;
+            ?>
+                <a href="<?php echo esc_url(wc_get_cart_url()); ?>" class="nav-header__cart" aria-label="<?php esc_attr_e('Shopping cart', 'navigate-peptides'); ?>">
                     <?php echo nav_icon('cart', 'nav-icon nav-icon--sm'); ?>
-                    <span class="nav-header__cart-count" id="nav-cart-count">
-                        <?php echo esc_html(WC()->cart ? WC()->cart->get_cart_contents_count() : '0'); ?>
+                    <!-- Classes .cart-contents-count + data-cart-count are what WC fragment
+                         updates target; keep BOTH so JS hooks can find us either way. -->
+                    <span class="nav-header__cart-count cart-contents-count"
+                          id="nav-cart-count"
+                          data-cart-count="<?php echo esc_attr((string) $cart_count); ?>">
+                        <?php echo esc_html((string) $cart_count); ?>
                     </span>
                 </a>
             <?php endif; ?>
 
             <a href="<?php echo esc_url(nav_get_contact_url()); ?>" class="nav-btn nav-btn--primary nav-header__cta">
-                Request Access
+                <?php esc_html_e('Request Access', 'navigate-peptides'); ?>
             </a>
 
             <button
@@ -145,6 +171,35 @@ if ($announcement) :
                 <span class="nav-header__toggle-open"><?php echo nav_icon('menu', 'nav-icon'); ?></span>
                 <span class="nav-header__toggle-close"><?php echo nav_icon('close', 'nav-icon'); ?></span>
             </button>
+        </div>
+    </div>
+
+    <!-- Expandable Site Search (toggled by the magnifier button above) -->
+    <div class="nav-header__search" id="nav-search-form" aria-hidden="true">
+        <div class="nav-container">
+            <form role="search" method="get" action="<?php echo esc_url(home_url('/')); ?>" class="nav-search-form">
+                <label for="nav-search-input" class="screen-reader-text">
+                    <?php esc_html_e('Search compounds, research articles, and COAs', 'navigate-peptides'); ?>
+                </label>
+                <span class="nav-search-form__icon" aria-hidden="true">
+                    <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+                </span>
+                <input
+                    id="nav-search-input"
+                    type="search"
+                    name="s"
+                    class="nav-search-form__input"
+                    placeholder="<?php esc_attr_e('Search BPC-157, MOTS-c, TB-500…', 'navigate-peptides'); ?>"
+                    value="<?php echo esc_attr(get_search_query()); ?>"
+                    autocomplete="off"
+                >
+                <button type="submit" class="nav-search-form__submit">
+                    <?php esc_html_e('Search', 'navigate-peptides'); ?>
+                </button>
+                <button type="button" class="nav-search-form__close" id="nav-search-close" aria-label="<?php esc_attr_e('Close search', 'navigate-peptides'); ?>">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </form>
         </div>
     </div>
 

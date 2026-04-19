@@ -48,7 +48,14 @@ while (have_posts()) : the_post();
                     <?php echo esc_html($primary_term->name); ?>
                 </a>
             <?php else : ?>
-                <span class="nav-kicker"><?php echo esc_html(get_post_type_object(get_post_type())->labels->singular_name ?? 'Article'); ?></span>
+                <?php
+                // Null-safe — get_post_type_object returns null on unregistered types.
+                $pto = get_post_type_object(get_post_type());
+                $singular_label = $pto && isset($pto->labels->singular_name)
+                    ? $pto->labels->singular_name
+                    : __('Article', 'navigate-peptides');
+                ?>
+                <span class="nav-kicker"><?php echo esc_html($singular_label); ?></span>
             <?php endif; ?>
 
             <h1 class="nav-page-hero__title"><?php echo esc_html(get_the_title()); ?></h1>

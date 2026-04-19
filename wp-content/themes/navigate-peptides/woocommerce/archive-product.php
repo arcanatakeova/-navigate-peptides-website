@@ -10,7 +10,7 @@ defined('ABSPATH') || exit;
 get_header();
 
 $current_cat   = get_queried_object();
-$is_category   = is_product_category();
+$is_category   = is_product_category() && $current_cat && !empty($current_cat->slug);
 $cat_color     = $is_category ? nav_get_category_color($current_cat->slug) : '#474C50';
 ?>
 

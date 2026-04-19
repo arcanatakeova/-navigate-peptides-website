@@ -741,9 +741,12 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: var(--nav-radius-lg);
 }
 
-/* Product Info Panel (right column) */
+/* Product Info Panel (right column on desktop, full-width below vial on mobile).
+   Previously hidden <1024px — that removed batch/COA/purity entirely on phone,
+   which is the majority of traffic. Now always visible; mobile stacks it after
+   the vial rather than next to it. */
 .nav-hero__info-panel {
-    display: none;
+    display: block;
 }
 
 /* Product Information Panel — matches mockup's compact, hairline-delimited
@@ -1088,7 +1091,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .nav-cat-icon-card:hover .nav-cat-icon-card__btn {
-    background-color: color-mix(in srgb, var(--cat-color) 18%, transparent);
+    /* Safari 15 fallback — solid category color @ 18% via rgba */
+    background-color: rgba(234, 234, 234, 0.08);
+}
+@supports (background-color: color-mix(in srgb, red, blue)) {
+    .nav-cat-icon-card:hover .nav-cat-icon-card__btn {
+        background-color: color-mix(in srgb, var(--cat-color) 18%, transparent);
+    }
 }
 
 /* Section title — caps variant (mockup: tracking-wide caps, hairline flanks) */
@@ -1188,9 +1197,15 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     align-items: center;
     justify-content: center;
-    background:
-        radial-gradient(ellipse 60% 55% at 50% 50%, color-mix(in srgb, var(--cat-color) 18%, transparent) 0%, transparent 70%),
-        linear-gradient(180deg, rgba(10, 16, 14, 0.5) 0%, rgba(10, 16, 14, 0.85) 100%);
+    /* Safari 15 fallback — linear gradient only (no color-mix ambient). */
+    background: linear-gradient(180deg, rgba(10, 16, 14, 0.5) 0%, rgba(10, 16, 14, 0.85) 100%);
+}
+@supports (background: radial-gradient(red, color-mix(in srgb, red, blue))) {
+    .nav-category-card__visual {
+        background:
+            radial-gradient(ellipse 60% 55% at 50% 50%, color-mix(in srgb, var(--cat-color) 18%, transparent) 0%, transparent 70%),
+            linear-gradient(180deg, rgba(10, 16, 14, 0.5) 0%, rgba(10, 16, 14, 0.85) 100%);
+    }
 }
 
 .nav-category-card__visual img {
@@ -3114,4 +3129,167 @@ a:focus-visible {
     position: absolute;
     word-wrap: normal !important;
 }
+
+/* ==========================================================================
+   HEADER SEARCH — Toggleable input under the nav row
+   ========================================================================== */
+.nav-header__search-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    color: var(--nav-text-secondary);
+    cursor: pointer;
+    transition: color 200ms var(--nav-ease), border-color 200ms var(--nav-ease);
+}
+
+.nav-header__search-toggle:hover {
+    color: var(--nav-text-primary);
+    border-color: rgba(234, 234, 234, 0.12);
+}
+
+.nav-header__search {
+    max-height: 0;
+    overflow: hidden;
+    border-bottom: 1px solid transparent;
+    background-color: rgba(10, 16, 14, 0.96);
+    transition: max-height 260ms var(--nav-ease), border-color 260ms var(--nav-ease);
+}
+
+.nav-header__search[aria-hidden="false"] {
+    max-height: 120px;
+    border-bottom-color: var(--nav-border-subtle);
+}
+
+.nav-search-form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 0;
+}
+
+.nav-search-form__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--nav-text-muted);
+    flex-shrink: 0;
+}
+
+.nav-search-form__icon .nav-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.nav-search-form__input {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 4px;
+    font-family: var(--nav-font-body);
+    font-size: 15px;
+    color: var(--nav-text-primary);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(234, 234, 234, 0.12);
+    outline: none;
+    transition: border-color 200ms var(--nav-ease);
+}
+
+.nav-search-form__input::placeholder {
+    color: var(--nav-text-muted);
+    opacity: 0.6;
+}
+
+.nav-search-form__input:focus {
+    border-bottom-color: rgba(184, 198, 189, 0.55);
+}
+
+.nav-search-form__submit {
+    padding: 10px 20px;
+    font-family: var(--nav-font-body);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--nav-text-primary);
+    background: transparent;
+    border: 1px solid rgba(234, 234, 234, 0.18);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: border-color 200ms var(--nav-ease), background-color 200ms var(--nav-ease);
+}
+
+.nav-search-form__submit:hover {
+    border-color: rgba(234, 234, 234, 0.4);
+    background-color: rgba(234, 234, 234, 0.04);
+}
+
+.nav-search-form__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    color: var(--nav-text-muted);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: color 200ms var(--nav-ease);
+}
+
+.nav-search-form__close:hover {
+    color: var(--nav-text-primary);
+}
+
+/* ==========================================================================
+   CART COUNT — pulse on ajax update
+   ========================================================================== */
+.nav-header__cart-count.is-pulse {
+    animation: nav-cart-pulse 520ms var(--nav-ease);
+}
+
+@keyframes nav-cart-pulse {
+    0%   { transform: scale(1);   }
+    35%  { transform: scale(1.28); }
+    100% { transform: scale(1);   }
+}
+
+/* ==========================================================================
+   MODEL-VIEWER FALLBACK — when GLB 404s / CORS, JS swaps the poster in
+   ========================================================================== */
+.nav-vial-fallback {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(10, 16, 14, 0.5) 0%, rgba(10, 16, 14, 0.75) 100%);
+    border-radius: var(--nav-radius-lg);
+}
+
+.nav-vial-fallback img,
+.nav-vial-fallback picture {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 40px 60px rgba(0, 0, 0, 0.65));
+}
+
+/* ==========================================================================
+   MOBILE-FIRST HERO INFO PANEL — show as a stacked card under the vial
+   ========================================================================== */
+@media (max-width: 1023px) {
+    .nav-hero__info-panel {
+        max-width: 520px;
+        margin: 0 auto;
+    }
+}
+
 

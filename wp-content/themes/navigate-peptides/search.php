@@ -47,7 +47,11 @@ $total_results = $GLOBALS['wp_query']->found_posts;
         <?php if (have_posts()) : ?>
             <div class="nav-post-grid">
                 <?php while (have_posts()) : the_post();
-                    $post_type_label = get_post_type_object(get_post_type())->labels->singular_name ?? '';
+                    // Null-safe — get_post_type_object can return null on unregistered types.
+                    $pto = get_post_type_object(get_post_type());
+                    $post_type_label = $pto && isset($pto->labels->singular_name)
+                        ? $pto->labels->singular_name
+                        : '';
                 ?>
                     <article class="nav-post-card">
                         <?php if (has_post_thumbnail()) : ?>

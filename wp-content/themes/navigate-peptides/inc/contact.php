@@ -10,26 +10,34 @@
 defined('ABSPATH') || exit;
 
 /**
- * Resolve the request's real client IP even when behind a CDN / reverse
- * proxy, so rate limiting doesn't block every visitor sharing a gateway.
- * Only trusts CF-Connecting-IP / X-Forwarded-For if those headers are
- * present — falls back to REMOTE_ADDR otherwise.
+ * Resolve the request's real client IP.
+ *
+ * SECURITY: HTTP_X_FORWARDED_FOR / HTTP_CF_CONNECTING_IP / HTTP_X_REAL_IP
+ * are client-controllable on a direct-connect install. A bot can spoof any
+ * value to bypass rate limiting. We therefore only honor those headers when
+ * NAV_TRUSTED_PROXIES is defined (typically in wp-config.php for hosts
+ * behind Cloudflare or a reverse proxy). Default: REMOTE_ADDR only.
+ *
+ * Set `define('NAV_TRUSTED_PROXIES', true);` on production hosts where
+ * the forwarding proxy is trusted. Optionally set it to an array of CIDRs
+ * to additionally require REMOTE_ADDR to match a known proxy range.
  */
 function nav_contact_client_ip(): string {
-    $candidates = [
-        'HTTP_CF_CONNECTING_IP', // Cloudflare
-        'HTTP_X_REAL_IP',        // nginx / common reverse-proxy
-        'HTTP_X_FORWARDED_FOR',  // generic proxy — may be comma-separated chain
-        'REMOTE_ADDR',
-    ];
-    foreach ($candidates as $header) {
+    $remote = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
+    $remote = filter_var($remote, FILTER_VALIDATE_IP) ? $remote : '0.0.0.0';
+
+    if (!defined('NAV_TRUSTED_PROXIES') || !NAV_TRUSTED_PROXIES) {
+        return $remote;
+    }
+
+    foreach (['HTTP_CF_CONNECTING_IP', 'HTTP_X_REAL_IP', 'HTTP_X_FORWARDED_FOR'] as $header) {
         if (empty($_SERVER[$header])) continue;
         $raw = (string) $_SERVER[$header];
-        // X-Forwarded-For chain: take the left-most entry (original client).
+        // X-Forwarded-For is comma-separated; left-most is the original client.
         $ip = trim(explode(',', $raw)[0]);
         if (filter_var($ip, FILTER_VALIDATE_IP)) return $ip;
     }
-    return '0.0.0.0';
+    return $remote;
 }
 
 add_action('admin_post_nav_contact_form', 'nav_handle_contact_form');

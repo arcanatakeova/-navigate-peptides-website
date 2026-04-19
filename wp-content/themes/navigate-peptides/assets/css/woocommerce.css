@@ -256,9 +256,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background:
-        radial-gradient(ellipse 60% 55% at 50% 50%, color-mix(in srgb, var(--cat-color) 14%, transparent) 0%, transparent 70%),
-        linear-gradient(180deg, rgba(10, 16, 14, 0.55) 0%, rgba(6, 10, 9, 0.9) 100%);
+    /* Safari 15 fallback — linear only (no radial ambient tint). */
+    background: linear-gradient(180deg, rgba(10, 16, 14, 0.55) 0%, rgba(6, 10, 9, 0.9) 100%);
+}
+@supports (background: radial-gradient(red, color-mix(in srgb, red, blue))) {
+    .nav-product-single__image {
+        background:
+            radial-gradient(ellipse 60% 55% at 50% 50%, color-mix(in srgb, var(--cat-color) 14%, transparent) 0%, transparent 70%),
+            linear-gradient(180deg, rgba(10, 16, 14, 0.55) 0%, rgba(6, 10, 9, 0.9) 100%);
+    }
 }
 
 .nav-product-single__image img {
@@ -511,6 +517,64 @@
 
 .nav-product-single__coa-link:hover {
     color: var(--nav-text-primary);
+}
+
+/* Trust strip — batch + purity + COA download, above the Add-to-Cart row */
+.nav-product-single__trust-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 28px;
+    margin-top: 28px;
+    padding: 18px 22px;
+    border: 1px solid rgba(234, 234, 234, 0.08);
+    border-left: 2px solid var(--cat-color, rgba(74, 107, 95, 0.5));
+    border-radius: 4px;
+    background: rgba(10, 16, 14, 0.4);
+}
+
+.nav-trust-strip__item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.nav-trust-strip__label {
+    font-family: var(--nav-font-body);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    color: var(--nav-text-muted);
+}
+
+.nav-trust-strip__value {
+    font-family: var(--nav-font-mono);
+    font-size: 15px;
+    color: var(--nav-text-primary);
+    letter-spacing: 0.02em;
+}
+
+.nav-trust-strip__coa {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    font-family: var(--nav-font-body);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--nav-text-primary);
+    border: 1px solid var(--cat-color, rgba(234, 234, 234, 0.22));
+    border-radius: 2px;
+    text-decoration: none;
+    transition: background-color 200ms var(--nav-ease);
+}
+
+.nav-trust-strip__coa:hover {
+    background-color: rgba(234, 234, 234, 0.05);
 }
 
 /* Purchase — large price on left, big primary CTA on right */
@@ -826,7 +890,13 @@
 }
 
 .nav-tab-coa-btn:hover {
-    background-color: color-mix(in srgb, var(--cat-color) 12%, transparent);
+    /* Safari 15 fallback — neutral elevated fill */
+    background-color: rgba(234, 234, 234, 0.06);
+}
+@supports (background-color: color-mix(in srgb, red, blue)) {
+    .nav-tab-coa-btn:hover {
+        background-color: color-mix(in srgb, var(--cat-color) 12%, transparent);
+    }
 }
 
 .nav-tab-coa-btn span {

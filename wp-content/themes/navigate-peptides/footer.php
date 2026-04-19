@@ -28,14 +28,9 @@
                     $cats = ['metabolic-research', 'tissue-repair-research', 'cognitive-research', 'inflammation-research', 'cellular-research', 'dermal-research', 'research-blends'];
                     $cat_names = ['Metabolic Research', 'Tissue Repair Research', 'Cognitive Research', 'Inflammation Research', 'Cellular Research', 'Dermal Research', 'Research Blends'];
                     foreach ($cats as $i => $slug) :
-                        $link = get_term_link($slug, 'product_cat');
-                        if (!is_wp_error($link)) :
                     ?>
-                        <li><a href="<?php echo esc_url($link); ?>"><?php echo esc_html($cat_names[$i]); ?></a></li>
-                    <?php
-                        endif;
-                    endforeach;
-                    ?>
+                        <li><a href="<?php echo esc_url(nav_get_product_cat_url($slug)); ?>"><?php echo esc_html($cat_names[$i]); ?></a></li>
+                    <?php endforeach; ?>
                 </ul>
             </div>
 
@@ -48,10 +43,10 @@
                 </h4>
                 <ul class="nav-footer__links">
                     <li><a href="<?php echo esc_url(home_url('/research/')); ?>">Research Hub</a></li>
-                    <li><a href="<?php echo esc_url(home_url('/research/category/intelligence/')); ?>">Research Intelligence</a></li>
-                    <li><a href="<?php echo esc_url(home_url('/research/category/library/')); ?>">Research Library</a></li>
-                    <li><a href="<?php echo esc_url(home_url('/research/category/framework/')); ?>">Research Framework</a></li>
-                    <li><a href="<?php echo esc_url(home_url('/research/category/emerging/')); ?>">Emerging Research</a></li>
+                    <li><a href="<?php echo esc_url(home_url('/research/topic/intelligence/')); ?>">Research Intelligence</a></li>
+                    <li><a href="<?php echo esc_url(home_url('/research/topic/library/')); ?>">Research Library</a></li>
+                    <li><a href="<?php echo esc_url(home_url('/research/topic/framework/')); ?>">Research Framework</a></li>
+                    <li><a href="<?php echo esc_url(home_url('/research/topic/emerging/')); ?>">Emerging Research</a></li>
                 </ul>
             </div>
 

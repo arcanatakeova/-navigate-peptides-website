@@ -44,11 +44,14 @@ $theme_uri = get_template_directory_uri();
             </div>
         </div>
 
-        <!-- Center: 3D Vial (model-viewer or fallback image) -->
+        <!-- Center: 3D Vial (model-viewer or fallback image) —
+             The rendered vial artwork we ship is GHK-Cu; the hero spec panel
+             and all labels below MUST match the rendered compound. Swapping
+             vial art requires swapping the spec block too. -->
         <div class="nav-hero__vial">
             <model-viewer
                 src="<?php echo esc_url($theme_uri . '/assets/models/vial.glb'); ?>"
-                alt="Navigate Peptides BPC-157 research vial — 3D interactive model"
+                alt="Navigate Peptides GHK-Cu research vial — 3D interactive model"
                 auto-rotate
                 camera-controls
                 interaction-prompt="none"
@@ -62,43 +65,48 @@ $theme_uri = get_template_directory_uri();
                 style="width:100%;height:100%;"
                 loading="eager"
             >
-                <!-- Fallback for no WebGL -->
-                <img
-                    slot="poster"
-                    src="<?php echo esc_url($theme_uri . '/assets/images/vial-ghkcu-single.png'); ?>"
-                    alt="Navigate Peptides GHK-Cu research vial"
-                >
+                <!-- Fallback for no WebGL / JS disabled. Picture source prefers webp. -->
+                <picture slot="poster">
+                    <source srcset="<?php echo esc_url($theme_uri . '/assets/images/vial-ghkcu-single.webp'); ?>" type="image/webp">
+                    <img
+                        src="<?php echo esc_url($theme_uri . '/assets/images/vial-ghkcu-single.png'); ?>"
+                        alt="Navigate Peptides GHK-Cu research vial"
+                        width="600"
+                        height="800"
+                        fetchpriority="high"
+                    >
+                </picture>
             </model-viewer>
         </div>
 
-        <!-- Right: Product Information Panel -->
+        <!-- Right: Product Information Panel — GHK-Cu to match the rendered vial -->
         <div class="nav-hero__info-panel">
             <div class="nav-info-panel">
-                <h3 class="nav-info-panel__title">Product Information</h3>
+                <h3 class="nav-info-panel__title"><?php esc_html_e('Product Information', 'navigate-peptides'); ?></h3>
                 <div class="nav-info-panel__grid">
                     <div class="nav-info-panel__row">
-                        <span class="nav-info-panel__label">Compound</span>
-                        <span class="nav-info-panel__value">BPC-157</span>
+                        <span class="nav-info-panel__label"><?php esc_html_e('Compound', 'navigate-peptides'); ?></span>
+                        <span class="nav-info-panel__value">GHK-Cu</span>
                     </div>
                     <div class="nav-info-panel__row">
-                        <span class="nav-info-panel__label">Sequence</span>
-                        <span class="nav-info-panel__value nav-info-panel__value--mono">H-Gly-Glu-Pro-Pro-Pro-Gly-Lys-Pro-Ala-Asp-Asp-Ala-Gly-Leu-Val</span>
+                        <span class="nav-info-panel__label"><?php esc_html_e('Sequence', 'navigate-peptides'); ?></span>
+                        <span class="nav-info-panel__value nav-info-panel__value--mono">Gly-His-Lys · Cu²⁺</span>
                     </div>
                     <div class="nav-info-panel__row">
-                        <span class="nav-info-panel__label">Molecular Weight</span>
-                        <span class="nav-info-panel__value">1419.5 g/mol</span>
+                        <span class="nav-info-panel__label"><?php esc_html_e('Molecular Weight', 'navigate-peptides'); ?></span>
+                        <span class="nav-info-panel__value">340.4 g/mol</span>
                     </div>
                     <div class="nav-info-panel__row">
-                        <span class="nav-info-panel__label">Form</span>
-                        <span class="nav-info-panel__value">Lyophilized Powder</span>
+                        <span class="nav-info-panel__label"><?php esc_html_e('Form', 'navigate-peptides'); ?></span>
+                        <span class="nav-info-panel__value"><?php esc_html_e('Lyophilized Powder', 'navigate-peptides'); ?></span>
                     </div>
                     <div class="nav-info-panel__row">
-                        <span class="nav-info-panel__label">Purity (HPLC)</span>
+                        <span class="nav-info-panel__label"><?php esc_html_e('Purity (HPLC)', 'navigate-peptides'); ?></span>
                         <span class="nav-info-panel__value">≥99%</span>
                     </div>
                     <div class="nav-info-panel__row">
-                        <span class="nav-info-panel__label">Use</span>
-                        <span class="nav-info-panel__value">Research Use Only<br>Not for Human Consumption</span>
+                        <span class="nav-info-panel__label"><?php esc_html_e('Use', 'navigate-peptides'); ?></span>
+                        <span class="nav-info-panel__value"><?php esc_html_e('Research Use Only', 'navigate-peptides'); ?><br><?php esc_html_e('Not for Human Consumption', 'navigate-peptides'); ?></span>
                     </div>
                 </div>
 
@@ -180,8 +188,7 @@ $theme_uri = get_template_directory_uri();
             ];
 
             foreach ($categories as $cat) :
-                $link = get_term_link($cat['slug'], 'product_cat');
-                if (is_wp_error($link)) $link = home_url('/compounds/');
+                $link = nav_get_product_cat_url($cat['slug']);
             ?>
                 <a href="<?php echo esc_url($link); ?>" class="nav-cat-icon-card" style="--cat-color: <?php echo esc_attr($cat['color']); ?>">
                     <div class="nav-cat-icon-card__icon">
@@ -235,15 +242,14 @@ $theme_uri = get_template_directory_uri();
     <div class="nav-container nav-section--center">
         <h2 class="nav-section__title">Begin Your Research</h2>
         <p class="nav-section__subtitle">
-            Access our full catalog of research-grade peptide compounds. All products include
-            certificates of analysis and are intended for research purposes only.
+            <?php esc_html_e('Browse our full catalog directly. All compounds include batch-specific certificates of analysis and ship under controlled laboratory handling. Institutional or wholesale volumes — use the inquiry form below.', 'navigate-peptides'); ?>
         </p>
         <div class="nav-cta-actions">
             <a href="<?php echo esc_url(home_url('/compounds/')); ?>" class="nav-btn nav-btn--primary">
-                View Compounds
+                <?php esc_html_e('Browse Compounds', 'navigate-peptides'); ?>
             </a>
             <a href="<?php echo esc_url(nav_get_contact_url()); ?>" class="nav-btn nav-btn--outline">
-                Request Access
+                <?php esc_html_e('Wholesale Inquiry', 'navigate-peptides'); ?>
             </a>
         </div>
     </div>

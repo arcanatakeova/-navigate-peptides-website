@@ -63,7 +63,8 @@ while (have_posts()) : the_post();
                             shadow-intensity="0.4"
                             exposure="1.1"
                             style="width:100%;height:100%;min-height:400px;"
-                            loading="eager"
+                            loading="lazy"
+                            reveal="auto"
                         >
                             <?php if (has_post_thumbnail()) : ?>
                                 <img slot="poster" src="<?php echo esc_url(get_the_post_thumbnail_url(null, 'product-hero')); ?>" alt="<?php the_title_attribute(); ?>">
@@ -177,6 +178,31 @@ while (have_posts()) : the_post();
                                 </a>
                             <?php endif; ?>
                         </div>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Batch + COA trust strip — the single biggest purchase
+                     signal in this industry; surfaced right at the buy button -->
+                <?php if ($batch || $purity || $coa_url) : ?>
+                    <div class="nav-product-single__trust-strip">
+                        <?php if ($batch) : ?>
+                            <div class="nav-trust-strip__item">
+                                <span class="nav-trust-strip__label"><?php esc_html_e('Current Batch', 'navigate-peptides'); ?></span>
+                                <span class="nav-trust-strip__value"><?php echo esc_html($batch); ?></span>
+                            </div>
+                        <?php endif; ?>
+                        <?php if ($purity) : ?>
+                            <div class="nav-trust-strip__item">
+                                <span class="nav-trust-strip__label"><?php esc_html_e('HPLC Purity', 'navigate-peptides'); ?></span>
+                                <span class="nav-trust-strip__value"><?php echo esc_html($purity); ?></span>
+                            </div>
+                        <?php endif; ?>
+                        <?php if ($coa_url) : ?>
+                            <a href="<?php echo esc_url($coa_url); ?>" class="nav-trust-strip__coa" target="_blank" rel="noopener">
+                                <?php esc_html_e('Download COA', 'navigate-peptides'); ?>
+                                <span aria-hidden="true">↗</span>
+                            </a>
+                        <?php endif; ?>
                     </div>
                 <?php endif; ?>
 

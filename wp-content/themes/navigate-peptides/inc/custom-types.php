@@ -30,39 +30,45 @@ add_action('init', function () {
         'show_in_rest'  => true,
     ]);
 
-    // Research Category taxonomy
+    // Research Topic taxonomy — slug matches docs/SITE_ARCHITECTURE:
+    //   /research/topic/intelligence/  /research/topic/library/  etc.
+    // Previously /research/category/ — renamed so nothing reads as a product
+    // category (that word is reserved for product_cat).
     register_taxonomy('research_category', 'nav_research', [
         'labels' => [
-            'name'          => __('Research Categories', 'navigate-peptides'),
-            'singular_name' => __('Research Category', 'navigate-peptides'),
+            'name'          => __('Research Topics', 'navigate-peptides'),
+            'singular_name' => __('Research Topic', 'navigate-peptides'),
         ],
         'public'       => true,
         'hierarchical' => true,
-        'rewrite'      => ['slug' => 'research/category', 'with_front' => false],
+        'rewrite'      => ['slug' => 'research/topic', 'with_front' => false],
         'show_in_rest' => true,
     ]);
 });
 
 /**
- * Insert default research categories on theme activation.
+ * Backfill default terms for both research and product taxonomies.
+ * Runs on theme activation AND on woocommerce_init so that if Woo is
+ * activated after the theme (common during onboarding), the product
+ * categories still get seeded.
  */
-add_action('after_switch_theme', function () {
-    $defaults = [
+function nav_backfill_default_terms(): void {
+    // Research topics — theme-native taxonomy, always present.
+    $research_defaults = [
         'Research Intelligence' => 'intelligence',
         'Research Library'      => 'library',
         'Research Framework'    => 'framework',
         'Emerging Research'     => 'emerging',
     ];
-
-    foreach ($defaults as $name => $slug) {
+    foreach ($research_defaults as $name => $slug) {
         if (!term_exists($slug, 'research_category')) {
             wp_insert_term($name, 'research_category', ['slug' => $slug]);
         }
     }
 
-    // Insert default WooCommerce product categories
+    // Product categories — only when WooCommerce is active.
     if (taxonomy_exists('product_cat')) {
-        $categories = [
+        $product_defaults = [
             'Metabolic Research'     => 'metabolic-research',
             'Tissue Repair Research' => 'tissue-repair-research',
             'Cognitive Research'     => 'cognitive-research',
@@ -71,12 +77,20 @@ add_action('after_switch_theme', function () {
             'Dermal Research'        => 'dermal-research',
             'Research Blends'        => 'research-blends',
         ];
-
-        foreach ($categories as $name => $slug) {
+        foreach ($product_defaults as $name => $slug) {
             if (!term_exists($slug, 'product_cat')) {
                 wp_insert_term($name, 'product_cat', ['slug' => $slug]);
             }
         }
+    }
+}
+
+add_action('after_switch_theme', 'nav_backfill_default_terms');
+// If WC activates after the theme, fire once more so product categories exist.
+add_action('woocommerce_init', function () {
+    if (!get_option('nav_product_terms_seeded')) {
+        nav_backfill_default_terms();
+        update_option('nav_product_terms_seeded', 1, false);
     }
 });
 

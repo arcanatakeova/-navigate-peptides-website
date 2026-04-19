@@ -372,6 +372,91 @@ add_filter('woocommerce_product_single_add_to_cart_text', fn() => __('Add to Car
 add_filter('woocommerce_product_add_to_cart_text', fn() => __('Add to Cart', 'navigate-peptides'));
 
 /* ------------------------------------------------------------------
+ * Cart-count fragment — keeps the header badge in sync after ajax adds.
+ * WC fires 'added_to_cart' which fetches fragments; our key replaces
+ * the <span> identified by selector.
+ * ----------------------------------------------------------------*/
+add_filter('woocommerce_add_to_cart_fragments', function (array $fragments) {
+    $count = WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0;
+    ob_start();
+    ?>
+    <span class="nav-header__cart-count cart-contents-count"
+          id="nav-cart-count"
+          data-cart-count="<?php echo esc_attr((string) $count); ?>">
+        <?php echo esc_html((string) $count); ?>
+    </span>
+    <?php
+    $fragments['span.nav-header__cart-count'] = ob_get_clean();
+    return $fragments;
+});
+
+/* ------------------------------------------------------------------
+ * COA PDF + 3D model URL admin warning — processor audit relies on the
+ * linked COA being a real document under a domain Ian controls. Block
+ * obvious mixed-content / attacker-controlled-host URLs and nudge admins
+ * toward the WP media library.
+ * ----------------------------------------------------------------*/
+add_action('woocommerce_process_product_meta', function ($post_id) {
+    $urls_to_check = [
+        '_nav_coa_pdf'       => __('COA PDF URL', 'navigate-peptides'),
+        '_nav_3d_model_url'  => __('3D Model URL', 'navigate-peptides'),
+    ];
+    $allowed_hosts = apply_filters('nav_product_url_allowed_hosts', [
+        wp_parse_url(home_url(), PHP_URL_HOST),
+    ]);
+
+    foreach ($urls_to_check as $field => $label) {
+        $url = get_post_meta($post_id, $field, true);
+        if (!$url) continue;
+
+        $scheme = wp_parse_url($url, PHP_URL_SCHEME);
+        $host   = wp_parse_url($url, PHP_URL_HOST);
+
+        if ($scheme !== 'https') {
+            error_log(sprintf('[nav_wc] product %d %s is not https: %s', $post_id, $field, $url));
+        }
+        if ($host && !in_array($host, $allowed_hosts, true)) {
+            error_log(sprintf('[nav_wc] product %d %s points to external host %s', $post_id, $field, $host));
+        }
+    }
+}, 20);
+
+/* ------------------------------------------------------------------
+ * Belt-and-suspenders RUO acknowledgment — if a checkout plugin replaces
+ * the order-review template and strips our UI checkbox, keep the
+ * server-side validation intact so no unacknowledged order ever posts.
+ * ----------------------------------------------------------------*/
+add_action('woocommerce_after_checkout_validation', function ($data, $errors) {
+    if (empty($_POST['nav_ruo_acknowledgment'])) {
+        $errors->add(
+            'nav_ruo_required',
+            __('You must acknowledge the research-use-only agreement before completing your order. If the checkbox is missing from your checkout, contact support.', 'navigate-peptides')
+        );
+    }
+}, 10, 2);
+
+/* ------------------------------------------------------------------
+ * Log checkout failures for diagnosis. Without this, declines and
+ * validation errors are invisible unless the gateway emails — and even
+ * then, the theme has no record of which page the user abandoned on.
+ * ----------------------------------------------------------------*/
+add_action('woocommerce_checkout_validation', function ($data, $errors) {
+    if (!empty($errors->get_error_messages())) {
+        $codes = array_unique($errors->get_error_codes());
+        error_log(sprintf(
+            '[nav_checkout] validation failed codes=%s ip=%s',
+            implode(',', $codes),
+            nav_contact_client_ip()
+        ));
+    }
+}, 10, 2);
+
+add_action('woocommerce_payment_complete_order_status', function ($status, $order_id) {
+    error_log(sprintf('[nav_checkout] payment completed order=%d status=%s', $order_id, $status));
+    return $status;
+}, 10, 2);
+
+/* ------------------------------------------------------------------
  * Prohibited Term Validation (Admin Product Save)
  * Warns admins when product content contains compliance-risk language.
  * ----------------------------------------------------------------*/

@@ -32,6 +32,10 @@ define('NAV_SEO_DEFAULT_DESC', 'Research-grade peptide compounds with third-part
  * JSON-LD script encoder — forces HEX escaping so user-controllable strings
  * containing </script>, &, quotes, or angle brackets can never break out of
  * the <script type="application/ld+json"> context. Defence-in-depth XSS.
+ *
+ * On encode failure (non-UTF-8 byte in a title, deeply recursive schema),
+ * logs the failure with enough context to diagnose rather than silently
+ * dropping the schema emitter.
  */
 function nav_seo_json_ld(array $schema): string {
     $flags = JSON_UNESCAPED_SLASHES
@@ -41,6 +45,12 @@ function nav_seo_json_ld(array $schema): string {
         | JSON_HEX_QUOT;
     $json = wp_json_encode($schema, $flags);
     if ($json === false) {
+        error_log(sprintf(
+            '[nav_seo] JSON-LD encode failed: err=%s @type=%s url=%s',
+            json_last_error_msg(),
+            $schema['@type'] ?? 'unknown',
+            $_SERVER['REQUEST_URI'] ?? ''
+        ));
         return '';
     }
     return '<script type="application/ld+json">' . $json . '</script>' . "\n";
@@ -189,18 +199,33 @@ function nav_seo_description(): string {
     } elseif (is_post_type_archive('post') || is_home()) {
         $desc = 'Mechanism deep-dives, emerging research, and analytical methodology for research peptide compounds. Purely scientific content — no human-use framing.';
     } elseif (is_search()) {
+        // Strip HTML + cap length so malicious search strings don't leak
+        // ugly raw characters into Google's SERP preview.
+        $q = wp_strip_all_tags((string) get_search_query());
+        $q = mb_substr($q, 0, 80);
         $desc = sprintf(
             'Search results for %s — Navigate Peptides research compounds and analytical resources.',
-            get_search_query()
+            $q
         );
     }
 
-    // Final safety net — compliance keyword scrub + non-empty guarantee.
-    $desc = nav_seo_scrub($desc);
-    if (trim($desc) === '') {
-        $desc = NAV_SEO_DEFAULT_DESC;
+    // Compliance scrub — but if the scrub actually changed the text,
+    // that means the source contained a prohibited keyword. Rather than
+    // ship mid-sentence regex-mangled English to Google, fall back to
+    // the hardcoded default and log so Ian can fix the offending copy.
+    $scrubbed = nav_seo_scrub($desc);
+    if ($scrubbed !== $desc && $desc !== '') {
+        error_log(sprintf(
+            '[nav_seo] scrub mutated meta description; using default. url=%s original=%s',
+            $_SERVER['REQUEST_URI'] ?? '',
+            mb_substr($desc, 0, 120)
+        ));
+        return NAV_SEO_DEFAULT_DESC;
     }
-    return $desc;
+    if (trim($scrubbed) === '') {
+        return NAV_SEO_DEFAULT_DESC;
+    }
+    return $scrubbed;
 }
 
 /**

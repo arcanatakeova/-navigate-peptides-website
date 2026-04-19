@@ -188,6 +188,65 @@ remove_action('wp_head', 'print_emoji_detection_script', 7);
 remove_action('wp_print_styles', 'print_emoji_styles');
 
 /* ------------------------------------------------------------------
+ * 8b. Admin surface hardening
+ *
+ * These close common WP admin-enumeration paths that aren't used by
+ * the theme's front-end. If a plugin requires any of these, unhook in
+ * wp-config.php via the provided filters.
+ * ----------------------------------------------------------------*/
+
+// Disable XML-RPC — brute-force / pingback amplifier. No theme feature uses it.
+add_filter('xmlrpc_enabled', '__return_false');
+add_filter('wp_headers', function (array $headers) {
+    unset($headers['X-Pingback']);
+    return $headers;
+});
+
+// Strip REST endpoints that expose the user list to anonymous requests.
+// Logged-in admins still get /wp/v2/users for admin UI needs.
+add_filter('rest_endpoints', function (array $endpoints) {
+    if (is_user_logged_in() && current_user_can('list_users')) {
+        return $endpoints;
+    }
+    foreach (['/wp/v2/users', '/wp/v2/users/(?P<id>[\d]+)'] as $path) {
+        if (isset($endpoints[$path])) unset($endpoints[$path]);
+    }
+    return $endpoints;
+});
+
+// Redirect /author/<slug>/ to home for anon — prevents username enumeration.
+add_action('template_redirect', function () {
+    if (is_author() && !is_user_logged_in()) {
+        wp_safe_redirect(home_url('/'), 301);
+        exit;
+    }
+});
+
+// Strip oEmbed author / avatar from REST response payloads.
+add_filter('oembed_response_data', function ($data) {
+    if (is_array($data)) {
+        unset($data['author_name'], $data['author_url']);
+    }
+    return $data;
+});
+
+/* ------------------------------------------------------------------
+ * 8c. Memoize category term URL lookups — homepage / header / footer
+ * cumulatively trigger 20+ get_term_link() calls each render. Cache
+ * the resolved URL for the request lifetime.
+ * ----------------------------------------------------------------*/
+function nav_get_product_cat_url(string $slug): string {
+    static $cache = [];
+    if (isset($cache[$slug])) return $cache[$slug];
+
+    $link = get_term_link($slug, 'product_cat');
+    $cache[$slug] = (is_wp_error($link) || !$link)
+        ? home_url('/compounds/')
+        : (string) $link;
+    return $cache[$slug];
+}
+
+/* ------------------------------------------------------------------
  * 9. Widget Areas
  * ----------------------------------------------------------------*/
 add_action('widgets_init', function () {
@@ -216,25 +275,40 @@ add_action('widgets_init', function () {
  * Lets marketing rename the slug without breaking header / footer / CTAs.
  */
 function nav_get_contact_url(): string {
-    $cached = wp_cache_get('nav_contact_url', 'navigate-peptides');
-    if ($cached) return $cached;
+    $found  = false;
+    $cached = wp_cache_get('nav_contact_url', 'navigate-peptides', false, $found);
+    if ($found && is_string($cached) && $cached !== '') {
+        return $cached;
+    }
 
+    $url = '';
     $page_id = (int) get_option('nav_contact_page_id', 0);
     if ($page_id && get_post_status($page_id) === 'publish') {
-        $url = get_permalink($page_id);
-    } else {
+        $url = (string) get_permalink($page_id);
+    }
+    if ($url === '') {
         $page = get_page_by_path('about/contact');
-        if ($page) {
-            $url = get_permalink($page);
-        } else {
-            $page = get_page_by_path('contact');
-            $url = $page ? get_permalink($page) : home_url('/about/contact/');
-        }
+        if ($page) $url = (string) get_permalink($page);
+    }
+    if ($url === '') {
+        $page = get_page_by_path('contact');
+        if ($page) $url = (string) get_permalink($page);
+    }
+    // Hard fallback — always a valid URL so the return type is honored.
+    if ($url === '') {
+        $url = home_url('/about/contact/');
     }
 
     wp_cache_set('nav_contact_url', $url, 'navigate-peptides', 300);
     return $url;
 }
+
+// Invalidate the cached contact URL when admin remaps the page.
+add_action('update_option_nav_contact_page_id', function () {
+    wp_cache_delete('nav_contact_url', 'navigate-peptides');
+});
+add_action('save_post_page',  function () { wp_cache_delete('nav_contact_url', 'navigate-peptides'); });
+add_action('trashed_post',    function () { wp_cache_delete('nav_contact_url', 'navigate-peptides'); });
 
 /**
  * Get category color by slug.
