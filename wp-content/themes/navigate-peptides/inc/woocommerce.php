@@ -95,6 +95,7 @@ add_filter('woocommerce_product_tabs', function ($tabs) {
  */
 function nav_research_overview_tab(): void {
     global $product;
+    if (!($product instanceof WC_Product)) return;
 
     echo '<div class="nav-tab-content">';
     echo '<h2>' . esc_html__('Research Overview', 'navigate-peptides') . '</h2>';
@@ -130,14 +131,15 @@ function nav_research_overview_tab(): void {
  */
 function nav_technical_specs_tab(): void {
     global $product;
+    if (!($product instanceof WC_Product)) return;
 
     $specs = [
-        'Molecular Structure' => get_post_meta($product->get_id(), '_nav_sequence', true),
-        'Molecular Weight'    => get_post_meta($product->get_id(), '_nav_molecular_weight', true),
-        'CAS Number'          => get_post_meta($product->get_id(), '_nav_cas_number', true),
-        'Form'                => get_post_meta($product->get_id(), '_nav_form', true),
-        'Purity'              => get_post_meta($product->get_id(), '_nav_purity', true),
-        'Storage'             => get_post_meta($product->get_id(), '_nav_storage', true),
+        __('Molecular Structure', 'navigate-peptides') => get_post_meta($product->get_id(), '_nav_sequence', true),
+        __('Molecular Weight', 'navigate-peptides')    => get_post_meta($product->get_id(), '_nav_molecular_weight', true),
+        __('CAS Number', 'navigate-peptides')          => get_post_meta($product->get_id(), '_nav_cas_number', true),
+        __('Form', 'navigate-peptides')                => get_post_meta($product->get_id(), '_nav_form', true),
+        __('Purity', 'navigate-peptides')              => get_post_meta($product->get_id(), '_nav_purity', true),
+        __('Storage', 'navigate-peptides')             => get_post_meta($product->get_id(), '_nav_storage', true),
     ];
 
     echo '<div class="nav-tab-content">';
@@ -156,9 +158,9 @@ function nav_technical_specs_tab(): void {
 
     // Additional notes
     echo '<div class="nav-tab-specs__notes">';
-    echo '<div class="nav-tab-specs__note"><span>Analytical Data</span><span>' . esc_html__('Available upon request', 'navigate-peptides') . '</span></div>';
-    echo '<div class="nav-tab-specs__note"><span>Stability Profile</span><span>' . esc_html__('Controlled conditions required', 'navigate-peptides') . '</span></div>';
-    echo '<div class="nav-tab-specs__note"><span>Reconstitution</span><span>' . esc_html__('Laboratory handling required', 'navigate-peptides') . '</span></div>';
+    echo '<div class="nav-tab-specs__note"><span>' . esc_html__('Analytical Data', 'navigate-peptides') . '</span><span>' . esc_html__('Available upon request', 'navigate-peptides') . '</span></div>';
+    echo '<div class="nav-tab-specs__note"><span>' . esc_html__('Stability Profile', 'navigate-peptides') . '</span><span>' . esc_html__('Controlled conditions required', 'navigate-peptides') . '</span></div>';
+    echo '<div class="nav-tab-specs__note"><span>' . esc_html__('Reconstitution', 'navigate-peptides') . '</span><span>' . esc_html__('Laboratory handling required', 'navigate-peptides') . '</span></div>';
     echo '</div>';
     echo '</div>';
 }
@@ -169,6 +171,7 @@ function nav_technical_specs_tab(): void {
  */
 function nav_batch_verification_tab(): void {
     global $product;
+    if (!($product instanceof WC_Product)) return;
 
     $coa_url = get_post_meta($product->get_id(), '_nav_coa_pdf', true);
     $batch   = get_post_meta($product->get_id(), '_nav_batch_number', true);
@@ -189,10 +192,10 @@ function nav_batch_verification_tab(): void {
     // Batch details
     if ($batch || $lab || $purity) {
         echo '<div class="nav-tab-specs" style="margin-top:24px;">';
-        if ($batch) echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">Batch Number</span><span class="nav-tab-specs__value">' . esc_html($batch) . '</span></div>';
-        if ($purity) echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">Verified Purity</span><span class="nav-tab-specs__value">' . esc_html($purity) . '</span></div>';
-        if ($lab) echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">Testing Laboratory</span><span class="nav-tab-specs__value">' . esc_html($lab) . '</span></div>';
-        echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">Methods</span><span class="nav-tab-specs__value">HPLC, Mass Spectrometry</span></div>';
+        if ($batch) echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">' . esc_html__('Batch Number', 'navigate-peptides') . '</span><span class="nav-tab-specs__value">' . esc_html($batch) . '</span></div>';
+        if ($purity) echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">' . esc_html__('Verified Purity', 'navigate-peptides') . '</span><span class="nav-tab-specs__value">' . esc_html($purity) . '</span></div>';
+        if ($lab) echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">' . esc_html__('Testing Laboratory', 'navigate-peptides') . '</span><span class="nav-tab-specs__value">' . esc_html($lab) . '</span></div>';
+        echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">' . esc_html__('Methods', 'navigate-peptides') . '</span><span class="nav-tab-specs__value">' . esc_html__('HPLC, Mass Spectrometry', 'navigate-peptides') . '</span></div>';
         echo '</div>';
     } else {
         echo '<p class="nav-text-muted">' . esc_html__('Batch verification data will be available once third-party testing is complete.', 'navigate-peptides') . '</p>';
@@ -200,14 +203,14 @@ function nav_batch_verification_tab(): void {
 
     // Additional links matching mockup
     echo '<div class="nav-tab-links">';
-    echo '<a href="' . esc_url(home_url('/quality/testing/')) . '" class="nav-tab-link">Research Classification <span>→</span></a>';
-    echo '<a href="' . esc_url(home_url('/quality/handling/')) . '" class="nav-tab-link">Handling &amp; Storage <span>→</span></a>';
+    echo '<a href="' . esc_url(home_url('/quality/testing/')) . '" class="nav-tab-link">' . esc_html__('Research Classification', 'navigate-peptides') . ' <span>→</span></a>';
+    echo '<a href="' . esc_url(home_url('/quality/handling/')) . '" class="nav-tab-link">' . esc_html__('Handling & Storage', 'navigate-peptides') . ' <span>→</span></a>';
     echo '</div>';
 
-    // Disclaimer
+    // Disclaimer — processor-mandated verbatim text, do not paraphrase
     echo '<div class="nav-tab-disclaimer">';
-    echo '<p>' . esc_html__('This product is supplied for research purposes only.', 'navigate-peptides') . '</p>';
-    echo '<p>' . esc_html__('Not for human or veterinary use.', 'navigate-peptides') . '</p>';
+    echo '<p>' . esc_html(nav_get_disclaimer('product')) . '</p>';
+    echo '<p>' . esc_html(nav_get_disclaimer('sitewide')) . '</p>';
     echo '</div>';
 
     echo '</div>';
@@ -348,7 +351,10 @@ add_action('woocommerce_review_order_before_submit', function () {
 add_action('woocommerce_checkout_process', function () {
     // Nonce verification is handled by WooCommerce core checkout form processing.
     // phpcs:ignore WordPress.Security.NonceVerification.Missing
-    if (empty($_POST['nav_ruo_acknowledgment'])) {
+    $ack = isset($_POST['nav_ruo_acknowledgment'])
+        ? sanitize_text_field(wp_unslash($_POST['nav_ruo_acknowledgment']))
+        : '';
+    if (empty($ack)) {
         wc_add_notice(
             __('You must acknowledge the research-use-only agreement before completing your order.', 'navigate-peptides'),
             'error'
@@ -370,6 +376,94 @@ add_action('woocommerce_after_cart_table', function () {
  * ----------------------------------------------------------------*/
 add_filter('woocommerce_product_single_add_to_cart_text', fn() => __('Add to Cart', 'navigate-peptides'));
 add_filter('woocommerce_product_add_to_cart_text', fn() => __('Add to Cart', 'navigate-peptides'));
+
+/* ------------------------------------------------------------------
+ * Cart-count fragment — keeps the header badge in sync after ajax adds.
+ * WC fires 'added_to_cart' which fetches fragments; our key replaces
+ * the <span> identified by selector.
+ * ----------------------------------------------------------------*/
+add_filter('woocommerce_add_to_cart_fragments', function (array $fragments) {
+    $count = WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0;
+    ob_start();
+    ?>
+    <span class="nav-header__cart-count cart-contents-count"
+          id="nav-cart-count"
+          data-cart-count="<?php echo esc_attr((string) $count); ?>">
+        <?php echo esc_html((string) $count); ?>
+    </span>
+    <?php
+    $fragments['span.nav-header__cart-count'] = ob_get_clean();
+    return $fragments;
+});
+
+/* ------------------------------------------------------------------
+ * COA PDF + 3D model URL admin warning — processor audit relies on the
+ * linked COA being a real document under a domain Ian controls. Block
+ * obvious mixed-content / attacker-controlled-host URLs and nudge admins
+ * toward the WP media library.
+ * ----------------------------------------------------------------*/
+add_action('woocommerce_process_product_meta', function ($post_id) {
+    $urls_to_check = [
+        '_nav_coa_pdf'       => __('COA PDF URL', 'navigate-peptides'),
+        '_nav_3d_model_url'  => __('3D Model URL', 'navigate-peptides'),
+    ];
+    $allowed_hosts = apply_filters('nav_product_url_allowed_hosts', [
+        wp_parse_url(home_url(), PHP_URL_HOST),
+    ]);
+
+    foreach ($urls_to_check as $field => $label) {
+        $url = get_post_meta($post_id, $field, true);
+        if (!$url) continue;
+
+        $scheme = wp_parse_url($url, PHP_URL_SCHEME);
+        $host   = wp_parse_url($url, PHP_URL_HOST);
+
+        if ($scheme !== 'https') {
+            error_log(sprintf('[nav_wc] product %d %s is not https: %s', $post_id, $field, $url));
+        }
+        if ($host && !in_array($host, $allowed_hosts, true)) {
+            error_log(sprintf('[nav_wc] product %d %s points to external host %s', $post_id, $field, $host));
+        }
+    }
+}, 20);
+
+/* ------------------------------------------------------------------
+ * Belt-and-suspenders RUO acknowledgment — if a checkout plugin replaces
+ * the order-review template and strips our UI checkbox, keep the
+ * server-side validation intact so no unacknowledged order ever posts.
+ * ----------------------------------------------------------------*/
+add_action('woocommerce_after_checkout_validation', function ($data, $errors) {
+    $ack = isset($_POST['nav_ruo_acknowledgment'])
+        ? sanitize_text_field(wp_unslash($_POST['nav_ruo_acknowledgment']))
+        : '';
+    if (empty($ack)) {
+        $errors->add(
+            'nav_ruo_required',
+            __('You must acknowledge the research-use-only agreement before completing your order. If the checkbox is missing from your checkout, contact support.', 'navigate-peptides')
+        );
+    }
+}, 10, 2);
+
+/* ------------------------------------------------------------------
+ * Log checkout failures for diagnosis. Without this, declines and
+ * validation errors are invisible unless the gateway emails — and even
+ * then, the theme has no record of which page the user abandoned on.
+ * ----------------------------------------------------------------*/
+add_action('woocommerce_checkout_validation', function ($data, $errors) {
+    if (!empty($errors->get_error_messages())) {
+        $codes = array_unique($errors->get_error_codes());
+        error_log(sprintf(
+            '[nav_checkout] validation failed codes=%s ip=%s',
+            implode(',', $codes),
+            nav_contact_client_ip()
+        ));
+    }
+}, 10, 2);
+
+add_action('woocommerce_payment_complete_order_status', function ($status, $order_id) {
+    error_log(sprintf('[nav_checkout] payment completed order=%d status=%s', $order_id, $status));
+    return $status;
+}, 10, 2);
 
 /* ------------------------------------------------------------------
  * Prohibited Term Validation (Admin Product Save)
@@ -433,13 +527,17 @@ add_action('admin_notices', function () {
     delete_transient('nav_compliance_warning_' . $post->ID);
 
     echo '<div class="notice notice-warning is-dismissible">';
-    echo '<p><strong>Compliance Warning:</strong> The following prohibited terms were detected in this product. These terms may cause the payment processor to reject the merchant account or trigger FDA enforcement.</p>';
+    echo '<p><strong>' . esc_html__('Compliance Warning:', 'navigate-peptides') . '</strong> ' . esc_html__('The following prohibited terms were detected in this product. These terms may cause the payment processor to reject the merchant account or trigger FDA enforcement.', 'navigate-peptides') . '</p>';
     echo '<ul style="list-style:disc;padding-left:20px;">';
     foreach ($warnings as $w) {
         echo '<li>' . esc_html($w) . '</li>';
     }
     echo '</ul>';
-    echo '<p>Review <code>docs/COMPLIANCE</code> for the full list of prohibited language.</p>';
+    echo '<p>' . wp_kses(
+        /* translators: %s: <code>docs/COMPLIANCE</code> literal */
+        sprintf(__('Review %s for the full list of prohibited language.', 'navigate-peptides'), '<code>docs/COMPLIANCE</code>'),
+        ['code' => []]
+    ) . '</p>';
     echo '</div>';
 });
 

@@ -22,10 +22,10 @@ $all_categories  = get_terms([
     <div class="nav-container">
         <?php if ($is_research_tax || $is_research_pt) : ?>
             <!-- Breadcrumbs for research -->
-            <nav class="nav-breadcrumb nav-breadcrumb--inline" aria-label="Breadcrumb">
-                <a href="<?php echo esc_url(home_url('/')); ?>">Home</a>
+            <nav class="nav-breadcrumb nav-breadcrumb--inline" aria-label="<?php esc_attr_e('Breadcrumb', 'navigate-peptides'); ?>">
+                <a href="<?php echo esc_url(home_url('/')); ?>"><?php esc_html_e('Home', 'navigate-peptides'); ?></a>
                 <span class="nav-breadcrumb__sep">/</span>
-                <a href="<?php echo esc_url(home_url('/research/')); ?>">Research</a>
+                <a href="<?php echo esc_url(home_url('/research/')); ?>"><?php esc_html_e('Research', 'navigate-peptides'); ?></a>
                 <?php if ($is_research_tax) : ?>
                     <span class="nav-breadcrumb__sep">/</span>
                     <span aria-current="page"><?php echo esc_html($current_term->name); ?></span>
@@ -33,7 +33,7 @@ $all_categories  = get_terms([
             </nav>
         <?php endif; ?>
 
-        <span class="nav-kicker"><?php echo esc_html(post_type_archive_title('', false) ?: 'Research Archive'); ?></span>
+        <span class="nav-kicker"><?php echo esc_html(post_type_archive_title('', false) ?: __('Research Archive', 'navigate-peptides')); ?></span>
         <h1 class="nav-page-hero__title"><?php the_archive_title(); ?></h1>
         <?php the_archive_description('<p class="nav-page-hero__subtitle">', '</p>'); ?>
     </div>
@@ -43,10 +43,10 @@ $all_categories  = get_terms([
 <!-- Research Category Filter Tabs -->
 <section class="nav-section nav-section--compact">
     <div class="nav-container">
-        <nav class="nav-filter-tabs" aria-label="Research categories">
+        <nav class="nav-filter-tabs" aria-label="<?php esc_attr_e('Research categories', 'navigate-peptides'); ?>">
             <a href="<?php echo esc_url(get_post_type_archive_link('nav_research')); ?>"
                class="nav-filter-tab <?php echo $is_research_pt ? 'is-active' : ''; ?>">
-                All Articles
+                <?php esc_html_e('All Articles', 'navigate-peptides'); ?>
             </a>
             <?php if (!is_wp_error($all_categories) && !empty($all_categories)) :
                 foreach ($all_categories as $term) :
@@ -84,7 +84,7 @@ $all_categories  = get_terms([
                                 </a>
                             <?php endif; ?>
                             <h3 class="nav-post-card__title">
-                                <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                                <a href="<?php the_permalink(); ?>"><?php echo esc_html(get_the_title()); ?></a>
                             </h3>
                             <p class="nav-post-card__meta">
                                 <time datetime="<?php echo esc_attr(get_the_date('c')); ?>">
@@ -92,7 +92,7 @@ $all_categories  = get_terms([
                                 </time>
                             </p>
                             <p class="nav-post-card__excerpt"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 24)); ?></p>
-                            <a href="<?php the_permalink(); ?>" class="nav-post-card__link">Read more →</a>
+                            <a href="<?php the_permalink(); ?>" class="nav-post-card__link"><?php esc_html_e('Read more →', 'navigate-peptides'); ?></a>
                         </div>
                     </article>
                 <?php endwhile; ?>
@@ -100,11 +100,11 @@ $all_categories  = get_terms([
             <?php the_posts_pagination(['class' => 'nav-pagination']); ?>
         <?php else : ?>
             <div class="nav-empty-state">
-                <h3 class="nav-empty-state__title">No articles published yet</h3>
-                <p>Content is being prepared. In the meantime, explore our compound catalog or review our quality standards.</p>
+                <h3 class="nav-empty-state__title"><?php esc_html_e('No articles published yet', 'navigate-peptides'); ?></h3>
+                <p><?php esc_html_e('Content is being prepared. In the meantime, explore our compound catalog or review our quality standards.', 'navigate-peptides'); ?></p>
                 <div class="nav-cta-actions nav-cta-actions--center">
-                    <a href="<?php echo esc_url(home_url('/compounds/')); ?>" class="nav-btn nav-btn--primary">Browse Compounds</a>
-                    <a href="<?php echo esc_url(home_url('/quality/')); ?>" class="nav-btn nav-btn--outline">Quality Standards</a>
+                    <a href="<?php echo esc_url(home_url('/compounds/')); ?>" class="nav-btn nav-btn--primary"><?php esc_html_e('Browse Compounds', 'navigate-peptides'); ?></a>
+                    <a href="<?php echo esc_url(home_url('/quality/')); ?>" class="nav-btn nav-btn--outline"><?php esc_html_e('Quality Standards', 'navigate-peptides'); ?></a>
                 </div>
             </div>
         <?php endif; ?>

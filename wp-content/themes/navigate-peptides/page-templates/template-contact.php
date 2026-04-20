@@ -28,7 +28,8 @@ get_header();
                 $error_messages = [
                     'required' => 'Please fill in all required fields.',
                     'email'    => 'Please enter a valid email address.',
-                    'rate'     => 'Please wait before submitting another inquiry.',
+                    'rate'     => 'You\'ve submitted recently from this network — please wait 60 seconds and try again.',
+                    'send'     => 'Your message could not be sent automatically. Please email us directly at ' . antispambot(get_option('admin_email')) . '.',
                 ];
                 $error_key = sanitize_text_field(wp_unslash($_GET['error']));
                 $error_msg = $error_messages[$error_key] ?? 'An error occurred. Please try again.';
@@ -52,10 +53,10 @@ get_header();
                 <input type="hidden" name="action" value="nav_contact_form">
                 <?php wp_nonce_field('nav_contact_nonce', 'nav_nonce'); ?>
 
-                <!-- Honeypot anti-spam field -->
+                <!-- Honeypot anti-spam field — name chosen to avoid password-manager autofill -->
                 <div style="position:absolute;left:-9999px;" aria-hidden="true">
-                    <label for="nav-website-hp">Leave this empty</label>
-                    <input type="text" id="nav-website-hp" name="nav_website" tabindex="-1" autocomplete="off">
+                    <label for="nav-fax-url-hp">Leave this empty</label>
+                    <input type="text" id="nav-fax-url-hp" name="nav_fax_url" tabindex="-1" autocomplete="off">
                 </div>
 
                 <div class="nav-form__row nav-form__row--2">

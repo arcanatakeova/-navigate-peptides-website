@@ -43,15 +43,71 @@
     }
 
     /* ------------------------------------------------------------------
-     * Announcement Bar: dismiss
+     * Announcement Bar: dismiss + persist for 7 days via localStorage
      * ----------------------------------------------------------------*/
     var announcementClose = document.getElementById('nav-announcement-close');
     var announcementBar = document.getElementById('nav-announcement');
+    var ANN_KEY = 'nav_announcement_dismissed_until';
+
+    function hideAnnouncement() {
+        if (!announcementBar) return;
+        announcementBar.remove();
+        document.documentElement.style.setProperty('--nav-announcement-h', '0px');
+    }
+
+    // On load, honor a prior dismissal within the last 7 days.
+    try {
+        var dismissedUntil = parseInt(localStorage.getItem(ANN_KEY) || '0', 10);
+        if (dismissedUntil > Date.now()) {
+            hideAnnouncement();
+        }
+    } catch (e) { /* localStorage disabled — fall through, no persist */ }
+
     if (announcementClose && announcementBar) {
         announcementClose.addEventListener('click', function () {
-            announcementBar.remove();
-            document.documentElement.style.setProperty('--nav-announcement-h', '0px');
+            try {
+                var sevenDays = 7 * 24 * 60 * 60 * 1000;
+                localStorage.setItem(ANN_KEY, String(Date.now() + sevenDays));
+            } catch (e) { /* noop */ }
+            hideAnnouncement();
         });
+    }
+
+    /* ------------------------------------------------------------------
+     * Header: Search toggle — expand/collapse the search form
+     * ----------------------------------------------------------------*/
+    var searchToggle = document.getElementById('nav-search-toggle');
+    var searchForm = document.getElementById('nav-search-form');
+    var searchClose = document.getElementById('nav-search-close');
+    var searchInput = document.getElementById('nav-search-input');
+    if (searchToggle && searchForm) {
+        var setSearchOpen = function (open) {
+            searchForm.setAttribute('aria-hidden', open ? 'false' : 'true');
+            searchToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            if (open && searchInput) {
+                setTimeout(function () { searchInput.focus(); }, 50);
+            }
+        };
+        searchToggle.addEventListener('click', function () {
+            var isOpen = searchForm.getAttribute('aria-hidden') === 'false';
+            setSearchOpen(!isOpen);
+        });
+        if (searchClose) {
+            searchClose.addEventListener('click', function () { setSearchOpen(false); });
+        }
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && searchForm.getAttribute('aria-hidden') === 'false') {
+                setSearchOpen(false);
+                searchToggle.focus();
+            }
+        });
+        // If the user lands on a URL that already has ?s=, open the search
+        // form by default so the existing query is visible + editable.
+        try {
+            if (new URLSearchParams(window.location.search).has('s')) {
+                setSearchOpen(true);
+            }
+        } catch (e) { /* URLSearchParams unsupported — ignore */ }
     }
 
     /* ------------------------------------------------------------------
@@ -102,43 +158,64 @@
 
     /* ------------------------------------------------------------------
      * WooCommerce: Update cart count via AJAX fragments
-     * Listens for multiple possible events and extracts the count from
-     * either the fragment data or common selectors, failing silently.
+     *
+     * The PHP side registers the fragment 'span.nav-header__cart-count' —
+     * Woo writes it straight into the DOM via WC core's updateFragment()
+     * without any code from us. This handler only covers cases where the
+     * selector isn't an exact match (variant carts, added_to_cart events
+     * that pass the fragment object directly) and the parent-side pulse
+     * animation.
      * ----------------------------------------------------------------*/
-    function updateCartCount(event, fragments) {
-        var countEl = document.getElementById('nav-cart-count');
-        if (!countEl) return;
-
-        // Try fragment data first (passed by Woo's added_to_cart event)
-        if (fragments) {
-            for (var key in fragments) {
-                if (Object.prototype.hasOwnProperty.call(fragments, key) && key.indexOf('cart-contents-count') !== -1) {
-                    var temp = document.createElement('div');
-                    temp.innerHTML = fragments[key];
-                    var countNode = temp.querySelector('.cart-contents-count, [data-cart-count]');
-                    if (countNode) {
-                        countEl.textContent = countNode.textContent.trim();
-                        return;
-                    }
-                }
-            }
-        }
-
-        // Fall back to DOM query
-        var fallback = document.querySelector('.cart-contents-count, [data-cart-count]');
-        if (fallback) {
-            countEl.textContent = fallback.textContent.trim();
-        }
+    // Pulse the cart badge after WC has finished swapping fragments into
+    // the DOM. Pulsing on `added_to_cart` loses to WC's updateFragment()
+    // which replaces the span wholesale and clobbers the animation class;
+    // pulsing on `wc_fragments_refreshed` runs AFTER the swap.
+    function pulseCartBadge() {
+        var el = document.getElementById('nav-cart-count');
+        if (!el) return;
+        el.classList.remove('is-pulse');
+        void el.offsetWidth; // force reflow so the class re-trigger restarts the keyframes
+        el.classList.add('is-pulse');
     }
 
     if (typeof jQuery !== 'undefined') {
-        jQuery(document.body).on('added_to_cart', function (e, fragments) {
-            updateCartCount(e, fragments);
+        jQuery(document.body).on('added_to_cart', function () {
+            // Wait one animation frame so WC's updateFragment() has a chance
+            // to land before we pulse.
+            requestAnimationFrame(pulseCartBadge);
         });
-        jQuery(document.body).on('removed_from_cart updated_cart_totals wc_fragments_refreshed', function () {
-            updateCartCount();
-        });
+        jQuery(document.body).on('wc_fragments_refreshed', pulseCartBadge);
     }
+
+    /* ------------------------------------------------------------------
+     * <model-viewer> error handler — when the GLB 404s or CORS blocks,
+     * fall back to the poster image instead of leaving the user staring
+     * at a frozen viewport.
+     *
+     * When the poster is a <picture>, we MUST move the <picture> element
+     * (not just the <img>), because <source> siblings carry the WebP
+     * srcset; detaching the <img> alone collapses selection to the PNG.
+     * ----------------------------------------------------------------*/
+    document.querySelectorAll('model-viewer').forEach(function (mv) {
+        var fired = false;
+        var handler = function (ev) {
+            if (fired) return;
+            fired = true;
+            mv.removeEventListener('error', handler);
+            console.warn('[nav] 3D model failed to load, showing poster', mv.src);
+
+            // Prefer <picture> so <source type=image/webp> stays attached.
+            var picture = mv.querySelector('picture');
+            var poster = picture || mv.querySelector('img');
+            if (!poster || !mv.parentNode) return;
+
+            var wrap = document.createElement('div');
+            wrap.className = 'nav-vial-fallback';
+            wrap.appendChild(poster);
+            mv.parentNode.replaceChild(wrap, mv);
+        };
+        mv.addEventListener('error', handler);
+    });
 
     /* ------------------------------------------------------------------
      * Smooth scroll for anchor links
@@ -146,8 +223,15 @@
     document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
         anchor.addEventListener('click', function (e) {
             var href = this.getAttribute('href');
-            if (href === '#') return;
-            var target = document.querySelector(href);
+            if (href === '#' || href.length < 2) return;
+            // querySelector throws SyntaxError on CSS-invalid hashes like
+            // #2col or #foo:bar. Swallow so navigation isn't cancelled.
+            var target = null;
+            try {
+                target = document.querySelector(href);
+            } catch (_) {
+                return;
+            }
             if (target) {
                 e.preventDefault();
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -203,5 +287,68 @@
             btt.classList.remove('nav-back-to-top--visible');
         }
     }, { passive: true });
+
+    /* ------------------------------------------------------------------
+     * Minicart drawer — open/close + trap
+     * ----------------------------------------------------------------*/
+    var minicart = document.getElementById('nav-minicart');
+    var minicartClose = document.getElementById('nav-minicart-close');
+    var minicartScrim = document.getElementById('nav-minicart-scrim');
+    var lastFocusBeforeCart = null;
+
+    window.navMinicartOpen = function () {
+        if (!minicart) return;
+        lastFocusBeforeCart = document.activeElement;
+        minicart.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        if (minicartClose) setTimeout(function () { minicartClose.focus(); }, 80);
+    };
+
+    window.navMinicartClose = function () {
+        if (!minicart) return;
+        minicart.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        if (lastFocusBeforeCart && typeof lastFocusBeforeCart.focus === 'function') {
+            lastFocusBeforeCart.focus();
+        }
+    };
+
+    if (minicart) {
+        if (minicartClose) minicartClose.addEventListener('click', window.navMinicartClose);
+        if (minicartScrim) minicartScrim.addEventListener('click', window.navMinicartClose);
+
+        // Focus trap: when the drawer is open, Tab cycles focusable
+        // children of .nav-minicart__panel. Without this, Tab escapes the
+        // drawer into the page behind the scrim — a WCAG 2.4.3 focus-order
+        // failure for modal dialogs.
+        var minicartPanel = minicart.querySelector('.nav-minicart__panel');
+        var FOCUSABLE_SEL = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+        document.addEventListener('keydown', function (e) {
+            if (minicart.getAttribute('aria-hidden') !== 'false') return;
+            if (e.key === 'Escape') {
+                window.navMinicartClose();
+                return;
+            }
+            if (e.key !== 'Tab' || !minicartPanel) return;
+            var nodes = minicartPanel.querySelectorAll(FOCUSABLE_SEL);
+            if (!nodes.length) return;
+            var first = nodes[0];
+            var last  = nodes[nodes.length - 1];
+            var active = document.activeElement;
+            if (e.shiftKey && active === first) {
+                last.focus();
+                e.preventDefault();
+            } else if (!e.shiftKey && active === last) {
+                first.focus();
+                e.preventDefault();
+            } else if (!minicartPanel.contains(active)) {
+                // Focus started outside the panel (e.g. user clicked scrim,
+                // then hit Tab) — pull it back in.
+                first.focus();
+                e.preventDefault();
+            }
+        });
+    }
 
 })();

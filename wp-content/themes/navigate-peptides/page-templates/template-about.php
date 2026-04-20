@@ -31,7 +31,7 @@ get_header();
                     <p>Navigate Peptides was founded to address a gap in the research peptide market: the need for a supplier that prioritizes scientific credibility, transparent quality documentation, and rigorous compliance standards.</p>
                     <p>Every compound in our catalog undergoes independent third-party testing via HPLC and mass spectrometry. Certificates of analysis are published for every batch, providing researchers with the verification data they need to trust their materials.</p>
                     <p>Our compound profiles include detailed mechanism-of-action documentation, cited preclinical studies, and pathway analysis — because researchers need more than a product listing. They need scientific context.</p>
-                    <p>All products sold by Navigate Peptides are intended for research and identification purposes only.</p>
+                    <p><?php echo esc_html(nav_get_disclaimer('sitewide')); ?></p>
                 </div>
             </div>
             <div class="nav-about-grid__sidebar">
@@ -40,7 +40,7 @@ get_header();
                     <p class="nav-link-card__desc">The principles and commitments that guide our operations.</p>
                     <span class="nav-link-card__action">Read more →</span>
                 </a>
-                <a href="<?php echo esc_url(home_url('/about/contact/')); ?>" class="nav-link-card">
+                <a href="<?php echo esc_url(nav_get_contact_url()); ?>" class="nav-link-card">
                     <h3 class="nav-link-card__title">Contact / Request Access</h3>
                     <p class="nav-link-card__desc">Reach our team for inquiries, wholesale requests, or research collaboration.</p>
                     <span class="nav-link-card__action">Get in touch →</span>

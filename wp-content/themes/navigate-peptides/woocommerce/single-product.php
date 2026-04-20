@@ -18,7 +18,17 @@ defined('ABSPATH') || exit;
 get_header();
 
 while (have_posts()) : the_post();
+    // WC core sets `global $product` inside the shop loop, but this template
+    // runs via wc_get_template_part() and plugins (or an odd query_posts)
+    // can land here with $product unset/invalid. Refetch defensively — an
+    // invalid product would fatal on the ->get_id() calls below.
     global $product;
+    if (!($product instanceof WC_Product) || !$product->exists()) {
+        $product = wc_get_product(get_the_ID());
+    }
+    if (!($product instanceof WC_Product) || !$product->exists()) {
+        continue;
+    }
 
     $cat_color  = nav_get_product_category_color($product);
     $subtitle   = get_post_meta($product->get_id(), '_nav_technical_subtitle', true);
@@ -63,7 +73,8 @@ while (have_posts()) : the_post();
                             shadow-intensity="0.4"
                             exposure="1.1"
                             style="width:100%;height:100%;min-height:400px;"
-                            loading="eager"
+                            loading="lazy"
+                            reveal="auto"
                         >
                             <?php if (has_post_thumbnail()) : ?>
                                 <img slot="poster" src="<?php echo esc_url(get_the_post_thumbnail_url(null, 'product-hero')); ?>" alt="<?php the_title_attribute(); ?>">
@@ -97,7 +108,7 @@ while (have_posts()) : the_post();
                 <?php endif; ?>
 
                 <!-- 1. Product Name -->
-                <h1 class="nav-product-single__title"><?php the_title(); ?></h1>
+                <h1 class="nav-product-single__title"><?php echo esc_html(get_the_title()); ?></h1>
 
                 <!-- 2. Technical Subtitle -->
                 <?php if ($subtitle) : ?>
@@ -114,31 +125,31 @@ while (have_posts()) : the_post();
                     <div class="nav-product-single__specs">
                         <?php if ($cas) : ?>
                             <div class="nav-spec">
-                                <span class="nav-spec__label">CAS Number</span>
+                                <span class="nav-spec__label"><?php esc_html_e('CAS Number', 'navigate-peptides'); ?></span>
                                 <span class="nav-spec__value"><?php echo esc_html($cas); ?></span>
                             </div>
                         <?php endif; ?>
                         <?php if ($mw) : ?>
                             <div class="nav-spec">
-                                <span class="nav-spec__label">Molecular Weight</span>
+                                <span class="nav-spec__label"><?php esc_html_e('Molecular Weight', 'navigate-peptides'); ?></span>
                                 <span class="nav-spec__value"><?php echo esc_html($mw); ?></span>
                             </div>
                         <?php endif; ?>
                         <?php if ($sequence) : ?>
                             <div class="nav-spec nav-spec--full">
-                                <span class="nav-spec__label">Sequence</span>
+                                <span class="nav-spec__label"><?php esc_html_e('Sequence', 'navigate-peptides'); ?></span>
                                 <span class="nav-spec__value"><?php echo esc_html($sequence); ?></span>
                             </div>
                         <?php endif; ?>
                         <?php if ($form) : ?>
                             <div class="nav-spec">
-                                <span class="nav-spec__label">Form</span>
+                                <span class="nav-spec__label"><?php esc_html_e('Form', 'navigate-peptides'); ?></span>
                                 <span class="nav-spec__value"><?php echo esc_html($form); ?></span>
                             </div>
                         <?php endif; ?>
                         <?php if ($storage) : ?>
                             <div class="nav-spec">
-                                <span class="nav-spec__label">Storage</span>
+                                <span class="nav-spec__label"><?php esc_html_e('Storage', 'navigate-peptides'); ?></span>
                                 <span class="nav-spec__value"><?php echo esc_html($storage); ?></span>
                             </div>
                         <?php endif; ?>
@@ -148,7 +159,7 @@ while (have_posts()) : the_post();
                 <!-- 4. Research Focus -->
                 <?php if ($focus) : ?>
                     <div class="nav-product-single__focus">
-                        <h2>Research Focus</h2>
+                        <h2><?php esc_html_e('Research Focus', 'navigate-peptides'); ?></h2>
                         <ul>
                             <?php
                             $items = array_filter(array_map('trim', explode("\n", $focus)));
@@ -166,17 +177,42 @@ while (have_posts()) : the_post();
                 <!-- 6. Purity / COA Information -->
                 <?php if ($purity || $batch || $lab || $coa_url) : ?>
                     <div class="nav-product-single__coa">
-                        <h2>Purity &amp; Verification</h2>
+                        <h2><?php esc_html_e('Purity & Verification', 'navigate-peptides'); ?></h2>
                         <div class="nav-product-single__coa-grid">
                             <?php if ($purity) : ?>
                                 <span class="nav-mono"><?php echo esc_html($purity); ?></span>
                             <?php endif; ?>
                             <?php if ($coa_url) : ?>
                                 <a href="<?php echo esc_url($coa_url); ?>" class="nav-product-single__coa-link" target="_blank" rel="noopener">
-                                    View Certificate of Analysis →
+                                    <?php esc_html_e('View Certificate of Analysis →', 'navigate-peptides'); ?>
                                 </a>
                             <?php endif; ?>
                         </div>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Batch + COA trust strip — the single biggest purchase
+                     signal in this industry; surfaced right at the buy button -->
+                <?php if ($batch || $purity || $coa_url) : ?>
+                    <div class="nav-product-single__trust-strip">
+                        <?php if ($batch) : ?>
+                            <div class="nav-trust-strip__item">
+                                <span class="nav-trust-strip__label"><?php esc_html_e('Current Batch', 'navigate-peptides'); ?></span>
+                                <span class="nav-trust-strip__value"><?php echo esc_html($batch); ?></span>
+                            </div>
+                        <?php endif; ?>
+                        <?php if ($purity) : ?>
+                            <div class="nav-trust-strip__item">
+                                <span class="nav-trust-strip__label"><?php esc_html_e('HPLC Purity', 'navigate-peptides'); ?></span>
+                                <span class="nav-trust-strip__value"><?php echo esc_html($purity); ?></span>
+                            </div>
+                        <?php endif; ?>
+                        <?php if ($coa_url) : ?>
+                            <a href="<?php echo esc_url($coa_url); ?>" class="nav-trust-strip__coa" target="_blank" rel="noopener">
+                                <?php esc_html_e('Download COA', 'navigate-peptides'); ?>
+                                <span aria-hidden="true">↗</span>
+                            </a>
+                        <?php endif; ?>
                     </div>
                 <?php endif; ?>
 

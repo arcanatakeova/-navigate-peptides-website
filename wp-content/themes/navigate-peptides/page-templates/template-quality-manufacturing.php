@@ -21,8 +21,8 @@ get_header();
             <?php
             $items = [
                 ['title' => 'GMP-Compliant Facilities', 'desc' => 'All compounds are synthesized in facilities following Good Manufacturing Practice guidelines. Controlled environments with validated HVAC, cleanroom classification, and environmental monitoring.'],
-                ['title' => 'Solid-Phase Peptide Synthesis', 'desc' => 'Automated SPPS with Fmoc chemistry protocols ensures consistent, high-purity peptide production. Each synthesis run follows validated standard operating procedures.'],
-                ['title' => 'Purification Protocols', 'desc' => 'Reverse-phase HPLC purification removes truncated sequences, deletion products, and synthesis byproducts. Multiple purification cycles are used when required to meet purity specifications.'],
+                ['title' => 'Solid-Phase Peptide Synthesis', 'desc' => 'Automated SPPS with Fmoc chemistry ensures consistent, high-purity peptide production. Each synthesis run follows validated standard operating procedures.'],
+                ['title' => 'Purification Stages', 'desc' => 'Reverse-phase HPLC purification removes truncated sequences, deletion products, and synthesis byproducts. Multiple purification stages are used when required to meet purity specifications.'],
                 ['title' => 'Lyophilization & Packaging', 'desc' => 'Controlled freeze-drying preserves compound stability and integrity. Nitrogen-flushed vials prevent oxidative degradation during storage and shipping.'],
             ];
             foreach ($items as $item) :

@@ -19,8 +19,8 @@ get_header();
 
 <section class="nav-page-hero">
     <div class="nav-container">
-        <h1 class="nav-page-hero__title">Research Compound Library</h1>
-        <p class="nav-page-hero__subtitle">Browse peptide compounds organized by research application.</p>
+        <h1 class="nav-page-hero__title"><?php esc_html_e('Research Compound Library', 'navigate-peptides'); ?></h1>
+        <p class="nav-page-hero__subtitle"><?php esc_html_e('Browse peptide compounds organized by research application.', 'navigate-peptides'); ?></p>
     </div>
 </section>
 

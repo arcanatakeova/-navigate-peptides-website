@@ -60,6 +60,17 @@ add_action('after_setup_theme', function () {
 /* ------------------------------------------------------------------
  * 2. Enqueue Assets
  * ----------------------------------------------------------------*/
+/**
+ * Asset cache-bust: file mtime when it's readable, NAV_THEME_VERSION fallback.
+ * A static version string would require manual bumps after every edit and
+ * serve stale CSS from CDN/browser caches.
+ */
+function nav_asset_version(string $relative_path): string {
+    $abs = NAV_THEME_DIR . '/' . ltrim($relative_path, '/');
+    $mtime = @filemtime($abs);
+    return $mtime ? (string) $mtime : NAV_THEME_VERSION;
+}
+
 add_action('wp_enqueue_scripts', function () {
     // Google Fonts
     wp_enqueue_style(
@@ -74,7 +85,7 @@ add_action('wp_enqueue_scripts', function () {
         'nav-main',
         NAV_THEME_URI . '/assets/css/main.css',
         ['nav-google-fonts'],
-        NAV_THEME_VERSION
+        nav_asset_version('assets/css/main.css')
     );
 
     // WooCommerce overrides
@@ -83,16 +94,28 @@ add_action('wp_enqueue_scripts', function () {
             'nav-woocommerce',
             NAV_THEME_URI . '/assets/css/woocommerce.css',
             ['nav-main'],
-            NAV_THEME_VERSION
+            nav_asset_version('assets/css/woocommerce.css')
         );
     }
 
-    // JavaScript
+    // JavaScript. Declaring jQuery + wc-cart-fragments as deps so our
+    // added_to_cart handlers and the minicart fragment-refresh path
+    // run on pages where WC wouldn't otherwise enqueue them.
+    $js_deps = [];
+    $force_wc_scripts = false;
+    if (class_exists('WooCommerce')) {
+        $js_deps = ['jquery', 'wc-cart-fragments', 'wc-add-to-cart'];
+        // Gate the force-enqueue of WC's ajax scripts to pages where they're
+        // meaningful. Research articles, blog posts, and about pages don't
+        // need cart-fragments polling / 80KB of extra JS.
+        $force_wc_scripts = is_shop() || is_product() || is_product_category()
+            || is_product_tag() || is_cart() || is_checkout() || is_front_page();
+    }
     wp_enqueue_script(
         'nav-main',
         NAV_THEME_URI . '/assets/js/main.js',
-        [],
-        NAV_THEME_VERSION,
+        $js_deps,
+        nav_asset_version('assets/js/main.js'),
         true
     );
 
@@ -101,6 +124,15 @@ add_action('wp_enqueue_scripts', function () {
         wp_dequeue_style('woocommerce-general');
         wp_dequeue_style('woocommerce-layout');
         wp_dequeue_style('woocommerce-smallscreen');
+
+        // Only force-enqueue WC ajax scripts on pages that actually need
+        // the cart-fragments XHR. Research articles / blog posts / static
+        // pages don't render cart UI — loading ~80KB of extra JS and
+        // polling cart-fragments there was pure waste.
+        if ($force_wc_scripts) {
+            wp_enqueue_script('wc-cart-fragments');
+            wp_enqueue_script('wc-add-to-cart');
+        }
     }
 });
 
@@ -130,16 +162,47 @@ require_once NAV_THEME_DIR . '/inc/custom-types.php';
 require_once NAV_THEME_DIR . '/inc/contact.php';
 
 /* ------------------------------------------------------------------
+ * 6c. Analytics (GA4 + WC ecommerce events)
+ * ----------------------------------------------------------------*/
+require_once NAV_THEME_DIR . '/inc/analytics.php';
+
+/* ------------------------------------------------------------------
+ * 6d. Minicart drawer
+ * ----------------------------------------------------------------*/
+require_once NAV_THEME_DIR . '/inc/minicart.php';
+
+/* ------------------------------------------------------------------
+ * 6e. Cookie consent banner (gates GA4 via Consent Mode v2)
+ * ----------------------------------------------------------------*/
+require_once NAV_THEME_DIR . '/inc/consent.php';
+
+/* ------------------------------------------------------------------
  * 7. Security Headers
  * ----------------------------------------------------------------*/
 add_action('send_headers', function () {
     if (is_admin()) return;
+
+    // Bail cleanly if another plugin already flushed headers — header() would
+    // warn silently otherwise.
+    if (headers_sent($sent_file, $sent_line)) {
+        error_log(sprintf('[nav_security] headers already sent at %s:%d', $sent_file, $sent_line));
+        return;
+    }
 
     header('X-Content-Type-Options: nosniff');
     header('X-Frame-Options: SAMEORIGIN');
     header('Referrer-Policy: strict-origin-when-cross-origin');
     header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
     header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+
+    // form-action must stay same-origin. If admin_url()'s host differs from
+    // home_url()'s (unusual — implies a filter messing with admin URLs), drop
+    // the extra origin rather than trust it.
+    $admin_host = wp_parse_url(admin_url(), PHP_URL_HOST);
+    $site_host  = wp_parse_url(home_url(), PHP_URL_HOST);
+    $form_action = ($admin_host && $admin_host === $site_host)
+        ? "'self' " . esc_url(admin_url())
+        : "'self'";
 
     // 'unsafe-inline' on style-src: required by Woo + theme inline <style>.
     // ajax.googleapis.com: Google <model-viewer> CDN in header.php.
@@ -152,7 +215,7 @@ add_action('send_headers', function () {
         . "connect-src 'self'; "
         . "frame-ancestors 'self'; "
         . "base-uri 'self'; "
-        . "form-action 'self' " . esc_url(admin_url()) . ";";
+        . "form-action {$form_action};";
     header('Content-Security-Policy: ' . $csp);
 });
 
@@ -172,6 +235,71 @@ remove_action('wp_head', 'print_emoji_detection_script', 7);
 remove_action('wp_print_styles', 'print_emoji_styles');
 
 /* ------------------------------------------------------------------
+ * 8b. Admin surface hardening
+ *
+ * These close common WP admin-enumeration paths that aren't used by
+ * the theme's front-end. If a plugin requires any of these, unhook in
+ * wp-config.php via the provided filters.
+ * ----------------------------------------------------------------*/
+
+// Disable XML-RPC — brute-force / pingback amplifier. No theme feature uses it.
+add_filter('xmlrpc_enabled', '__return_false');
+add_filter('wp_headers', function (array $headers) {
+    unset($headers['X-Pingback']);
+    return $headers;
+});
+
+// Strip REST endpoints that expose the user list to anonymous requests.
+// Logged-in admins still get /wp/v2/users for admin UI needs.
+add_filter('rest_endpoints', function (array $endpoints) {
+    if (is_user_logged_in() && current_user_can('list_users')) {
+        return $endpoints;
+    }
+    foreach ([
+        '/wp/v2/users',
+        '/wp/v2/users/(?P<id>[\d]+)',
+        '/wp/v2/users/me',
+    ] as $path) {
+        if (isset($endpoints[$path])) unset($endpoints[$path]);
+    }
+    return $endpoints;
+});
+
+// Redirect /author/<slug>/ to home — prevents username enumeration. Gates
+// on capability (list_users) rather than login-state so subscribers /
+// customers can't enumerate authors either.
+add_action('template_redirect', function () {
+    if (is_author() && !current_user_can('list_users')) {
+        wp_safe_redirect(home_url('/'), 301);
+        exit;
+    }
+});
+
+// Strip oEmbed author / avatar from REST response payloads.
+add_filter('oembed_response_data', function ($data) {
+    if (is_array($data)) {
+        unset($data['author_name'], $data['author_url']);
+    }
+    return $data;
+});
+
+/* ------------------------------------------------------------------
+ * 8c. Memoize category term URL lookups — homepage / header / footer
+ * cumulatively trigger 20+ get_term_link() calls each render. Cache
+ * the resolved URL for the request lifetime.
+ * ----------------------------------------------------------------*/
+function nav_get_product_cat_url(string $slug): string {
+    static $cache = [];
+    if (isset($cache[$slug])) return $cache[$slug];
+
+    $link = get_term_link($slug, 'product_cat');
+    $cache[$slug] = (is_wp_error($link) || !$link)
+        ? home_url('/compounds/')
+        : (string) $link;
+    return $cache[$slug];
+}
+
+/* ------------------------------------------------------------------
  * 9. Widget Areas
  * ----------------------------------------------------------------*/
 add_action('widgets_init', function () {
@@ -188,6 +316,113 @@ add_action('widgets_init', function () {
 /* ------------------------------------------------------------------
  * 10. Helper Functions
  * ----------------------------------------------------------------*/
+
+/**
+ * Stable per-visitor identifier for transient keying across redirects.
+ *
+ * Previously analytics + minicart keyed on wp_get_session_token() which
+ * returns '' for anonymous guests — so the queued add_to_cart event and
+ * the drawer auto-open both silently no-op'd for logged-out users (the
+ * single largest cohort on a pre-account B2B site).
+ *
+ * Resolution order:
+ *   1. WC customer session ID (cookie-backed, survives across page loads
+ *      for guests as soon as any Woo session touchpoint fires)
+ *   2. WP auth session token (logged-in users)
+ *   3. A theme-owned 1st-party cookie set once per visitor
+ *
+ * Returned string is guaranteed non-empty + stable for the visitor.
+ */
+function nav_visitor_key(): string {
+    // Prefer WC's customer session key — Woo sets a customer cookie as soon
+    // as add_to_cart fires, so the redirect back to the product page has
+    // the same key available.
+    if (function_exists('WC') && WC()->session) {
+        $cid = (string) WC()->session->get_customer_id();
+        if ($cid !== '') return 'wc:' . $cid;
+    }
+
+    // Logged-in users get a per-session auth token.
+    $token = wp_get_session_token();
+    if ($token) return 'wp:' . $token;
+
+    // Anonymous + no Woo session yet — fall back to a 1st-party cookie.
+    // NAV_VISITOR cookie is httponly-false on purpose (some client scripts
+    // may want to read it). Rotates every 180 days.
+    if (!empty($_COOKIE['nav_visitor'])) {
+        $cookie = (string) $_COOKIE['nav_visitor'];
+        if (preg_match('/^[a-f0-9]{32}$/', $cookie)) return 'ck:' . $cookie;
+    }
+
+    if (!headers_sent()) {
+        $fresh = wp_hash(uniqid('nav_visitor_', true));
+        setcookie(
+            'nav_visitor',
+            $fresh,
+            time() + 180 * DAY_IN_SECONDS,
+            COOKIEPATH ?: '/',
+            COOKIE_DOMAIN,
+            is_ssl(),
+            false
+        );
+        // Make the fresh cookie available to subsequent code in the same request.
+        $_COOKIE['nav_visitor'] = $fresh;
+        return 'ck:' . $fresh;
+    }
+
+    // Last resort — use IP + UA hash so we at least have SOME key and
+    // don't bucket every guest together.
+    return 'fp:' . wp_hash(
+        ($_SERVER['REMOTE_ADDR'] ?? '') . '|' .
+        substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 200)
+    );
+}
+
+/**
+ * Canonical URL for the "Contact / Request Access" page.
+ *
+ * Resolves (in order):
+ *   1. A page saved in the `nav_contact_page_id` option (Customizer-editable)
+ *   2. A page with slug 'contact' (matches WP's default page finder)
+ *   3. The hardcoded default /about/contact/
+ *
+ * Lets marketing rename the slug without breaking header / footer / CTAs.
+ */
+function nav_get_contact_url(): string {
+    $found  = false;
+    $cached = wp_cache_get('nav_contact_url', 'navigate-peptides', false, $found);
+    if ($found && is_string($cached) && $cached !== '') {
+        return $cached;
+    }
+
+    $url = '';
+    $page_id = (int) get_option('nav_contact_page_id', 0);
+    if ($page_id && get_post_status($page_id) === 'publish') {
+        $url = (string) get_permalink($page_id);
+    }
+    if ($url === '') {
+        $page = get_page_by_path('about/contact');
+        if ($page) $url = (string) get_permalink($page);
+    }
+    if ($url === '') {
+        $page = get_page_by_path('contact');
+        if ($page) $url = (string) get_permalink($page);
+    }
+    // Hard fallback — always a valid URL so the return type is honored.
+    if ($url === '') {
+        $url = home_url('/about/contact/');
+    }
+
+    wp_cache_set('nav_contact_url', $url, 'navigate-peptides', 300);
+    return $url;
+}
+
+// Invalidate the cached contact URL when admin remaps the page.
+add_action('update_option_nav_contact_page_id', function () {
+    wp_cache_delete('nav_contact_url', 'navigate-peptides');
+});
+add_action('save_post_page',  function () { wp_cache_delete('nav_contact_url', 'navigate-peptides'); });
+add_action('trashed_post',    function () { wp_cache_delete('nav_contact_url', 'navigate-peptides'); });
 
 /**
  * Get category color by slug.
@@ -229,23 +464,36 @@ function nav_get_product_category_color($product = null): string {
  * Use via nav_kses_svg($svg_string).
  */
 function nav_svg_allowed_html(): array {
+    // Base attributes that every SVG element can carry.
     $svg_attrs = [
         'xmlns' => true, 'viewbox' => true, 'fill' => true,
         'stroke' => true, 'stroke-width' => true, 'stroke-linecap' => true,
         'stroke-linejoin' => true, 'stroke-miterlimit' => true,
+        'stroke-dasharray' => true, 'stroke-dashoffset' => true, 'stroke-opacity' => true,
+        'fill-opacity' => true, 'fill-rule' => true, 'clip-path' => true,
+        'mask' => true, 'opacity' => true, 'transform' => true,
+        'vector-effect' => true, 'pointer-events' => true,
         'width' => true, 'height' => true, 'class' => true, 'style' => true,
-        'aria-hidden' => true, 'role' => true, 'focusable' => true,
+        'aria-hidden' => true, 'aria-label' => true, 'role' => true, 'focusable' => true,
     ];
     return [
         'svg'      => $svg_attrs,
         'path'     => array_merge($svg_attrs, ['d' => true]),
-        'circle'   => array_merge($svg_attrs, ['cx' => true, 'cy' => true, 'r' => true, 'opacity' => true]),
+        'circle'   => array_merge($svg_attrs, ['cx' => true, 'cy' => true, 'r' => true]),
+        'ellipse'  => array_merge($svg_attrs, ['cx' => true, 'cy' => true, 'rx' => true, 'ry' => true]),
         'rect'     => array_merge($svg_attrs, ['x' => true, 'y' => true, 'rx' => true, 'ry' => true]),
         'line'     => array_merge($svg_attrs, ['x1' => true, 'y1' => true, 'x2' => true, 'y2' => true]),
         'polyline' => array_merge($svg_attrs, ['points' => true]),
         'polygon'  => array_merge($svg_attrs, ['points' => true]),
-        'g'        => array_merge($svg_attrs, ['transform' => true, 'opacity' => true]),
+        'g'        => $svg_attrs,
+        'use'      => array_merge($svg_attrs, ['href' => true, 'xlink:href' => true, 'x' => true, 'y' => true]),
         'defs'     => $svg_attrs,
+        'symbol'   => array_merge($svg_attrs, ['id' => true]),
+        'clippath' => array_merge($svg_attrs, ['id' => true]),
+        'mask'     => array_merge($svg_attrs, ['id' => true, 'maskunits' => true]),
+        'lineargradient' => array_merge($svg_attrs, ['id' => true, 'x1' => true, 'y1' => true, 'x2' => true, 'y2' => true, 'gradientunits' => true]),
+        'radialgradient' => array_merge($svg_attrs, ['id' => true, 'cx' => true, 'cy' => true, 'r' => true, 'fx' => true, 'fy' => true, 'gradientunits' => true]),
+        'stop'     => array_merge($svg_attrs, ['offset' => true, 'stop-color' => true, 'stop-opacity' => true]),
         'title'    => ['id' => true],
         'desc'     => ['id' => true],
     ];
