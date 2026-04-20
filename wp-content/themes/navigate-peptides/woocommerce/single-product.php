@@ -72,11 +72,7 @@ while (have_posts()) : the_post();
                     <?php elseif (has_post_thumbnail()) : ?>
                         <?php the_post_thumbnail('product-hero'); ?>
                     <?php else : ?>
-                        <div class="nav-product-single__placeholder">
-                            <div class="nav-product-single__placeholder-circle">
-                                <span><?php echo esc_html(mb_strtoupper(mb_substr(get_the_title(), 0, 3))); ?></span>
-                            </div>
-                        </div>
+                        <img src="<?php echo esc_url(nav_get_category_placeholder($cat ? $cat->slug : '')); ?>" alt="<?php the_title_attribute(); ?>" class="nav-product-single__placeholder-img" width="800" height="800">
                     <?php endif; ?>
                 </div>
                 <?php if ($product->get_gallery_image_ids()) : ?>

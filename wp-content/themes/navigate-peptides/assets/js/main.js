@@ -43,6 +43,18 @@
     }
 
     /* ------------------------------------------------------------------
+     * Announcement Bar: dismiss
+     * ----------------------------------------------------------------*/
+    var announcementClose = document.getElementById('nav-announcement-close');
+    var announcementBar = document.getElementById('nav-announcement');
+    if (announcementClose && announcementBar) {
+        announcementClose.addEventListener('click', function () {
+            announcementBar.remove();
+            document.documentElement.style.setProperty('--nav-announcement-h', '0px');
+        });
+    }
+
+    /* ------------------------------------------------------------------
      * Header: Scroll effect — solid bg + shadow on scroll
      * ----------------------------------------------------------------*/
     var headerEl = document.querySelector('.nav-header');
@@ -90,16 +102,41 @@
 
     /* ------------------------------------------------------------------
      * WooCommerce: Update cart count via AJAX fragments
+     * Listens for multiple possible events and extracts the count from
+     * either the fragment data or common selectors, failing silently.
      * ----------------------------------------------------------------*/
-    if (typeof jQuery !== 'undefined') {
-        jQuery(document.body).on('added_to_cart removed_from_cart updated_cart_totals', function () {
-            var countEl = document.getElementById('nav-cart-count');
-            if (countEl) {
-                var fragment = document.querySelector('.cart-contents-count');
-                if (fragment) {
-                    countEl.textContent = fragment.textContent;
+    function updateCartCount(event, fragments) {
+        var countEl = document.getElementById('nav-cart-count');
+        if (!countEl) return;
+
+        // Try fragment data first (passed by Woo's added_to_cart event)
+        if (fragments) {
+            for (var key in fragments) {
+                if (Object.prototype.hasOwnProperty.call(fragments, key) && key.indexOf('cart-contents-count') !== -1) {
+                    var temp = document.createElement('div');
+                    temp.innerHTML = fragments[key];
+                    var countNode = temp.querySelector('.cart-contents-count, [data-cart-count]');
+                    if (countNode) {
+                        countEl.textContent = countNode.textContent.trim();
+                        return;
+                    }
                 }
             }
+        }
+
+        // Fall back to DOM query
+        var fallback = document.querySelector('.cart-contents-count, [data-cart-count]');
+        if (fallback) {
+            countEl.textContent = fallback.textContent.trim();
+        }
+    }
+
+    if (typeof jQuery !== 'undefined') {
+        jQuery(document.body).on('added_to_cart', function (e, fragments) {
+            updateCartCount(e, fragments);
+        });
+        jQuery(document.body).on('removed_from_cart updated_cart_totals wc_fragments_refreshed', function () {
+            updateCartCount();
         });
     }
 

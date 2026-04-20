@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <rect width="400" height="400" fill="#1a2a24"/>
+  <!-- Vial outline -->
+  <rect x="175" y="100" width="50" height="180" rx="4" stroke="#A8B0AD" stroke-width="1.5" opacity="0.4"/>
+  <!-- Cap -->
+  <rect x="170" y="85" width="60" height="20" rx="3" stroke="#A8B0AD" stroke-width="1.5" opacity="0.4"/>
+  <!-- Liquid level -->
+  <rect x="176" y="200" width="48" height="79" rx="3" fill="#A8B0AD" opacity="0.06"/>
+  <!-- Graduation marks -->
+  <path d="M180 150H195" stroke="#A8B0AD" stroke-width="0.8" opacity="0.2"/>
+  <path d="M180 180H190" stroke="#A8B0AD" stroke-width="0.8" opacity="0.2"/>
+  <path d="M180 210H195" stroke="#A8B0AD" stroke-width="0.8" opacity="0.2"/>
+  <path d="M180 240H190" stroke="#A8B0AD" stroke-width="0.8" opacity="0.2"/>
+  <!-- Label area -->
+  <rect x="182" y="300" width="36" height="12" rx="2" stroke="#A8B0AD" stroke-width="0.8" opacity="0.2"/>
+  <!-- Molecular decoration -->
+  <circle cx="310" cy="130" r="6" stroke="#A8B0AD" stroke-width="0.8" opacity="0.15"/>
+  <circle cx="330" cy="150" r="4" stroke="#A8B0AD" stroke-width="0.8" opacity="0.15"/>
+  <path d="M315 134L327 147" stroke="#A8B0AD" stroke-width="0.8" opacity="0.12"/>
+  <circle cx="90" cy="270" r="5" stroke="#A8B0AD" stroke-width="0.8" opacity="0.15"/>
+  <circle cx="75" cy="250" r="3" stroke="#A8B0AD" stroke-width="0.8" opacity="0.15"/>
+  <path d="M87 267L77 253" stroke="#A8B0AD" stroke-width="0.8" opacity="0.12"/>
+</svg>

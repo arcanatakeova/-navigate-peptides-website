@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="<?php echo esc_url(get_template_directory_uri() . '/assets/images/favicon.svg'); ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo esc_url(get_template_directory_uri() . '/assets/images/favicon.svg'); ?>">
+    <meta name="theme-color" content="#2A3B36">
     <!-- Google model-viewer for 3D vials -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
     <?php wp_head(); ?>
@@ -21,7 +25,7 @@ if ($announcement) :
     <div class="nav-container">
         <p><?php echo esc_html($announcement); ?></p>
     </div>
-    <button class="nav-announcement__close" aria-label="Close announcement" onclick="this.parentElement.remove();document.documentElement.style.setProperty('--nav-announcement-h','0px');">
+    <button class="nav-announcement__close" id="nav-announcement-close" aria-label="Close announcement" type="button">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
     </button>
 </div>
@@ -31,14 +35,18 @@ if ($announcement) :
     <div class="nav-container nav-header__inner">
 
         <!-- Logo -->
-        <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-header__logo" aria-label="<?php bloginfo('name'); ?> — Home">
+        <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-header__logo" aria-label="<?php echo esc_attr(get_bloginfo('name')); ?> — Home">
             <?php if (has_custom_logo()) : ?>
                 <?php the_custom_logo(); ?>
             <?php else : ?>
                 <span class="nav-header__logo-icon">
-                    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-icon" style="width:24px;height:24px;">
-                        <path d="M14 2L2 26h24L14 2z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                        <path d="M8 20c4-6 8-6 12 0" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-icon" style="width:28px;height:28px;">
+                        <path d="M16 3L27.3 9.5V22.5L16 29L4.7 22.5V9.5L16 3Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                        <path d="M10 13L16 9L22 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M10 13V19L16 23L22 19V13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="16" cy="16" r="2" fill="currentColor" opacity="0.6"/>
+                        <path d="M16 7V12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                        <path d="M13.5 9.5L16 7L18.5 9.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </span>
                 <span class="nav-header__logo-text-group">
