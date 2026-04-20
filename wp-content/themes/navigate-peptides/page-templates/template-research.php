@@ -18,10 +18,9 @@ $latest_articles = new WP_Query([
 
 <section class="nav-page-hero">
     <div class="nav-container">
-        <h1 class="nav-page-hero__title">Research Hub</h1>
+        <h1 class="nav-page-hero__title"><?php esc_html_e('Research Hub', 'navigate-peptides'); ?></h1>
         <p class="nav-page-hero__subtitle">
-            Scientific resources for peptide research. Pathway analysis, mechanism-of-action documentation,
-            and referenced preclinical studies — organized for research professionals.
+            <?php esc_html_e('Scientific resources for peptide research. Pathway analysis, mechanism-of-action documentation, and referenced preclinical studies — organized for research professionals.', 'navigate-peptides'); ?>
         </p>
     </div>
 </section>
@@ -29,15 +28,15 @@ $latest_articles = new WP_Query([
 <section class="nav-section">
     <div class="nav-container">
         <div class="nav-section__header">
-            <h2 class="nav-section__title-caps">Research Categories</h2>
+            <h2 class="nav-section__title-caps"><?php esc_html_e('Research Categories', 'navigate-peptides'); ?></h2>
         </div>
         <div class="nav-card-grid nav-card-grid--2">
             <?php
             $sections = [
-                ['title' => 'Research Intelligence', 'slug' => 'intelligence', 'tag' => 'Analysis',     'desc' => 'Curated analysis of peptide research developments, regulatory updates, and preclinical findings from peer-reviewed sources.'],
-                ['title' => 'Research Library',      'slug' => 'library',      'tag' => 'Database',     'desc' => 'Comprehensive database of compound profiles, mechanism-of-action summaries, and referenced preclinical studies.'],
-                ['title' => 'Research Framework',    'slug' => 'framework',    'tag' => 'Methodology',  'desc' => 'Methodological guidelines for peptide research including handling protocols, storage requirements, and documentation standards.'],
-                ['title' => 'Emerging Research',     'slug' => 'emerging',     'tag' => 'Frontier',     'desc' => 'Coverage of novel peptide compounds and newly published research exploring uncharacterized signaling pathways.'],
+                ['slug' => 'intelligence', 'tag' => __('Analysis', 'navigate-peptides'),    'title' => __('Research Intelligence', 'navigate-peptides'), 'desc' => __('Curated analysis of peptide research developments, regulatory updates, and preclinical findings from peer-reviewed sources.', 'navigate-peptides')],
+                ['slug' => 'library',      'tag' => __('Database', 'navigate-peptides'),    'title' => __('Research Library', 'navigate-peptides'),      'desc' => __('Comprehensive database of compound profiles, mechanism-of-action summaries, and referenced preclinical studies.', 'navigate-peptides')],
+                ['slug' => 'framework',    'tag' => __('Methodology', 'navigate-peptides'), 'title' => __('Research Framework', 'navigate-peptides'),    'desc' => __('Methodological guidelines for peptide research including handling protocols, storage requirements, and documentation standards.', 'navigate-peptides')],
+                ['slug' => 'emerging',     'tag' => __('Frontier', 'navigate-peptides'),    'title' => __('Emerging Research', 'navigate-peptides'),     'desc' => __('Coverage of novel peptide compounds and newly published research exploring uncharacterized signaling pathways.', 'navigate-peptides')],
             ];
             foreach ($sections as $s) :
                 $link = get_term_link($s['slug'], 'research_category');
@@ -47,7 +46,7 @@ $latest_articles = new WP_Query([
                     <span class="nav-link-card__tag"><?php echo esc_html($s['tag']); ?></span>
                     <h3 class="nav-link-card__title"><?php echo esc_html($s['title']); ?></h3>
                     <p class="nav-link-card__desc"><?php echo esc_html($s['desc']); ?></p>
-                    <span class="nav-link-card__action">Explore →</span>
+                    <span class="nav-link-card__action"><?php esc_html_e('Explore →', 'navigate-peptides'); ?></span>
                 </a>
             <?php endforeach; ?>
         </div>
@@ -59,9 +58,9 @@ $latest_articles = new WP_Query([
 <section class="nav-section nav-section--dark">
     <div class="nav-container">
         <div class="nav-section__header nav-section__header--split">
-            <h2 class="nav-section__title-caps">Latest Articles</h2>
+            <h2 class="nav-section__title-caps"><?php esc_html_e('Latest Articles', 'navigate-peptides'); ?></h2>
             <a href="<?php echo esc_url(get_post_type_archive_link('nav_research')); ?>" class="nav-section__link">
-                View all articles →
+                <?php esc_html_e('View all articles →', 'navigate-peptides'); ?>
             </a>
         </div>
         <div class="nav-post-grid">
@@ -90,7 +89,7 @@ $latest_articles = new WP_Query([
                             </time>
                         </p>
                         <p class="nav-post-card__excerpt"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 22)); ?></p>
-                        <a href="<?php the_permalink(); ?>" class="nav-post-card__link">Read more →</a>
+                        <a href="<?php the_permalink(); ?>" class="nav-post-card__link"><?php esc_html_e('Read more →', 'navigate-peptides'); ?></a>
                     </div>
                 </article>
             <?php endwhile; wp_reset_postdata(); ?>

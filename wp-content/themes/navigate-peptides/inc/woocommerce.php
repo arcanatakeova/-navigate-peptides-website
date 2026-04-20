@@ -95,6 +95,7 @@ add_filter('woocommerce_product_tabs', function ($tabs) {
  */
 function nav_research_overview_tab(): void {
     global $product;
+    if (!($product instanceof WC_Product)) return;
 
     echo '<div class="nav-tab-content">';
     echo '<h2>' . esc_html__('Research Overview', 'navigate-peptides') . '</h2>';
@@ -130,14 +131,15 @@ function nav_research_overview_tab(): void {
  */
 function nav_technical_specs_tab(): void {
     global $product;
+    if (!($product instanceof WC_Product)) return;
 
     $specs = [
-        'Molecular Structure' => get_post_meta($product->get_id(), '_nav_sequence', true),
-        'Molecular Weight'    => get_post_meta($product->get_id(), '_nav_molecular_weight', true),
-        'CAS Number'          => get_post_meta($product->get_id(), '_nav_cas_number', true),
-        'Form'                => get_post_meta($product->get_id(), '_nav_form', true),
-        'Purity'              => get_post_meta($product->get_id(), '_nav_purity', true),
-        'Storage'             => get_post_meta($product->get_id(), '_nav_storage', true),
+        __('Molecular Structure', 'navigate-peptides') => get_post_meta($product->get_id(), '_nav_sequence', true),
+        __('Molecular Weight', 'navigate-peptides')    => get_post_meta($product->get_id(), '_nav_molecular_weight', true),
+        __('CAS Number', 'navigate-peptides')          => get_post_meta($product->get_id(), '_nav_cas_number', true),
+        __('Form', 'navigate-peptides')                => get_post_meta($product->get_id(), '_nav_form', true),
+        __('Purity', 'navigate-peptides')              => get_post_meta($product->get_id(), '_nav_purity', true),
+        __('Storage', 'navigate-peptides')             => get_post_meta($product->get_id(), '_nav_storage', true),
     ];
 
     echo '<div class="nav-tab-content">';
@@ -156,9 +158,9 @@ function nav_technical_specs_tab(): void {
 
     // Additional notes
     echo '<div class="nav-tab-specs__notes">';
-    echo '<div class="nav-tab-specs__note"><span>Analytical Data</span><span>' . esc_html__('Available upon request', 'navigate-peptides') . '</span></div>';
-    echo '<div class="nav-tab-specs__note"><span>Stability Profile</span><span>' . esc_html__('Controlled conditions required', 'navigate-peptides') . '</span></div>';
-    echo '<div class="nav-tab-specs__note"><span>Reconstitution</span><span>' . esc_html__('Laboratory handling required', 'navigate-peptides') . '</span></div>';
+    echo '<div class="nav-tab-specs__note"><span>' . esc_html__('Analytical Data', 'navigate-peptides') . '</span><span>' . esc_html__('Available upon request', 'navigate-peptides') . '</span></div>';
+    echo '<div class="nav-tab-specs__note"><span>' . esc_html__('Stability Profile', 'navigate-peptides') . '</span><span>' . esc_html__('Controlled conditions required', 'navigate-peptides') . '</span></div>';
+    echo '<div class="nav-tab-specs__note"><span>' . esc_html__('Reconstitution', 'navigate-peptides') . '</span><span>' . esc_html__('Laboratory handling required', 'navigate-peptides') . '</span></div>';
     echo '</div>';
     echo '</div>';
 }
@@ -169,6 +171,7 @@ function nav_technical_specs_tab(): void {
  */
 function nav_batch_verification_tab(): void {
     global $product;
+    if (!($product instanceof WC_Product)) return;
 
     $coa_url = get_post_meta($product->get_id(), '_nav_coa_pdf', true);
     $batch   = get_post_meta($product->get_id(), '_nav_batch_number', true);
@@ -189,10 +192,10 @@ function nav_batch_verification_tab(): void {
     // Batch details
     if ($batch || $lab || $purity) {
         echo '<div class="nav-tab-specs" style="margin-top:24px;">';
-        if ($batch) echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">Batch Number</span><span class="nav-tab-specs__value">' . esc_html($batch) . '</span></div>';
-        if ($purity) echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">Verified Purity</span><span class="nav-tab-specs__value">' . esc_html($purity) . '</span></div>';
-        if ($lab) echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">Testing Laboratory</span><span class="nav-tab-specs__value">' . esc_html($lab) . '</span></div>';
-        echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">Methods</span><span class="nav-tab-specs__value">HPLC, Mass Spectrometry</span></div>';
+        if ($batch) echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">' . esc_html__('Batch Number', 'navigate-peptides') . '</span><span class="nav-tab-specs__value">' . esc_html($batch) . '</span></div>';
+        if ($purity) echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">' . esc_html__('Verified Purity', 'navigate-peptides') . '</span><span class="nav-tab-specs__value">' . esc_html($purity) . '</span></div>';
+        if ($lab) echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">' . esc_html__('Testing Laboratory', 'navigate-peptides') . '</span><span class="nav-tab-specs__value">' . esc_html($lab) . '</span></div>';
+        echo '<div class="nav-tab-specs__row"><span class="nav-tab-specs__label">' . esc_html__('Methods', 'navigate-peptides') . '</span><span class="nav-tab-specs__value">' . esc_html__('HPLC, Mass Spectrometry', 'navigate-peptides') . '</span></div>';
         echo '</div>';
     } else {
         echo '<p class="nav-text-muted">' . esc_html__('Batch verification data will be available once third-party testing is complete.', 'navigate-peptides') . '</p>';
@@ -200,8 +203,8 @@ function nav_batch_verification_tab(): void {
 
     // Additional links matching mockup
     echo '<div class="nav-tab-links">';
-    echo '<a href="' . esc_url(home_url('/quality/testing/')) . '" class="nav-tab-link">Research Classification <span>→</span></a>';
-    echo '<a href="' . esc_url(home_url('/quality/handling/')) . '" class="nav-tab-link">Handling &amp; Storage <span>→</span></a>';
+    echo '<a href="' . esc_url(home_url('/quality/testing/')) . '" class="nav-tab-link">' . esc_html__('Research Classification', 'navigate-peptides') . ' <span>→</span></a>';
+    echo '<a href="' . esc_url(home_url('/quality/handling/')) . '" class="nav-tab-link">' . esc_html__('Handling & Storage', 'navigate-peptides') . ' <span>→</span></a>';
     echo '</div>';
 
     // Disclaimer — processor-mandated verbatim text, do not paraphrase
@@ -524,13 +527,17 @@ add_action('admin_notices', function () {
     delete_transient('nav_compliance_warning_' . $post->ID);
 
     echo '<div class="notice notice-warning is-dismissible">';
-    echo '<p><strong>Compliance Warning:</strong> The following prohibited terms were detected in this product. These terms may cause the payment processor to reject the merchant account or trigger FDA enforcement.</p>';
+    echo '<p><strong>' . esc_html__('Compliance Warning:', 'navigate-peptides') . '</strong> ' . esc_html__('The following prohibited terms were detected in this product. These terms may cause the payment processor to reject the merchant account or trigger FDA enforcement.', 'navigate-peptides') . '</p>';
     echo '<ul style="list-style:disc;padding-left:20px;">';
     foreach ($warnings as $w) {
         echo '<li>' . esc_html($w) . '</li>';
     }
     echo '</ul>';
-    echo '<p>Review <code>docs/COMPLIANCE</code> for the full list of prohibited language.</p>';
+    echo '<p>' . wp_kses(
+        /* translators: %s: <code>docs/COMPLIANCE</code> literal */
+        sprintf(__('Review %s for the full list of prohibited language.', 'navigate-peptides'), '<code>docs/COMPLIANCE</code>'),
+        ['code' => []]
+    ) . '</p>';
     echo '</div>';
 });
 

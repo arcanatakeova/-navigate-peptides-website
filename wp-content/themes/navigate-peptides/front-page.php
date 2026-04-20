@@ -22,7 +22,7 @@ $theme_uri = get_template_directory_uri();
                 <em class="nav-hero__title-italic"><?php esc_html_e('Intelligent.', 'navigate-peptides'); ?></em>
             </h1>
             <p class="nav-hero__subtitle">
-                Research-grade peptide compounds for controlled laboratory investigation.
+                <?php esc_html_e('Research-grade peptide compounds for controlled laboratory investigation.', 'navigate-peptides'); ?>
             </p>
             <ul class="nav-hero__badges">
                 <li>
@@ -180,33 +180,36 @@ $theme_uri = get_template_directory_uri();
             <?php
             // Per-category scientific line-art icons matching Stephie's mockup v1.
             // Shown at 56px, stroked with the category's brand color.
+            // Names are literal __() calls so makepot extracts them — a
+            // dynamic __($var) wrapper is a no-op for the extractor and
+            // these strings would otherwise never land in the .pot file.
             $categories = [
                 // Cognitive — stylized brain in profile
-                ['name' => 'Cognitive Research',      'slug' => 'cognitive-research',     'color' => '#5E507F',
+                ['name' => __('Cognitive Research', 'navigate-peptides'),      'slug' => 'cognitive-research',     'color' => '#5E507F',
                  'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M23 10c-4-4-12-2-12 6 0 2 1 3 2 4-2 2-2 6 1 8-1 2 0 5 3 6 0 3 3 5 6 4 2 2 6 2 8-1V10"/><path d="M23 14c1 0 3 1 4 3M23 22c-2 0-3 0-4 2M19 32c1-1 3-1 4-1M15 26c1-1 2-1 3 0"/></svg>'],
 
                 // Tissue Repair — overlapping suture / knit lines (cross + hairlines)
-                ['name' => 'Tissue Repair Research',  'slug' => 'tissue-repair-research', 'color' => '#9C843E',
+                ['name' => __('Tissue Repair Research', 'navigate-peptides'),  'slug' => 'tissue-repair-research', 'color' => '#9C843E',
                  'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20h12v-8h4v8h12v4H26v16h-4V24H10z"/><path d="M6 14l4 4M42 14l-4 4M6 34l4-4M42 34l-4-4"/></svg>'],
 
                 // Inflammation — teardrop with inner pulse
-                ['name' => 'Inflammation Research',   'slug' => 'inflammation-research',  'color' => '#4A141C',
+                ['name' => __('Inflammation Research', 'navigate-peptides'),   'slug' => 'inflammation-research',  'color' => '#4A141C',
                  'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6c0 0-10 12-10 20a10 10 0 0020 0c0-8-10-20-10-20z"/><path d="M19 26c0 3 2 5 5 5"/></svg>'],
 
                 // Cellular — cell with radiating field (organelles)
-                ['name' => 'Cellular Research',       'slug' => 'cellular-research',      'color' => '#8E5660',
+                ['name' => __('Cellular Research', 'navigate-peptides'),       'slug' => 'cellular-research',      'color' => '#8E5660',
                  'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="14"/><circle cx="24" cy="24" r="4"/><circle cx="18" cy="18" r="1.5"/><circle cx="31" cy="18" r="1.5"/><circle cx="30" cy="31" r="1.5"/><circle cx="17" cy="29" r="1.5"/><path d="M24 4v3M24 41v3M4 24h3M41 24h3M10 10l2 2M36 36l2 2M10 38l2-2M36 12l2-2"/></svg>'],
 
                 // Dermal — layered skin / profile with hair strands
-                ['name' => 'Dermal Research',         'slug' => 'dermal-research',        'color' => '#4A6B5F',
+                ['name' => __('Dermal Research', 'navigate-peptides'),         'slug' => 'dermal-research',        'color' => '#4A6B5F',
                  'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M30 10c-6-2-12 1-14 7-2 6 0 12 5 16 2 2 2 5 0 7"/><path d="M32 14c4 3 6 9 3 15-1 2-1 4 1 6"/><path d="M22 20c2 0 3 1 3 3M18 28c2 0 3 1 3 3"/></svg>'],
 
                 // Metabolic — flask with droplets (mitochondrial flow)
-                ['name' => 'Metabolic Research',      'slug' => 'metabolic-research',     'color' => '#2F4666',
+                ['name' => __('Metabolic Research', 'navigate-peptides'),      'slug' => 'metabolic-research',     'color' => '#2F4666',
                  'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6h12M20 6v14L10 38a3 3 0 002.5 5h23A3 3 0 0038 38L28 20V6"/><path d="M14 30h20"/><circle cx="22" cy="35" r="1.5" fill="currentColor"/><circle cx="28" cy="33" r="1" fill="currentColor"/></svg>'],
 
                 // Research Blends — diamond / prism (multi-compound blend)
-                ['name' => 'Research Blends',         'slug' => 'research-blends',        'color' => '#474C50',
+                ['name' => __('Research Blends', 'navigate-peptides'),         'slug' => 'research-blends',        'color' => '#474C50',
                  'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M24 4L8 18 24 44 40 18 24 4z"/><path d="M8 18h32M16 18L24 4M32 18L24 4M16 18L24 44M32 18L24 44"/></svg>'],
             ];
 
@@ -217,7 +220,7 @@ $theme_uri = get_template_directory_uri();
                     <div class="nav-cat-icon-card__icon">
                         <?php echo nav_kses_svg($cat['icon']); ?>
                     </div>
-                    <h3 class="nav-cat-icon-card__title"><?php echo esc_html(__($cat['name'], 'navigate-peptides')); ?></h3>
+                    <h3 class="nav-cat-icon-card__title"><?php echo esc_html($cat['name']); ?></h3>
                     <span class="nav-cat-icon-card__btn"><?php esc_html_e('View', 'navigate-peptides'); ?></span>
                 </a>
             <?php endforeach; ?>

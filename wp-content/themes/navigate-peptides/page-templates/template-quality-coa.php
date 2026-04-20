@@ -97,7 +97,15 @@ if ($search_query !== '') {
                 if ($results->have_posts()) :
             ?>
                 <div class="nav-coa-results">
-                    <h4 class="nav-coa-results__title">Results for "<?php echo esc_html($search_query); ?>"</h4>
+                    <h4 class="nav-coa-results__title">
+                        <?php
+                        printf(
+                            /* translators: %s: user-supplied search query */
+                            esc_html__('Results for "%s"', 'navigate-peptides'),
+                            esc_html($search_query)
+                        );
+                        ?>
+                    </h4>
                     <div class="nav-coa-results__grid">
                         <?php while ($results->have_posts()) : $results->the_post();
                             $product_obj = wc_get_product(get_the_ID());
@@ -111,20 +119,20 @@ if ($search_query !== '') {
                         <div class="nav-coa-result-card">
                             <h5 class="nav-coa-result-card__name"><?php echo esc_html($product_obj->get_name()); ?></h5>
                             <?php if ($batch) : ?>
-                                <p class="nav-coa-result-card__meta"><span>Batch:</span> <?php echo esc_html($batch); ?></p>
+                                <p class="nav-coa-result-card__meta"><span><?php esc_html_e('Batch:', 'navigate-peptides'); ?></span> <?php echo esc_html($batch); ?></p>
                             <?php endif; ?>
                             <?php if ($purity) : ?>
-                                <p class="nav-coa-result-card__meta"><span>Purity:</span> <?php echo esc_html($purity); ?></p>
+                                <p class="nav-coa-result-card__meta"><span><?php esc_html_e('Purity:', 'navigate-peptides'); ?></span> <?php echo esc_html($purity); ?></p>
                             <?php endif; ?>
                             <?php if ($lab) : ?>
-                                <p class="nav-coa-result-card__meta"><span>Lab:</span> <?php echo esc_html($lab); ?></p>
+                                <p class="nav-coa-result-card__meta"><span><?php esc_html_e('Lab:', 'navigate-peptides'); ?></span> <?php echo esc_html($lab); ?></p>
                             <?php endif; ?>
                             <?php if ($coa_url) : ?>
                                 <a href="<?php echo esc_url($coa_url); ?>" class="nav-btn nav-btn--outline nav-btn--sm" target="_blank" rel="noopener">
-                                    View Certificate
+                                    <?php esc_html_e('View Certificate', 'navigate-peptides'); ?>
                                 </a>
                             <?php else : ?>
-                                <p class="nav-text-muted">Certificate pending publication</p>
+                                <p class="nav-text-muted"><?php esc_html_e('Certificate pending publication', 'navigate-peptides'); ?></p>
                             <?php endif; ?>
                         </div>
                         <?php endwhile; wp_reset_postdata(); ?>
@@ -132,7 +140,15 @@ if ($search_query !== '') {
                 </div>
             <?php else : ?>
                 <div class="nav-coa-no-results">
-                    <p>No certificates found for "<?php echo esc_html($search_query); ?>". Please verify your batch number or contact our team for assistance.</p>
+                    <p>
+                        <?php
+                        printf(
+                            /* translators: %s: user-supplied search query */
+                            esc_html__('No certificates found for "%s". Please verify your batch number or contact our team for assistance.', 'navigate-peptides'),
+                            esc_html($search_query)
+                        );
+                        ?>
+                    </p>
                 </div>
             <?php endif;
 

@@ -74,7 +74,7 @@ $cat_color     = $is_category ? nav_get_category_color($current_cat->slug) : '#4
                     <div class="nav-category-card__body">
                         <h3 class="nav-category-card__title"><?php echo esc_html($cat['name']); ?></h3>
                         <p class="nav-category-card__desc"><?php echo esc_html($cat['desc']); ?></p>
-                        <span class="nav-category-card__link">View Compounds →</span>
+                        <span class="nav-category-card__link"><?php esc_html_e('View Compounds →', 'navigate-peptides'); ?></span>
                     </div>
                 </a>
             <?php endforeach; ?>
@@ -139,7 +139,7 @@ $cat_color     = $is_category ? nav_get_category_color($current_cat->slug) : '#4
                             <p class="nav-product-card__excerpt"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 15)); ?></p>
                             <div class="nav-product-card__footer">
                                 <span class="nav-product-card__price"><?php echo $product->get_price_html(); ?></span>
-                                <span class="nav-product-card__action">Details →</span>
+                                <span class="nav-product-card__action"><?php esc_html_e('Details →', 'navigate-peptides'); ?></span>
                             </div>
                             <p class="nav-product-card__disclaimer"><?php echo esc_html(nav_get_disclaimer('product')); ?></p>
                         </div>
