@@ -75,6 +75,7 @@ function nav_backfill_default_terms(): void {
             'Inflammation Research'  => 'inflammation-research',
             'Cellular Research'      => 'cellular-research',
             'Dermal Research'        => 'dermal-research',
+            'Longevity Research'     => 'longevity-research',
             'Research Blends'        => 'research-blends',
         ];
         foreach ($product_defaults as $name => $slug) {

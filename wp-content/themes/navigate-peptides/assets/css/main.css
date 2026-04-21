@@ -285,50 +285,142 @@ body.admin-bar .nav-header {
     color: var(--nav-text-primary);
 }
 
-/* Dropdowns */
+/* ==========================================================================
+   HEADER DROPDOWNS — brand panel with chevron + hairline divider
+   ========================================================================== */
+
 .nav-header__menu > .menu-item {
     position: relative;
 }
 
+/* Chevron indicator on top-level items that have children.
+   Rotates on hover so the panel feels "opened into." */
+.nav-header__menu > .menu-item-has-children > a::after {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-left: 8px;
+    border-right: 1.3px solid currentColor;
+    border-bottom: 1.3px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform var(--nav-duration) var(--nav-ease), opacity var(--nav-duration) var(--nav-ease);
+    opacity: 0.7;
+    vertical-align: middle;
+}
+.nav-header__menu > .menu-item-has-children:hover > a::after,
+.nav-header__menu > .menu-item-has-children:focus-within > a::after {
+    transform: translateY(0) rotate(225deg);
+    opacity: 1;
+}
+
+/* Invisible bridge between top-level link and the panel so hover doesn't
+   drop the dropdown when the cursor crosses the gap. */
+.nav-header__menu > .menu-item-has-children::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 8px;
+    display: block;
+    pointer-events: auto;
+}
+
+/* Panel — glass + hairline + soft drop shadow + amber accent on the
+   top edge so it reads as a material pulled from the header. */
 .nav-header__menu .sub-menu {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 6px);
     left: 0;
-    padding-top: 8px;
+    min-width: 260px;
+    padding: 10px;
+
+    background:
+        linear-gradient(180deg, rgba(26, 42, 36, 0.96) 0%, rgba(14, 22, 19, 0.98) 100%);
+    backdrop-filter: blur(var(--nav-glass-blur, 12px));
+    -webkit-backdrop-filter: blur(var(--nav-glass-blur, 12px));
+    border: 1px solid rgba(234, 234, 234, 0.08);
+    border-top: 2px solid var(--nav-accent, #9C843E);
+    border-radius: var(--nav-radius-md, 4px);
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.55),
+        0 2px 6px rgba(0, 0, 0, 0.3);
+
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-4px);
-    transition: all var(--nav-duration) var(--nav-ease);
+    transform: translateY(-8px);
+    transition:
+        opacity var(--nav-duration) var(--nav-ease),
+        visibility var(--nav-duration) var(--nav-ease),
+        transform var(--nav-duration) var(--nav-ease);
     z-index: 50;
 }
 
-.nav-header__menu > .menu-item:hover > .sub-menu {
+/* Open on hover OR keyboard focus within the item (a11y). */
+.nav-header__menu > .menu-item:hover > .sub-menu,
+.nav-header__menu > .menu-item:focus-within > .sub-menu {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
 }
 
-.nav-header__menu .sub-menu {
-    min-width: 240px;
-    background-color: var(--nav-bg-primary);
-    border: 1px solid var(--nav-border-medium);
-    border-radius: var(--nav-radius-md);
-    padding: 8px;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+/* Menu items — thin, tracked, with a hairline leader on hover. */
+.nav-header__menu .sub-menu .menu-item + .menu-item {
+    border-top: 1px solid rgba(234, 234, 234, 0.04);
 }
 
 .nav-header__menu .sub-menu .menu-item a {
-    display: block;
-    padding: 8px 12px;
-    font-size: 14px;
-    color: var(--nav-text-secondary);
-    border-radius: var(--nav-radius-sm);
-    transition: all var(--nav-duration) var(--nav-ease);
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 10px 14px 10px 20px;
+    font-family: var(--nav-font-sans, "Inter", -apple-system, "Helvetica Neue", sans-serif);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--nav-text-secondary, #A8B0AD);
+    letter-spacing: 0.01em;
+    border-radius: 2px;
+    transition:
+        color var(--nav-duration) var(--nav-ease),
+        background-color var(--nav-duration) var(--nav-ease),
+        padding var(--nav-duration) var(--nav-ease);
 }
 
-.nav-header__menu .sub-menu .menu-item a:hover {
-    color: var(--nav-text-primary);
-    background-color: var(--nav-bg-card);
+/* Leading sage bar, hidden until hover — slides in from the left. */
+.nav-header__menu .sub-menu .menu-item a::before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    width: 0;
+    height: 1px;
+    background: var(--nav-sage, #4A6B5F);
+    transform: translateY(-50%);
+    transition: width var(--nav-duration) var(--nav-ease);
+}
+
+.nav-header__menu .sub-menu .menu-item a:hover,
+.nav-header__menu .sub-menu .menu-item a:focus-visible {
+    color: var(--nav-text-primary, #EAEAEA);
+    background-color: rgba(74, 107, 95, 0.12);
+    padding-left: 28px;
+    outline: none;
+}
+
+.nav-header__menu .sub-menu .menu-item a:hover::before,
+.nav-header__menu .sub-menu .menu-item a:focus-visible::before {
+    width: 10px;
+}
+
+/* Current page / active category gets a permanent sage hairline + brighter text. */
+.nav-header__menu .sub-menu .menu-item.current-menu-item > a,
+.nav-header__menu .sub-menu .menu-item.current-product_cat-ancestor > a {
+    color: var(--nav-text-primary, #EAEAEA);
+}
+.nav-header__menu .sub-menu .menu-item.current-menu-item > a::before,
+.nav-header__menu .sub-menu .menu-item.current-product_cat-ancestor > a::before {
+    width: 10px;
 }
 
 /* Header Actions */
@@ -1024,22 +1116,18 @@ body.admin-bar .nav-header {
 }
 
 /* ==========================================================================
-   CATEGORY ICON CARDS (7-card row — Stephie mockup style)
+   CATEGORY ICON CARDS (8-card grid — Stephie mockup style)
+   2x4 on mobile, 4x2 on desktop. Breakpoints that would yield odd rows
+   (3 cols × 8 items = 2 rows of 3 + 1 orphan row of 2) are skipped.
    ========================================================================== */
-.nav-category-grid--7 {
+.nav-category-grid--icons {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
 }
 
-@media (min-width: 640px) {
-    .nav-category-grid--7 { grid-template-columns: repeat(3, 1fr); gap: 14px; }
-}
 @media (min-width: 900px) {
-    .nav-category-grid--7 { grid-template-columns: repeat(4, 1fr); gap: 16px; }
-}
-@media (min-width: 1200px) {
-    .nav-category-grid--7 { grid-template-columns: repeat(7, 1fr); gap: 14px; }
+    .nav-category-grid--icons { grid-template-columns: repeat(4, 1fr); gap: 16px; }
 }
 
 /* Category icon card — matches mockup v1: line-art icon, serif name,
@@ -1178,13 +1266,12 @@ body.admin-bar .nav-header {
     gap: var(--nav-gap-lg);
 }
 
+/* 8 categories: skip the 3-col breakpoint that would produce 2 rows of 3
+   plus a 2-item orphan. Grid stays even-row at every size: 1, 2, or 4. */
 @media (min-width: 640px) {
     .nav-category-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (min-width: 1024px) {
-    .nav-category-grid { grid-template-columns: repeat(3, 1fr); }
-}
-@media (min-width: 1280px) {
     .nav-category-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
@@ -2355,7 +2442,7 @@ body.admin-bar .nav-header {
 
 /* Category icon cards: smaller grid on mobile */
 @media (max-width: 479px) {
-    .nav-category-grid--7 {
+    .nav-category-grid--icons {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
     }

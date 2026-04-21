@@ -104,6 +104,9 @@ echo "  Cellular Research → ID $CAT_CELLULAR"
 CAT_DERMAL=$(get_or_create_cat "Dermal Research" "dermal-research")
 echo "  Dermal Research → ID $CAT_DERMAL"
 
+CAT_LONGEVITY=$(get_or_create_cat "Longevity Research" "longevity-research")
+echo "  Longevity Research → ID $CAT_LONGEVITY"
+
 CAT_BLENDS=$(get_or_create_cat "Research Blends" "research-blends")
 echo "  Research Blends → ID $CAT_BLENDS"
 
@@ -246,6 +249,7 @@ wp menu item add-custom "$MENU_ID" "Cognitive Research" "$SITEURL/product-catego
 wp menu item add-custom "$MENU_ID" "Inflammation Research" "$SITEURL/product-category/inflammation-research/" --parent-id="$COMPOUNDS_MENU" 2>/dev/null
 wp menu item add-custom "$MENU_ID" "Cellular Research" "$SITEURL/product-category/cellular-research/" --parent-id="$COMPOUNDS_MENU" 2>/dev/null
 wp menu item add-custom "$MENU_ID" "Dermal Research" "$SITEURL/product-category/dermal-research/" --parent-id="$COMPOUNDS_MENU" 2>/dev/null
+wp menu item add-custom "$MENU_ID" "Longevity Research" "$SITEURL/product-category/longevity-research/" --parent-id="$COMPOUNDS_MENU" 2>/dev/null
 wp menu item add-custom "$MENU_ID" "Research Blends" "$SITEURL/product-category/research-blends/" --parent-id="$COMPOUNDS_MENU" 2>/dev/null
 
 QUALITY_MENU=$(wp menu item add-post-type "$MENU_ID" "$QUALITY_ID" --title="Quality" --porcelain)

@@ -60,6 +60,7 @@ $cat_color     = $is_category ? nav_get_category_color($current_cat->slug) : '#4
                 ['name' => 'Inflammation Research',  'slug' => 'inflammation-research',  'color' => '#4A141C', 'desc' => 'Compounds studied for cytokine modulation and immune-signaling mechanisms.'],
                 ['name' => 'Cellular Research',      'slug' => 'cellular-research',      'color' => '#8E5660', 'desc' => 'Compounds investigated for cellular signaling pathways and proliferation mechanisms.'],
                 ['name' => 'Dermal Research',        'slug' => 'dermal-research',        'color' => '#4A6B5F', 'desc' => 'Compounds studied for epidermal pathway analysis and structural protein research.'],
+                ['name' => 'Longevity Research',     'slug' => 'longevity-research',     'color' => '#2E5C6A', 'desc' => 'Peptides investigated for cellular aging, senescence, and lifespan extension pathways.'],
                 ['name' => 'Research Blends',        'slug' => 'research-blends',        'color' => '#474C50', 'desc' => 'Multi-peptide formulations designed for synergistic pathway research applications.'],
             ];
             foreach ($categories as $cat) :
