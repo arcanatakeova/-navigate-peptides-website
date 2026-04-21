@@ -856,17 +856,52 @@ body.admin-bar .nav-header {
    collapse to auto. */
 .nav-hero__vial {
     display: none;
-    height: 560px;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--nav-gap-md);
+    height: 620px;
     width: 100%;
     max-width: 520px;
     margin: 0 auto;
+    cursor: grab;
 }
+.nav-hero__vial:active { cursor: grabbing; }
 
 .nav-hero__vial model-viewer {
     width: 100%;
-    height: 100%;
+    flex: 1;
+    height: auto;
     background: transparent;
     filter: drop-shadow(0 36px 56px rgba(0, 0, 0, 0.55));
+}
+
+.nav-hero__vial-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    font-family: var(--nav-font-mono, "JetBrains Mono", "SF Mono", monospace);
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #ece9df;
+    background: rgba(143, 166, 149, 0.14);
+    border: 1px solid rgba(143, 166, 149, 0.5);
+    border-radius: 999px;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+.nav-hero__vial-cta span { transition: transform 0.2s ease; }
+.nav-hero__vial-cta:hover {
+    background: rgba(143, 166, 149, 0.24);
+    border-color: rgba(143, 166, 149, 0.8);
+    transform: translateY(-1px);
+}
+.nav-hero__vial-cta:hover span { transform: translateX(4px); }
+.nav-hero__vial-cta:focus-visible {
+    outline: 2px solid var(--nav-accent, #8fa695);
+    outline-offset: 3px;
 }
 
 /* Product Info Panel (right column on desktop, full-width below vial on mobile).
@@ -1065,12 +1100,12 @@ body.admin-bar .nav-header {
         align-items: center;
         gap: var(--nav-gap-xl);
     }
-    .nav-hero__vial { display: block; height: 560px; }
+    .nav-hero__vial { display: flex; height: 620px; }
     .nav-hero__info-panel { display: block; }
 }
 
 @media (min-width: 1280px) {
-    .nav-hero__vial { height: 620px; }
+    .nav-hero__vial { height: 680px; }
 }
 
 /* ==========================================================================
@@ -2759,8 +2794,9 @@ body.admin-bar .nav-header {
         grid-template-columns: 1fr 1fr;
     }
     .nav-hero__vial {
-        display: block;
-        height: 420px;
+        display: flex;
+        height: 540px;
+        max-width: 100%;
     }
     .nav-hero__info-panel {
         display: block;
