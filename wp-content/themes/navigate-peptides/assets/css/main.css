@@ -4485,3 +4485,196 @@ a:focus-visible {
     }
 }
 
+/* ==========================================================================
+   Product Card (archive + related products + upsells)
+   Dark branded card with per-category accent bar, compound wordmark title,
+   and a footer row pairing price with a "View" arrow. Image slot accepts
+   either a real product thumbnail or the SVG category placeholder.
+   ========================================================================== */
+.nav-product-card {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    position: relative;
+    background: linear-gradient(180deg, rgba(26, 42, 36, 0.7) 0%, rgba(14, 22, 19, 0.9) 100%);
+    border: 1px solid var(--nav-border-subtle);
+    border-radius: var(--nav-radius-lg);
+    overflow: hidden;
+    transition: transform 0.25s var(--nav-ease), border-color 0.25s var(--nav-ease),
+                box-shadow 0.25s var(--nav-ease);
+}
+.nav-product-card:hover,
+.nav-product-card:focus-within {
+    transform: translateY(-2px);
+    border-color: rgba(143, 166, 149, 0.35);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.35);
+}
+
+.nav-product-card__link {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Category-tinted accent bar across the top */
+.nav-product-card__accent {
+    height: 4px;
+    width: 100%;
+    background: var(--cat-color, var(--nav-accent));
+    flex-shrink: 0;
+}
+
+.nav-product-card__image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background:
+        radial-gradient(ellipse at 50% 40%, rgba(143, 166, 149, 0.08) 0%, rgba(10, 19, 17, 0) 68%),
+        #0a1311;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    padding: var(--nav-gap-md);
+}
+.nav-product-card__image img,
+.nav-product-card__image .attachment-product-card,
+.nav-product-card__image .wp-post-image,
+.nav-product-card__placeholder-img {
+    max-width: 72%;
+    max-height: 82%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+.nav-product-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: var(--nav-gap-md) var(--nav-gap-md) var(--nav-gap-lg);
+    flex: 1;
+}
+
+.nav-product-card__title {
+    font-family: var(--nav-font-display);
+    font-size: 1.4rem;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--nav-text-primary);
+    margin: 0;
+}
+
+.nav-product-card__subtitle {
+    font-family: var(--nav-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cat-color, var(--nav-text-secondary));
+    margin: 0;
+}
+
+.nav-product-card__excerpt {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--nav-text-secondary);
+    margin: 0;
+}
+
+.nav-product-card__footer {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--nav-gap-md);
+    margin-top: auto;
+    padding-top: var(--nav-gap-sm);
+    border-top: 1px solid var(--nav-border-subtle);
+}
+
+.nav-product-card__price {
+    font-family: var(--nav-font-display);
+    font-size: 1.35rem;
+    letter-spacing: -0.01em;
+    color: var(--nav-text-primary);
+}
+.nav-product-card__price .woocommerce-Price-amount,
+.nav-product-card__price bdi {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+}
+
+.nav-product-card__action {
+    font-family: var(--nav-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--nav-text-secondary);
+    transition: color 0.2s, transform 0.2s;
+}
+.nav-product-card:hover .nav-product-card__action {
+    color: var(--nav-accent);
+    transform: translateX(3px);
+}
+
+.nav-product-card__disclaimer {
+    font-family: var(--nav-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    line-height: 1.5;
+    color: var(--nav-text-muted);
+    margin: 0;
+    padding-top: 6px;
+}
+
+/* WC product loop — default <ul class="products columns-3"> lists.
+   Normalize to a grid since WC ships float-based layout that clashes
+   with our flex cards. */
+ul.products {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--nav-gap-lg);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+ul.products::before,
+ul.products::after { display: none; }
+ul.products.columns-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+ul.products.columns-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 1023px) {
+    ul.products,
+    ul.products.columns-3,
+    ul.products.columns-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 539px) {
+    ul.products,
+    ul.products.columns-2,
+    ul.products.columns-3,
+    ul.products.columns-4 { grid-template-columns: 1fr; }
+}
+
+/* Related / upsells heading — brand the serif label */
+.nav-product-single .related > h2,
+.nav-product-single .upsells > h2 {
+    font-family: var(--nav-font-display);
+    font-size: clamp(24px, 3.2vw, 32px);
+    letter-spacing: -0.01em;
+    color: var(--nav-text-primary);
+    margin: 0 0 var(--nav-gap-lg);
+    position: relative;
+    padding-bottom: var(--nav-gap-sm);
+}
+.nav-product-single .related > h2::after,
+.nav-product-single .upsells > h2::after {
+    content: "";
+    display: block;
+    width: 48px;
+    height: 2px;
+    background: var(--nav-accent);
+    margin-top: var(--nav-gap-sm);
+}
+
