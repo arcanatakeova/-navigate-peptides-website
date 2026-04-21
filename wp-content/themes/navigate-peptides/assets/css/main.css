@@ -838,9 +838,9 @@ body.admin-bar .nav-header {
     margin-top: 40px;
 }
 
-/* Branded Research Vial (inline SVG, replaces the old model-viewer block).
-   The SVG ships with its own ambient glow; drop-shadow below adds depth
-   against the dark hero background. */
+/* Hero 3D vial (rotating model-viewer). The model handles rotation,
+   lighting, and shadow intrinsically. Drop-shadow on the container adds
+   depth against the dark hero background for the poster-fallback path. */
 .nav-hero__vial {
     display: none;
     min-height: 400px;
@@ -848,31 +848,21 @@ body.admin-bar .nav-header {
     justify-content: center;
 }
 
-.nav-hero__vial-img {
-    width: 100%;
-    max-width: 420px;
-    height: auto;
-    object-fit: contain;
-    filter: drop-shadow(0 36px 56px rgba(0, 0, 0, 0.55));
-    /* Subtle float animation — keeps the static SVG feeling alive without
-       the cost of a real 3D model. `prefers-reduced-motion` respects users
-       who have motion reduced in OS settings. */
-    animation: nav-vial-float 6s ease-in-out infinite;
-}
-
-@keyframes nav-vial-float {
-    0%, 100% { transform: translateY(0); }
-    50%      { transform: translateY(-10px); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .nav-hero__vial-img { animation: none; }
-}
-
-/* Backwards compat — if a legacy template still renders <model-viewer>
-   inside .nav-hero__vial, round its corners. */
 .nav-hero__vial model-viewer {
+    width: 100%;
+    max-width: 520px;
+    height: 560px;
     border-radius: var(--nav-radius-lg);
+    filter: drop-shadow(0 36px 56px rgba(0, 0, 0, 0.55));
+}
+
+/* Poster fallback — when WebGL fails, model-viewer shows the <img slot="poster">.
+   Style it the same way the old SVG block was presented so the fallback
+   state is visually coherent with the rotating state. */
+.nav-hero__vial model-viewer img[slot="poster"] {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 /* Product Info Panel (right column on desktop, full-width below vial on mobile).
