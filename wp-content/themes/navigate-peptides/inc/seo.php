@@ -796,9 +796,13 @@ add_action('wp_head', function () {
  * with different shapes, which trips warnings in rich-result testing.
  * ----------------------------------------------------------------*/
 add_filter('woocommerce_structured_data_type_for_page', function ($type) {
+    if (!is_array($type)) {
+        return [];
+    }
     if (is_singular('product')) {
-        // Return false-y to skip Woo's default Product emitter.
-        return '';
+        // Drop the 'product' + 'review' entries so Woo's default Product
+        // emitter stays silent; keep everything else (breadcrumb, order).
+        return array_values(array_diff($type, ['product', 'review']));
     }
     return $type;
 });
