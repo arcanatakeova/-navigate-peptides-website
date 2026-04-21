@@ -1617,7 +1617,10 @@ body.admin-bar .nav-header {
     border-radius: var(--nav-radius-lg);
     overflow: hidden;
     border: 1px solid var(--nav-border-subtle);
-    max-height: 320px;
+    /* Match the 16:9 render so the full branded vials render instead of
+       being cropped to the cap band by object-fit: cover. */
+    aspect-ratio: 16 / 9;
+    background: #0a1311;
 }
 
 .nav-about-visual img {
@@ -1625,13 +1628,7 @@ body.admin-bar .nav-header {
     height: 100%;
     object-fit: cover;
     display: block;
-    opacity: 0.85;
-}
-
-@media (max-width: 767px) {
-    .nav-about-visual {
-        max-height: 200px;
-    }
+    opacity: 1;
 }
 
 .nav-about-grid {
