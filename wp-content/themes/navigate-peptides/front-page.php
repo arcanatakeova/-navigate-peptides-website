@@ -68,8 +68,8 @@ $theme_uri = get_template_directory_uri();
                 auto-rotate
                 camera-controls
                 interaction-prompt="none"
-                rotation-per-second="14deg"
-                camera-orbit="22deg 75deg 110%"
+                rotation-per-second="32deg"
+                camera-orbit="0deg 75deg 110%"
                 min-camera-orbit="auto auto 80%"
                 max-camera-orbit="auto auto 180%"
                 environment-image="neutral"
