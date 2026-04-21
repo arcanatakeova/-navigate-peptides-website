@@ -17,11 +17,17 @@ get_header();
 
 <section class="nav-section">
     <div class="nav-container">
-        <!-- Visual: Research vials -->
+        <!-- Visual: Research vials. mtime-versioned for cache-busting. -->
+        <?php
+        $hero_ver = function_exists('nav_asset_version')
+            ? nav_asset_version('assets/images/hero-three-vials.png')
+            : '';
+        $hero_q   = $hero_ver ? '?v=' . $hero_ver : '';
+        ?>
         <div class="nav-about-visual">
             <picture>
-                <source srcset="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-three-vials.webp'); ?>" type="image/webp">
-                <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-three-vials.png'); ?>" alt="Navigate Peptides research vials with certificates of analysis" loading="lazy" width="1200" height="400">
+                <source srcset="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-three-vials.webp' . $hero_q); ?>" type="image/webp">
+                <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-three-vials.png' . $hero_q); ?>" alt="Navigate Peptides research vials with certificates of analysis" loading="lazy" width="1200" height="400">
             </picture>
         </div>
 
