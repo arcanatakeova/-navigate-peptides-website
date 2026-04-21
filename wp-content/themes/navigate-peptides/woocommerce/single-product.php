@@ -67,13 +67,15 @@ while (have_posts()) : the_post();
                             alt="<?php echo esc_attr(get_the_title()); ?> — 3D interactive model"
                             auto-rotate
                             camera-controls
-                            rotation-per-second="10deg"
-                            camera-orbit="20deg 75deg 105%"
+                            interaction-prompt="none"
+                            rotation-per-second="14deg"
+                            camera-orbit="20deg 75deg 115%"
+                            min-camera-orbit="auto auto 85%"
+                            max-camera-orbit="auto auto 200%"
                             environment-image="neutral"
-                            shadow-intensity="0.4"
-                            exposure="1.1"
-                            style="width:100%;height:100%;min-height:400px;"
-                            loading="lazy"
+                            shadow-intensity="0.6"
+                            exposure="1.15"
+                            loading="eager"
                             reveal="auto"
                         >
                             <?php if (has_post_thumbnail()) : ?>
