@@ -31,18 +31,19 @@ $cat_slug  = ($terms && !is_wp_error($terms)) ? $terms[0]->slug : '';
     <a href="<?php the_permalink(); ?>" class="nav-product-card__link">
         <div class="nav-product-card__accent"></div>
         <div class="nav-product-card__image">
-            <?php if (has_post_thumbnail()) : ?>
-                <?php echo wp_get_attachment_image(get_post_thumbnail_id(), 'product-card', false, ['loading' => 'lazy']); ?>
-            <?php else : ?>
-                <img
-                    src="<?php echo esc_url(nav_get_category_placeholder($cat_slug)); ?>"
-                    alt="<?php the_title_attribute(); ?>"
-                    class="nav-product-card__placeholder-img"
-                    loading="lazy"
-                    width="400"
-                    height="400"
-                >
-            <?php endif; ?>
+            <?php
+            $card_img = nav_get_product_card_image($product);
+            ?>
+            <img
+                src="<?php echo esc_url($card_img['src']); ?>"
+                <?php if (!empty($card_img['srcset'])) : ?>srcset="<?php echo esc_attr($card_img['srcset']); ?>"<?php endif; ?>
+                alt="<?php the_title_attribute(); ?>"
+                class="nav-product-card__img"
+                loading="lazy"
+                decoding="async"
+                width="<?php echo esc_attr((string) $card_img['width']); ?>"
+                height="<?php echo esc_attr((string) $card_img['height']); ?>"
+            >
         </div>
         <div class="nav-product-card__body">
             <h3 class="nav-product-card__title"><?php echo esc_html(get_the_title()); ?></h3>

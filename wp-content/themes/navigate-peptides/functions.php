@@ -586,6 +586,55 @@ function nav_get_category_placeholder(string $slug): string {
     return NAV_THEME_URI . '/assets/images/product-placeholder.svg';
 }
 
+/**
+ * Resolve the WooCommerce product card image — prefers, in order:
+ *   1. The product's WC featured image (admin can override per product)
+ *   2. A compound-specific render baked into the theme, derived from the
+ *      product's _nav_3d_model_url (vial-{slug}.glb → vial-{slug}-card.{webp,png})
+ *   3. The category SVG placeholder
+ *
+ * Returns a URL string. The source and its srcset-friendly variant are
+ * encoded via nav_asset_version() so redeploys bust the browser cache.
+ *
+ * @return array{src: string, srcset: string|null, width: int, height: int}
+ */
+function nav_get_product_card_image(WC_Product $product): array {
+    // 1. WC featured image (admin-uploaded)
+    if (has_post_thumbnail($product->get_id())) {
+        $thumb_id = get_post_thumbnail_id($product->get_id());
+        $src = wp_get_attachment_image_url($thumb_id, 'product-card');
+        if ($src) {
+            return ['src' => $src, 'srcset' => wp_get_attachment_image_srcset($thumb_id, 'product-card'), 'width' => 600, 'height' => 750];
+        }
+    }
+
+    // 2. Compound render derived from the 3D model URL
+    $glb_url = (string) get_post_meta($product->get_id(), '_nav_3d_model_url', true);
+    if ($glb_url) {
+        // vial-ghkcu.glb -> ghkcu (preserving the naming convention we use
+        // for both models and posters)
+        $basename = pathinfo(wp_parse_url($glb_url, PHP_URL_PATH) ?: '', PATHINFO_FILENAME);
+        if ($basename && str_starts_with($basename, 'vial-')) {
+            $slug = substr($basename, 5);
+            $webp_rel = "/assets/images/vial-{$slug}-card.webp";
+            $png_rel  = "/assets/images/vial-{$slug}-card.png";
+            foreach ([$webp_rel, $png_rel] as $rel) {
+                if (file_exists(NAV_THEME_DIR . $rel)) {
+                    $ver = function_exists('nav_asset_version')
+                        ? nav_asset_version(ltrim($rel, '/')) : '';
+                    $src = NAV_THEME_URI . $rel . ($ver ? '?v=' . $ver : '');
+                    return ['src' => $src, 'srcset' => null, 'width' => 1024, 'height' => 1280];
+                }
+            }
+        }
+    }
+
+    // 3. Category placeholder
+    $terms = get_the_terms($product->get_id(), 'product_cat');
+    $cat_slug = ($terms && !is_wp_error($terms)) ? $terms[0]->slug : '';
+    return ['src' => nav_get_category_placeholder($cat_slug), 'srcset' => null, 'width' => 400, 'height' => 400];
+}
+
 /* ------------------------------------------------------------------
  * 12. Excerpt Length
  * ----------------------------------------------------------------*/
