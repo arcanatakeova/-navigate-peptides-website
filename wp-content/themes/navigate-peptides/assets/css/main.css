@@ -1631,6 +1631,71 @@ body.admin-bar .nav-header {
     opacity: 1;
 }
 
+/* ---------- Quality page: interactive 3D vial trio ---------- */
+.nav-vial-trio {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--nav-gap-lg);
+    margin-bottom: var(--nav-gap-2xl);
+    padding: var(--nav-gap-xl) var(--nav-gap-lg);
+    background:
+        radial-gradient(ellipse at 50% 40%, rgba(143, 166, 149, 0.06) 0%, rgba(10, 19, 17, 0) 70%),
+        #0a1311;
+    border: 1px solid var(--nav-border-subtle);
+    border-radius: var(--nav-radius-lg);
+}
+
+.nav-vial-trio__cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    min-width: 0;
+}
+
+.nav-vial-trio__viewer {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    background: transparent;
+    --poster-color: transparent;
+}
+
+.nav-vial-trio__meta {
+    margin-top: var(--nav-gap-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+    text-align: center;
+}
+
+.nav-vial-trio__name {
+    font-family: var(--nav-font-serif, Georgia, serif);
+    font-size: 1.45rem;
+    letter-spacing: 0.02em;
+    color: var(--nav-text-strong, #e8eae7);
+}
+
+.nav-vial-trio__desc {
+    font-family: var(--nav-font-mono, "SF Mono", Menlo, monospace);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--nav-text-muted, #8fa695);
+}
+
+@media (max-width: 900px) {
+    .nav-vial-trio {
+        grid-template-columns: 1fr;
+        gap: var(--nav-gap-md);
+        padding: var(--nav-gap-lg) var(--nav-gap-md);
+    }
+    .nav-vial-trio__viewer {
+        aspect-ratio: 4 / 5;
+        max-height: 520px;
+    }
+}
+
 .nav-about-grid {
     display: grid;
     gap: var(--nav-gap-2xl);
