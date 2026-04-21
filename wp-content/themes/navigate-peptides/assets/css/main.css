@@ -495,12 +495,17 @@ body.admin-bar .nav-header {
     display: block;
 }
 
-/* Mobile Menu */
+/* Mobile Menu — compact. Previously showed every top-level item plus all
+   submenu items expanded (18 rows total: 8 category children, 4 quality
+   children, 2 about children). That pushed the drawer past 600px on phone
+   screens — "too big." Now the drawer shows just the 4 top-level items +
+   Request Access CTA. Users reach submenu destinations via each top page
+   (e.g. /compounds/ shows all 8 categories as cards). */
 .nav-mobile-menu {
     display: none;
     border-top: 1px solid var(--nav-border-subtle);
     background-color: var(--nav-bg-primary);
-    padding: 24px 0;
+    padding: 12px 0 16px;
     max-height: calc(100vh - 72px);
     overflow-y: auto;
 }
@@ -511,31 +516,38 @@ body.admin-bar .nav-header {
 }
 
 .nav-mobile-menu__list {
-    margin-bottom: 24px;
+    margin: 0 0 12px;
+    padding: 0;
+    list-style: none;
 }
 
 .nav-mobile-menu__list > .menu-item {
-    margin-bottom: 16px;
+    margin: 0;
+    border-bottom: 1px solid rgba(234, 234, 234, 0.06);
+}
+.nav-mobile-menu__list > .menu-item:last-child {
+    border-bottom: 0;
 }
 
 .nav-mobile-menu__list > .menu-item > a {
-    font-size: 14px;
-    font-weight: 600;
+    display: block;
+    padding: 14px 4px;
+    font-size: 15px;
+    font-weight: 500;
     color: var(--nav-text-primary);
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+}
+.nav-mobile-menu__list > .menu-item > a:active {
+    color: var(--nav-accent, #9C843E);
 }
 
+/* Hide submenus on mobile — 14 extra rows pushed the drawer past the fold.
+   The destination pages (Compounds, Quality, About) render their own
+   category/subpage grids, so discoverability isn't lost — just deferred
+   by one tap. */
 .nav-mobile-menu__list .sub-menu {
-    padding-left: 16px;
-    margin-top: 8px;
-}
-
-.nav-mobile-menu__list .sub-menu .menu-item {
-    margin-bottom: 4px;
-}
-
-.nav-mobile-menu__list .sub-menu .menu-item a {
-    font-size: 14px;
-    color: var(--nav-text-secondary);
+    display: none;
 }
 
 /* Desktop breakpoint */
