@@ -1044,12 +1044,21 @@ add_action('save_post', function (int $post_id) {
 add_action('wp_head', function () {
     if (is_front_page()) {
         $theme_uri = get_template_directory_uri();
-        // Branded vial SVG is the LCP hero — ~8KB, loads inline in one round
-        // trip, no WebGL or model-viewer CDN dependency. `type="image/svg+xml"`
-        // so browsers apply the correct MIME-based decode path.
-        echo '<link rel="preload" as="image" type="image/svg+xml" href="' .
-            esc_url($theme_uri . '/assets/images/vial-brand.svg') .
-            '" fetchpriority="high">' . "\n";
+        $theme_dir = get_template_directory();
+        // Preload the vial GLB so WebGL can start decoding it before the
+        // model-viewer script even registers. The SVG preload here used to
+        // hand the branded SVG to the browser for the old hero composition
+        // — that asset isn't used on the homepage anymore (we ship the
+        // rotating 3D vial directly), so preloading it was wasteful AND it
+        // left the SVG cached in browsers that had seen the old markup.
+        $glb_rel = '/assets/models/vial.glb';
+        $glb_ver = function_exists('nav_asset_version')
+            ? nav_asset_version(ltrim($glb_rel, '/'))
+            : '';
+        $glb_url = $theme_uri . $glb_rel . ($glb_ver ? '?v=' . $glb_ver : '');
+        echo '<link rel="preload" as="fetch" type="model/gltf-binary" '
+            . 'href="' . esc_url($glb_url) . '" crossorigin="anonymous" '
+            . 'fetchpriority="high">' . "\n";
         return;
     }
 
