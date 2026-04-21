@@ -853,13 +853,14 @@ body.admin-bar .nav-header {
 /* Hero 3D vial — model-viewer fills the container. GLB is self-branded
    (amber cap, green glass, Navigate Peptides label + RUO chip baked in).
    Container uses explicit height so model-viewer's 100% height doesn't
-   collapse to auto. */
+   collapse to auto. Shown on every breakpoint; size scales via the
+   responsive overrides further down. */
 .nav-hero__vial {
-    display: none;
+    display: flex;
     flex-direction: column;
     align-items: center;
     gap: var(--nav-gap-md);
-    height: 620px;
+    height: 520px;
     width: 100%;
     max-width: 520px;
     margin: 0 auto;
@@ -1094,13 +1095,22 @@ body.admin-bar .nav-header {
     .nav-hero__badges { flex-direction: row; gap: 24px; }
 }
 
+/* Small phones: keep the vial punchy but shorter so the headline +
+   CTAs above it don't get pushed below the fold. */
+@media (max-width: 480px) {
+    .nav-hero__vial {
+        height: 440px;
+        max-width: 380px;
+    }
+}
+
 @media (min-width: 1024px) {
     .nav-hero__inner {
         grid-template-columns: 1fr 0.9fr 0.85fr;
         align-items: center;
         gap: var(--nav-gap-xl);
     }
-    .nav-hero__vial { display: flex; height: 620px; }
+    .nav-hero__vial { height: 620px; }
     .nav-hero__info-panel { display: block; }
 }
 
@@ -1869,10 +1879,12 @@ body.admin-bar .nav-header {
 .nav-about-hero__viewer {
     width: 100%;
     /* Taller aspect + no tight max-height so the vial dominates the
-       hero canvas instead of floating in a pool of empty dark space. */
-    aspect-ratio: 3 / 4;
-    min-height: 640px;
-    max-height: 820px;
+       hero canvas instead of floating in a pool of empty dark space.
+       Extra vertical padding prevents the vial base from being clipped
+       against the canvas edge at the default camera orbit. */
+    aspect-ratio: 3 / 4.25;
+    min-height: 680px;
+    max-height: 860px;
     background: transparent;
     --poster-color: transparent;
 }
@@ -1957,9 +1969,9 @@ body.admin-bar .nav-header {
         min-height: 0;
     }
     .nav-about-hero__viewer {
-        min-height: 520px;
-        max-height: 75vh;
-        aspect-ratio: 4 / 5;
+        min-height: 540px;
+        max-height: 78vh;
+        aspect-ratio: 3 / 4.25;
     }
     .nav-about-hero__statement {
         text-align: center;
@@ -1975,8 +1987,9 @@ body.admin-bar .nav-header {
         gap: var(--nav-gap-lg);
     }
     .nav-about-hero__viewer {
-        min-height: 420px;
-        max-height: 72vh;
+        min-height: 460px;
+        max-height: 78vh;
+        aspect-ratio: 3 / 4.25;
     }
     .nav-about-hero__hint {
         opacity: 1;
