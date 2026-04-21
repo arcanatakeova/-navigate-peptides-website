@@ -100,13 +100,19 @@ Use this if Path A is unavailable, if you want multi-environment deploys (stagin
 
 | Secret name | Value |
 |---|---|
-| `WPCOM_SFTP_HOST` | SFTP hostname from wordpress.com |
-| `WPCOM_SFTP_PORT` | `22` (or whatever they gave you) |
-| `WPCOM_SFTP_USER` | SFTP username |
-| `WPCOM_SFTP_PASSWORD` | SFTP password (or use `WPCOM_SFTP_KEY` for SSH key auth) |
-| `WPCOM_THEME_PATH` | Absolute path, e.g. `/htdocs/wp-content/themes/navigate-peptides` |
+| `WPCOM_SSH_HOST` | `ssh.wp.com` |
+| `WPCOM_SSH_PORT` | `22` |
+| `WPCOM_SSH_USER` | `<yoursite>.wordpress.com` (matches the user you SSH as) |
+| `WPCOM_SSH_KEY` | The **private** key that pairs with the public key registered on wordpress.com (full multi-line PEM/OpenSSH content including the BEGIN/END lines) |
+| `WPCOM_THEME_PATH` | `/srv/htdocs/wp-content/themes/navigate-peptides` |
 
-Password auth is simpler; SSH key is more secure. If you use a key, store the private key in `WPCOM_SFTP_KEY` instead and update the workflow accordingly.
+Generate a dedicated ed25519 keypair just for this deploy (don't reuse a personal key):
+```
+ssh-keygen -t ed25519 -f ~/.ssh/wpcom_deploy -N "" -C "wpcom-deploy"
+```
+Paste the contents of `~/.ssh/wpcom_deploy.pub` into wordpress.com's SSH key dashboard. Add the contents of `~/.ssh/wpcom_deploy` (the private one) as the `WPCOM_SSH_KEY` secret in GitHub.
+
+Password auth is not supported — wordpress.com's SSH rejects password attempts consistently in our testing, so the workflow is key-only.
 
 ### 3. Enable the workflow
 
