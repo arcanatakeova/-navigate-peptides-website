@@ -676,7 +676,9 @@ add_action('wp_head', function () {
         $image_url = get_the_post_thumbnail_url($product->get_id(), 'large');
     }
     if (!$image_url) {
-        $image_url = get_template_directory_uri() . '/assets/images/vial-ghkcu-single.png';
+        // Branded vial SVG is the fallback — replaces the raster PNG that
+        // previously shipped. Schema.org allows SVG for Product.image.
+        $image_url = get_template_directory_uri() . '/assets/images/vial-brand.svg';
     }
 
     // additionalProperty — chemical/physical attributes
@@ -1012,19 +1014,13 @@ add_action('save_post', function (int $post_id) {
  * ----------------------------------------------------------------*/
 add_action('wp_head', function () {
     if (is_front_page()) {
-        $theme_dir = get_template_directory();
         $theme_uri = get_template_directory_uri();
-        // Prefer webp when the file exists on disk (tested via realpath, not HTTP).
-        $webp = $theme_dir . '/assets/images/vial-ghkcu-single.webp';
-        if (file_exists($webp)) {
-            echo '<link rel="preload" as="image" type="image/webp" href="' .
-                esc_url($theme_uri . '/assets/images/vial-ghkcu-single.webp') .
-                '" fetchpriority="high">' . "\n";
-        } else {
-            echo '<link rel="preload" as="image" href="' .
-                esc_url($theme_uri . '/assets/images/vial-ghkcu-single.png') .
-                '" fetchpriority="high">' . "\n";
-        }
+        // Branded vial SVG is the LCP hero — ~8KB, loads inline in one round
+        // trip, no WebGL or model-viewer CDN dependency. `type="image/svg+xml"`
+        // so browsers apply the correct MIME-based decode path.
+        echo '<link rel="preload" as="image" type="image/svg+xml" href="' .
+            esc_url($theme_uri . '/assets/images/vial-brand.svg') .
+            '" fetchpriority="high">' . "\n";
         return;
     }
 

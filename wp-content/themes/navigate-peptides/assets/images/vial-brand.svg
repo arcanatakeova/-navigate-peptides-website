@@ -1,0 +1,188 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 640" width="420" height="640" role="img" aria-labelledby="nav-vial-title nav-vial-desc">
+  <title id="nav-vial-title">Navigate Peptides — Branded Research Vial</title>
+  <desc id="nav-vial-desc">Amber-capped glass research vial with the Navigate Peptides wordmark on a paper label; spec strip lists molecular weight, purity, and batch; marked for research use only.</desc>
+
+  <defs>
+    <!-- Ambient glow behind the vial -->
+    <radialGradient id="nav-ambient" cx="50%" cy="52%" r="55%">
+      <stop offset="0%"  stop-color="#4A6B5F" stop-opacity="0.45"/>
+      <stop offset="45%" stop-color="#1F3028" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#141F1B" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Amber metallic cap — vertical sheen -->
+    <linearGradient id="nav-cap" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#6E5A24"/>
+      <stop offset="18%"  stop-color="#B59A50"/>
+      <stop offset="48%"  stop-color="#9C843E"/>
+      <stop offset="72%"  stop-color="#7A6830"/>
+      <stop offset="100%" stop-color="#5B4A1E"/>
+    </linearGradient>
+
+    <!-- Cap highlight — one bright vertical band to sell the metal -->
+    <linearGradient id="nav-cap-highlight" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="42%"  stop-color="#FFF3D2" stop-opacity="0.55"/>
+      <stop offset="58%"  stop-color="#FFFFFF" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Glass body — subtle sage-tinted cylinder -->
+    <linearGradient id="nav-glass" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#1F3028" stop-opacity="0.95"/>
+      <stop offset="22%"  stop-color="#2A3D35" stop-opacity="0.88"/>
+      <stop offset="50%"  stop-color="#304740" stop-opacity="0.80"/>
+      <stop offset="78%"  stop-color="#243731" stop-opacity="0.88"/>
+      <stop offset="100%" stop-color="#141F1B" stop-opacity="0.97"/>
+    </linearGradient>
+
+    <!-- Vertical glass reflection stripe -->
+    <linearGradient id="nav-reflection" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="45%"  stop-color="#D8E7DF" stop-opacity="0.38"/>
+      <stop offset="55%"  stop-color="#FFFFFF" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Lyophilized powder inside the vial -->
+    <linearGradient id="nav-powder" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#F6ECCF"/>
+      <stop offset="40%"  stop-color="#E5D5A8"/>
+      <stop offset="100%" stop-color="#9C843E"/>
+    </linearGradient>
+
+    <!-- Label paper — warm off-white with subtle vertical falloff -->
+    <linearGradient id="nav-paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#FDF9EE"/>
+      <stop offset="55%"  stop-color="#F6F0DE"/>
+      <stop offset="100%" stop-color="#EBE4D0"/>
+    </linearGradient>
+
+    <!-- Clip so the glass reflection + powder stay inside the body shape -->
+    <clipPath id="nav-body-clip">
+      <rect x="110" y="160" width="200" height="400" rx="18" ry="18"/>
+    </clipPath>
+
+    <!-- Soft drop shadow -->
+    <filter id="nav-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="9"/>
+    </filter>
+  </defs>
+
+  <!-- Ambient glow background (behind the vial) -->
+  <ellipse cx="210" cy="340" rx="190" ry="290" fill="url(#nav-ambient)"/>
+
+  <!-- Ground shadow -->
+  <ellipse cx="210" cy="596" rx="110" ry="10" fill="#000" opacity="0.42" filter="url(#nav-shadow)"/>
+
+  <!-- Cap crimp (amber metallic) -->
+  <g>
+    <!-- Main cap body -->
+    <rect x="150" y="74" width="120" height="58" rx="6" ry="6" fill="url(#nav-cap)"/>
+    <!-- Highlight sweep -->
+    <rect x="150" y="74" width="120" height="58" rx="6" ry="6" fill="url(#nav-cap-highlight)"/>
+    <!-- Crimp flutes (vertical lines) -->
+    <g stroke="#5B4A1E" stroke-width="1" opacity="0.55">
+      <line x1="162" y1="78" x2="162" y2="128"/>
+      <line x1="174" y1="78" x2="174" y2="128"/>
+      <line x1="186" y1="78" x2="186" y2="128"/>
+      <line x1="198" y1="78" x2="198" y2="128"/>
+      <line x1="210" y1="78" x2="210" y2="128"/>
+      <line x1="222" y1="78" x2="222" y2="128"/>
+      <line x1="234" y1="78" x2="234" y2="128"/>
+      <line x1="246" y1="78" x2="246" y2="128"/>
+      <line x1="258" y1="78" x2="258" y2="128"/>
+    </g>
+    <!-- Cap lip (darker band at base) -->
+    <rect x="146" y="128" width="128" height="10" rx="2" ry="2" fill="#4A3D18"/>
+    <!-- Top cap highlight rim -->
+    <rect x="150" y="74" width="120" height="3" fill="#D8BF78" opacity="0.85"/>
+  </g>
+
+  <!-- Glass neck -->
+  <rect x="166" y="138" width="88" height="28" fill="url(#nav-glass)"/>
+  <!-- Neck-to-shoulder transition -->
+  <path d="M166,166 Q160,168 156,180 L156,184 L264,184 L264,180 Q260,168 254,166 Z" fill="url(#nav-glass)"/>
+
+  <!-- Glass body (main cylinder) -->
+  <rect x="110" y="180" width="200" height="400" rx="18" ry="18" fill="url(#nav-glass)"/>
+
+  <!-- Inside-body details — clipped to the body shape -->
+  <g clip-path="url(#nav-body-clip)">
+    <!-- Lyophilized powder fill, bottom 55% -->
+    <rect x="110" y="380" width="200" height="200" fill="url(#nav-powder)" opacity="0.92"/>
+    <!-- Powder top irregular edge — a few overlapping shapes -->
+    <path d="M110,386 Q140,378 170,384 T230,380 T290,386 T310,384 L310,400 L110,400 Z" fill="#EBD79F" opacity="0.75"/>
+    <path d="M110,392 Q150,388 200,392 T310,390 L310,404 L110,404 Z" fill="#D7BF7C" opacity="0.55"/>
+
+    <!-- Glass reflection stripe (left inner) -->
+    <rect x="122" y="180" width="22" height="400" fill="url(#nav-reflection)" opacity="0.9"/>
+    <!-- Thin secondary highlight (right inner, dimmer) -->
+    <rect x="286" y="180" width="6" height="400" fill="#FFFFFF" opacity="0.08"/>
+  </g>
+
+  <!-- Glass outline refine -->
+  <rect x="110" y="180" width="200" height="400" rx="18" ry="18" fill="none" stroke="#0D1A15" stroke-width="1.2" opacity="0.7"/>
+  <rect x="110.5" y="180.5" width="199" height="399" rx="18" ry="18" fill="none" stroke="#7C9489" stroke-width="0.6" opacity="0.55"/>
+
+  <!-- Label (paper overlay) -->
+  <g>
+    <!-- Paper background -->
+    <rect x="118" y="208" width="184" height="288" rx="3" ry="3" fill="url(#nav-paper)"/>
+    <!-- Paper left accent (sage hairline) -->
+    <rect x="118" y="208" width="3" height="288" fill="#4A6B5F"/>
+    <!-- Paper subtle edge shadow -->
+    <rect x="118" y="208" width="184" height="288" rx="3" ry="3" fill="none" stroke="#C9C1AC" stroke-width="0.8"/>
+
+    <!-- Top kicker -->
+    <text x="133" y="238" font-family="'SF Mono','JetBrains Mono','Courier New',monospace"
+          font-size="9.5" letter-spacing="3.2" fill="#4A6B5F" font-weight="700">RESEARCH GRADE</text>
+
+    <!-- Wordmark: NAVIGATE (small caps, tracked) -->
+    <text x="133" y="266" font-family="'Inter','Helvetica Neue',sans-serif"
+          font-size="13.2" letter-spacing="4.2" fill="#141F1B" font-weight="700">NAVIGATE</text>
+
+    <!-- Wordmark: Peptides (Playfair italic, large) -->
+    <text x="131" y="304" font-family="'Playfair Display',Georgia,serif"
+          font-size="32" fill="#1F3028" font-weight="500" font-style="italic">Peptides</text>
+
+    <!-- Divider -->
+    <line x1="133" y1="320" x2="287" y2="320" stroke="#141F1B" stroke-width="0.7" opacity="0.85"/>
+
+    <!-- Spec table rows -->
+    <g font-family="'SF Mono','JetBrains Mono','Courier New',monospace" fill="#141F1B">
+      <text x="133" y="344" font-size="9" letter-spacing="1.6" fill="#6B7570" font-weight="600">COMPOUND</text>
+      <text x="287" y="344" font-size="10.5" text-anchor="end" font-weight="700">GHK-Cu</text>
+
+      <text x="133" y="366" font-size="9" letter-spacing="1.6" fill="#6B7570" font-weight="600">MW</text>
+      <text x="287" y="366" font-size="10.5" text-anchor="end" font-weight="700">340.4 g/mol</text>
+
+      <text x="133" y="388" font-size="9" letter-spacing="1.6" fill="#6B7570" font-weight="600">PURITY</text>
+      <text x="287" y="388" font-size="10.5" text-anchor="end" font-weight="700">≥99% HPLC</text>
+
+      <text x="133" y="410" font-size="9" letter-spacing="1.6" fill="#6B7570" font-weight="600">FORM</text>
+      <text x="287" y="410" font-size="10.5" text-anchor="end" font-weight="700">Lyophilized</text>
+
+      <text x="133" y="432" font-size="9" letter-spacing="1.6" fill="#6B7570" font-weight="600">BATCH</text>
+      <text x="287" y="432" font-size="10.5" text-anchor="end" font-weight="700">Q247A</text>
+    </g>
+
+    <!-- Secondary hairline -->
+    <line x1="133" y1="452" x2="287" y2="452" stroke="#141F1B" stroke-width="0.4" opacity="0.35"/>
+
+    <!-- RUO chip + footer -->
+    <g>
+      <rect x="133" y="462" width="46" height="20" rx="2" ry="2" fill="#4A141C"/>
+      <text x="156" y="476" font-family="'Inter','Helvetica Neue',sans-serif"
+            font-size="10" letter-spacing="2.4" fill="#FDF9EE" font-weight="700" text-anchor="middle">RUO</text>
+      <text x="187" y="477" font-family="'SF Mono','JetBrains Mono','Courier New',monospace"
+            font-size="8.5" fill="#2B3733" letter-spacing="0.5">Not for human use</text>
+    </g>
+  </g>
+
+  <!-- Outer glass reflection (subtle vertical highlight on left edge of glass) -->
+  <rect x="122" y="186" width="8" height="384" rx="4" fill="#E8F0EB" opacity="0.12"/>
+
+  <!-- Cap base shadow band on vial -->
+  <rect x="110" y="180" width="200" height="6" fill="#000" opacity="0.35"/>
+</svg>

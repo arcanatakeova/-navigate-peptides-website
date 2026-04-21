@@ -83,7 +83,22 @@ while (have_posts()) : the_post();
                     <?php elseif (has_post_thumbnail()) : ?>
                         <?php the_post_thumbnail('product-hero'); ?>
                     <?php else : ?>
-                        <img src="<?php echo esc_url(nav_get_category_placeholder($cat ? $cat->slug : '')); ?>" alt="<?php the_title_attribute(); ?>" class="nav-product-single__placeholder-img" width="800" height="800">
+                        <!-- No product photo, no GLB — fall back to the Navigate Peptides
+                             branded research vial. The SVG label panel shows GHK-Cu specs,
+                             which is a reasonable category-agnostic default for
+                             research-peptide products. -->
+                        <img
+                            src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/vial-brand.svg'); ?>"
+                            alt="<?php echo esc_attr(sprintf(
+                                /* translators: %s: product name */
+                                __('%s — Navigate Peptides branded research vial placeholder', 'navigate-peptides'),
+                                wp_strip_all_tags(get_the_title())
+                            )); ?>"
+                            class="nav-product-single__placeholder-img"
+                            width="420"
+                            height="640"
+                            decoding="async"
+                        >
                     <?php endif; ?>
                 </div>
                 <?php if ($product->get_gallery_image_ids()) : ?>
