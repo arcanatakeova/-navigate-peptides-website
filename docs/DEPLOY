@@ -1,0 +1,151 @@
+# Navigate Peptides — Deployment (wordpress.com Business/Commerce)
+
+This theme lives in this GitHub repo at `wp-content/themes/navigate-peptides/`. This doc explains how to get it onto a wordpress.com-hosted WordPress install and keep it in sync when we push to `main`.
+
+## Plan-tier prerequisite (verify before starting)
+
+**wordpress.com Free / Personal / Premium DO NOT allow custom themes or plugins.** They only support the wordpress.com marketplace. If your plan is one of these, the theme literally cannot be installed — you must upgrade.
+
+Minimum plan for this theme + AllayPay NMI plugin + WooCommerce:
+
+| Plan | Custom theme? | Custom plugin? | WooCommerce | SFTP/SSH | GitHub Deployments | Monthly (billed yearly) |
+|---|---|---|---|---|---|---|
+| Free / Personal / Premium | ❌ | ❌ | ❌ | ❌ | ❌ | $0 – $8 |
+| **Business** | ✅ | ✅ | manual install | ✅ | ✅ | ~$25 |
+| **Commerce** | ✅ | ✅ | pre-installed | ✅ | ✅ | ~$45 |
+
+Pick **Commerce** if you want WooCommerce preinstalled + WC shipping/payment UX already wired in the dashboard. Pick **Business** if you want to save ~$20/month and don't mind installing WooCommerce + the AllayPay NMI plugin yourself.
+
+Either works. Both expose the SFTP credentials and the GitHub Deployments feature described below.
+
+Verify your plan: wordpress.com dashboard → **Upgrades** → **Plan**. If it says "Free" / "Personal" / "Premium," upgrade to Business or Commerce before proceeding.
+
+## Two deployment paths
+
+**Path A — wordpress.com's native GitHub Deployments (recommended).** Connect the repo once, push to `main`, wordpress.com pulls automatically. Zero CI/CD infrastructure to maintain on our side. Uses their Atomic hosting layer.
+
+**Path B — GitHub Actions → SFTP.** We push theme files via SFTP using credentials from wordpress.com. More control, vendor-neutral, but we have to maintain the workflow. Use as fallback if Path A has any limitation you hit (e.g., directory paths, branch rules).
+
+Path A is the primary recommendation. Path B is documented in the "Fallback" section below.
+
+---
+
+## Path A — wordpress.com native GitHub Deployments
+
+### 1. Install the wordpress.com Deploy app on GitHub
+
+1. Go to **wordpress.com dashboard → Hosting Overview** (or the site's individual dashboard).
+2. Find the **Deployments** section (sometimes under **Developer Tools**).
+3. Click **Connect GitHub account**. This walks you through installing the "WordPress.com Deployments" GitHub App.
+4. Grant it access to **`arcanatakeova/-navigate-peptides-website`** (only that repo, not all repos).
+
+### 2. Configure the deployment
+
+In the Deployments UI on wordpress.com:
+
+- **Repository:** `arcanatakeova/-navigate-peptides-website`
+- **Branch:** `main`
+- **Source directory:** `/wp-content/themes/navigate-peptides`
+- **Target directory:** `/wp-content/themes/navigate-peptides`
+- **Mode:** Automatic (deploy on every push to main) — recommended
+- **Install command:** (leave empty; this is a pure-PHP theme with no build step)
+
+If their UI uses different wording for "source directory," the concept is: copy FROM this path in the repo TO the same path inside your WP install's document root.
+
+### 3. Run the first deploy manually
+
+- Click **Deploy now** or **Trigger deploy** in the UI.
+- Watch the log — first deploy may take 1–2 minutes.
+- When it succeeds, check the site: **WP admin → Appearance → Themes**. Navigate Peptides should now appear in the list.
+
+### 4. Activate the theme
+
+In **WP admin → Appearance → Themes → Navigate Peptides → Activate.**
+
+### 5. Verify
+
+- Frontend: site loads with the new hero, category icons, footer, etc.
+- WooCommerce-backed pages (shop, product, cart, checkout) render with our overrides.
+- Homepage shows the branded SVG vial (not the old PNG).
+
+### 6. Ongoing workflow
+
+After this is set up, every merge to `main` deploys automatically. No manual steps. To roll back, revert the merge commit on GitHub — the revert itself is a new push to main, so wordpress.com deploys the reverted state.
+
+### Troubleshooting Path A
+
+**"Theme activates but pages 500."** Check the WordPress debug log via SFTP or SSH: `wp-content/debug.log`. Most likely culprit is a PHP fatal from a function we call that the WP version doesn't have; wordpress.com runs current WP so this shouldn't happen, but flag in commit message if it does.
+
+**"Deploy succeeds but files don't update."** wordpress.com may cache static theme assets at their edge. Use WP admin → Settings → General → "Clear cache" (the wp.com plan's page cache is Varnish-backed; busting it requires the dashboard button or a `Cache-Control: no-cache` override).
+
+**"GitHub push triggers no deploy."** Check the deployment log in wordpress.com's UI. Common cause: the GitHub App lost access to the repo (check **GitHub → Settings → Applications → WordPress.com Deployments** and verify `-navigate-peptides-website` is in the allowed repos list).
+
+**"Source directory doesn't match."** If wordpress.com expects a specific directory layout you can't match, fall through to Path B.
+
+---
+
+## Path B — GitHub Actions → SFTP (fallback)
+
+Use this if Path A is unavailable, if you want multi-environment deploys (staging + prod), or if you want deploys gated by CI status.
+
+### 1. Get SFTP credentials from wordpress.com
+
+- **wordpress.com dashboard → Hosting → SFTP/SSH Credentials** (name varies).
+- Create a new credential pair (username + password, or generate an SSH key).
+- Note: **host**, **port** (usually 22), **username**, **password or private key**, and the **absolute path** to the WP install (usually `/home/<site>/public_html` or similar).
+
+### 2. Add secrets to the GitHub repo
+
+**GitHub → Settings → Secrets and variables → Actions**. Add these repository secrets (names must match the workflow):
+
+| Secret name | Value |
+|---|---|
+| `WPCOM_SSH_HOST` | `ssh.wp.com` |
+| `WPCOM_SSH_PORT` | `22` |
+| `WPCOM_SSH_USER` | `<yoursite>.wordpress.com` (matches the user you SSH as) |
+| `WPCOM_SSH_KEY` | The **private** key that pairs with the public key registered on wordpress.com (full multi-line PEM/OpenSSH content including the BEGIN/END lines) |
+| `WPCOM_THEME_PATH` | `/srv/htdocs/wp-content/themes/navigate-peptides` |
+
+Generate a dedicated ed25519 keypair just for this deploy (don't reuse a personal key):
+```
+ssh-keygen -t ed25519 -f ~/.ssh/wpcom_deploy -N "" -C "wpcom-deploy"
+```
+Paste the contents of `~/.ssh/wpcom_deploy.pub` into wordpress.com's SSH key dashboard. Add the contents of `~/.ssh/wpcom_deploy` (the private one) as the `WPCOM_SSH_KEY` secret in GitHub.
+
+Password auth is not supported — wordpress.com's SSH rejects password attempts consistently in our testing, so the workflow is key-only.
+
+### 3. Enable the workflow
+
+The workflow is already committed at `.github/workflows/deploy-wpcom-sftp.yml`. It triggers on:
+
+- **Push to `main`** where any file under `wp-content/themes/navigate-peptides/` changed
+- **Manual dispatch** (**Actions → Deploy theme via SFTP → Run workflow**) with an optional `dry_run` checkbox
+
+### 4. Run the first deploy manually (dry-run)
+
+**Actions → Deploy theme via SFTP → Run workflow → dry_run: ✓ → Run.**
+
+Check the workflow output. It should list what files *would* be pushed without actually pushing them.
+
+### 5. Deploy for real
+
+**Actions → Deploy theme via SFTP → Run workflow → dry_run: (unchecked) → Run.**
+
+Or just merge to `main` — the workflow triggers on push.
+
+### Troubleshooting Path B
+
+**"Authentication failed."** SFTP credentials are wrong. Regenerate via wordpress.com dashboard and update the secret.
+
+**"Permission denied writing to path."** The SFTP user doesn't have write access to `WPCOM_THEME_PATH`. Check wordpress.com's SFTP user docs — some plans require a specific subpath.
+
+**"Deploy succeeds but theme still shows old content."** wordpress.com's Varnish cache. Bust it from the dashboard.
+
+---
+
+## Safety notes (both paths)
+
+- **Never edit the theme directly on wordpress.com's dashboard / file editor.** Any server-side edit gets overwritten the next time we deploy, because both paths sync the entire theme directory. All edits go through git → PR → merge → deploy.
+- **Compliance copy in `inc/compliance.php` is legally load-bearing** (AllayPay processor audit). Reverting accidental edits to that file is the single most important reason to enforce the no-direct-editing rule.
+- **Activation state is stored in WP options**, not in theme files. Activating / deactivating the theme via the admin UI does not touch the repo and does not conflict with deploys.
+- **Uploaded media (`wp-content/uploads/`) and installed plugins (`wp-content/plugins/`) are NOT deployed** by either path — they're server-side state, managed through WP admin or WP-CLI.

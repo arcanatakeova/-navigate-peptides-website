@@ -1,0 +1,111 @@
+name: Deploy theme to wordpress.com
+
+# Push theme files to the wordpress.com server over SSH on every main-branch
+# push that touches the theme directory. Auth is key-based — wordpress.com's
+# password SSH is unreliable; the key was generated locally, public half
+# registered on wordpress.com via the dashboard, private half lives in this
+# repo's secrets as WPCOM_SSH_KEY.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'wp-content/themes/navigate-peptides/**'
+      - '.github/workflows/deploy-wpcom-sftp.yml'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (list what would deploy, don''t upload)'
+        type: boolean
+        default: false
+
+# Serialize deploys so two PRs merging in rapid succession don't race.
+concurrency:
+  group: deploy-wpcom-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Sync theme over SSH
+    runs-on: ubuntu-latest
+    # "production" environment lets you add required reviewers, deployment
+    # branch rules, or environment-scoped secrets from the repo Settings.
+    # Delete `environment: production` to deploy without gating.
+    environment: production
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify secrets are configured
+        run: |
+          missing=""
+          [ -z "${{ secrets.WPCOM_SSH_HOST }}" ]   && missing="$missing WPCOM_SSH_HOST"
+          [ -z "${{ secrets.WPCOM_SSH_USER }}" ]   && missing="$missing WPCOM_SSH_USER"
+          [ -z "${{ secrets.WPCOM_SSH_KEY }}" ]    && missing="$missing WPCOM_SSH_KEY"
+          [ -z "${{ secrets.WPCOM_THEME_PATH }}" ] && missing="$missing WPCOM_THEME_PATH"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing required secret(s):$missing"
+            echo "See docs/DEPLOY → Path B for setup."
+            exit 1
+          fi
+
+      - name: Load SSH key into agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.WPCOM_SSH_KEY }}
+
+      - name: Trust the wordpress.com host key
+        env:
+          PORT: ${{ secrets.WPCOM_SSH_PORT || 22 }}
+          HOST: ${{ secrets.WPCOM_SSH_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          ssh-keyscan -p "$PORT" -H "$HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy via rsync over SSH
+        env:
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+          PORT:    ${{ secrets.WPCOM_SSH_PORT || 22 }}
+          USER:    ${{ secrets.WPCOM_SSH_USER }}
+          HOST:    ${{ secrets.WPCOM_SSH_HOST }}
+          TARGET:  ${{ secrets.WPCOM_THEME_PATH }}
+        run: |
+          DRY=""
+          if [ "$DRY_RUN" = "true" ]; then
+            DRY="--dry-run -v"
+            echo "::notice::DRY RUN — no files will be uploaded."
+          fi
+
+          # --delete keeps the server exactly matching the repo's theme dir.
+          # Dev/debris excluded: git metadata, macOS Finder, CI workflow dir,
+          # any node_modules a future build step would create.
+          # Trailing slash on source ensures we sync CONTENTS (not the dir
+          # itself) into $TARGET. $TARGET is the absolute path to the theme
+          # directory on the wordpress.com server:
+          # /srv/htdocs/wp-content/themes/navigate-peptides
+          rsync -avz --delete $DRY \
+            --exclude '.DS_Store' \
+            --exclude '.git' \
+            --exclude '.gitignore' \
+            --exclude '.github' \
+            --exclude 'node_modules' \
+            -e "ssh -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=~/.ssh/known_hosts" \
+            wp-content/themes/navigate-peptides/ \
+            "${USER}@${HOST}:${TARGET}/"
+
+      - name: Post-deploy summary
+        if: success() && github.event.inputs.dry_run != 'true'
+        run: |
+          {
+            echo "### ✅ Deployed commit ${{ github.sha }}"
+            echo ""
+            echo "- Ref: \`${{ github.ref }}\`"
+            echo "- Actor: @${{ github.actor }}"
+            echo "- Target: \`${{ secrets.WPCOM_THEME_PATH }}\` on \`${{ secrets.WPCOM_SSH_HOST }}\`"
+            echo ""
+            echo "If the site still shows old content, bust the wordpress.com Varnish cache from the dashboard or run \`wp cache flush\` via SSH."
+          } >> "$GITHUB_STEP_SUMMARY"
