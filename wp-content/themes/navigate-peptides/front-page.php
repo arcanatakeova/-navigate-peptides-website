@@ -160,7 +160,7 @@ $theme_uri = get_template_directory_uri();
         <div class="nav-section__header nav-section__header--center">
             <h2 class="nav-section__title-caps"><?php esc_html_e('Research Categories', 'navigate-peptides'); ?></h2>
         </div>
-        <div class="nav-category-grid nav-category-grid--7">
+        <div class="nav-category-grid nav-category-grid--icons">
             <?php
             // Per-category scientific line-art icons matching Stephie's mockup v1.
             // Shown at 56px, stroked with the category's brand color.
@@ -191,6 +191,10 @@ $theme_uri = get_template_directory_uri();
                 // Metabolic — flask with droplets (mitochondrial flow)
                 ['name' => __('Metabolic Research', 'navigate-peptides'),      'slug' => 'metabolic-research',     'color' => '#2F4666',
                  'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6h12M20 6v14L10 38a3 3 0 002.5 5h23A3 3 0 0038 38L28 20V6"/><path d="M14 30h20"/><circle cx="22" cy="35" r="1.5" fill="currentColor"/><circle cx="28" cy="33" r="1" fill="currentColor"/></svg>'],
+
+                // Longevity — hourglass / bidirectional arrow (time + lifespan)
+                ['name' => __('Longevity Research', 'navigate-peptides'),      'slug' => 'longevity-research',     'color' => '#2E5C6A',
+                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6h24M12 42h24M14 6c0 6 3 10 10 16 7-6 10-10 10-16M14 42c0-6 3-10 10-16 7 6 10 10 10 16"/><circle cx="24" cy="24" r="1.5" fill="currentColor"/></svg>'],
 
                 // Research Blends — diamond / prism (multi-compound blend)
                 ['name' => __('Research Blends', 'navigate-peptides'),         'slug' => 'research-blends',        'color' => '#474C50',

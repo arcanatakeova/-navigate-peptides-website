@@ -463,6 +463,7 @@ function nav_get_category_color(string $slug): string {
         'inflammation-research'  => '#4A141C',
         'cellular-research'      => '#8E5660',
         'dermal-research'        => '#4A6B5F',
+        'longevity-research'     => '#2E5C6A',
         'research-blends'        => '#474C50',
     ];
     return $colors[$slug] ?? '#474C50';

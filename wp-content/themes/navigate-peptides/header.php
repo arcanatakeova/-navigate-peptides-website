@@ -109,6 +109,7 @@ if ($announcement) :
                             <li><a href="<?php echo esc_url(nav_get_product_cat_url('inflammation-research')); ?>"><?php esc_html_e('Inflammation Research', 'navigate-peptides'); ?></a></li>
                             <li><a href="<?php echo esc_url(nav_get_product_cat_url('cellular-research')); ?>"><?php esc_html_e('Cellular Research', 'navigate-peptides'); ?></a></li>
                             <li><a href="<?php echo esc_url(nav_get_product_cat_url('dermal-research')); ?>"><?php esc_html_e('Dermal Research', 'navigate-peptides'); ?></a></li>
+                            <li><a href="<?php echo esc_url(nav_get_product_cat_url('longevity-research')); ?>"><?php esc_html_e('Longevity Research', 'navigate-peptides'); ?></a></li>
                             <li><a href="<?php echo esc_url(nav_get_product_cat_url('research-blends')); ?>"><?php esc_html_e('Research Blends', 'navigate-peptides'); ?></a></li>
                         </ul>
                     </li>
