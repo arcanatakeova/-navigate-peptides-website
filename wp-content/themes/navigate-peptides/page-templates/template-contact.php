@@ -25,17 +25,29 @@ get_header();
                     <p>Your inquiry has been submitted. Our team will respond within 1-2 business days.</p>
                 </div>
             <?php elseif (isset($_GET['error'])) :
-                $error_messages = [
-                    'required' => 'Please fill in all required fields.',
-                    'email'    => 'Please enter a valid email address.',
-                    'rate'     => 'You\'ve submitted recently from this network — please wait 60 seconds and try again.',
-                    'send'     => 'Your message could not be sent automatically. Please email us directly at ' . antispambot(get_option('admin_email')) . '.',
-                ];
                 $error_key = sanitize_text_field(wp_unslash($_GET['error']));
-                $error_msg = $error_messages[$error_key] ?? 'An error occurred. Please try again.';
+                // Build the 'send' branch separately because antispambot()
+                // returns HTML entities (e.g. &#105;&#97;&#110;@example.com)
+                // and running the whole string through esc_html() would
+                // double-escape the ampersands, making the email unreadable.
+                if ($error_key === 'send') {
+                    $safe_email = antispambot((string) get_option('admin_email'));
+                    $error_html = sprintf(
+                        /* translators: %s: obfuscated mailto link to admin email */
+                        esc_html__('Your message could not be sent automatically. Please email us directly at %s.', 'navigate-peptides'),
+                        '<a href="mailto:' . esc_attr($safe_email) . '">' . $safe_email . '</a>'
+                    );
+                } else {
+                    $error_messages = [
+                        'required' => __('Please fill in all required fields.', 'navigate-peptides'),
+                        'email'    => __('Please enter a valid email address.', 'navigate-peptides'),
+                        'rate'     => __('You\'ve submitted recently from this network — please wait 60 seconds and try again.', 'navigate-peptides'),
+                    ];
+                    $error_html = esc_html($error_messages[$error_key] ?? __('An error occurred. Please try again.', 'navigate-peptides'));
+                }
             ?>
                 <div class="nav-form-error">
-                    <p><?php echo esc_html($error_msg); ?></p>
+                    <p><?php echo wp_kses($error_html, ['a' => ['href' => true]]); ?></p>
                 </div>
             <?php endif; ?>
 

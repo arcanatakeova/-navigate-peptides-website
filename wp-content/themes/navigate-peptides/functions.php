@@ -207,12 +207,24 @@ add_action('send_headers', function () {
     // 'unsafe-inline' on style-src: required by Woo + theme inline <style>.
     // ajax.googleapis.com: Google <model-viewer> CDN in header.php.
     // fonts.googleapis.com: Google Fonts CSS.
+    // GA4 hosts: only appended when GA4 is configured — keeps the CSP
+    // tight on sites that don't ship the gtag snippet, and prevents the
+    // previously-silent breakage where CSP blocked googletagmanager.com
+    // and connect-src 'self' blocked all analytics beacons.
+    $script_src  = "'self' https://ajax.googleapis.com https://fonts.googleapis.com 'unsafe-inline'";
+    $connect_src = "'self'";
+    $img_src     = "'self' data: https:";
+    if (function_exists('nav_ga4_id') && nav_ga4_id() !== '') {
+        $script_src  .= ' https://www.googletagmanager.com';
+        $connect_src .= ' https://www.google-analytics.com https://*.analytics.google.com https://*.g.doubleclick.net';
+        // GA4 sets a 1x1 collect pixel in some transports; img-src already permissive.
+    }
     $csp = "default-src 'self'; "
-        . "script-src 'self' https://ajax.googleapis.com https://fonts.googleapis.com 'unsafe-inline'; "
+        . "script-src {$script_src}; "
         . "style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; "
         . "font-src 'self' https://fonts.gstatic.com data:; "
-        . "img-src 'self' data: https:; "
-        . "connect-src 'self'; "
+        . "img-src {$img_src}; "
+        . "connect-src {$connect_src}; "
         . "frame-ancestors 'self'; "
         . "base-uri 'self'; "
         . "form-action {$form_action};";
@@ -370,11 +382,27 @@ function nav_visitor_key(): string {
         return 'ck:' . $fresh;
     }
 
-    // Last resort — use IP + UA hash so we at least have SOME key and
-    // don't bucket every guest together.
+    // Last resort — reached when headers are already sent (typically a
+    // cached response) AND there's no nav_visitor cookie AND no WC
+    // session. Previously we hashed (IP | UA) here, which bucketed every
+    // visitor behind the same NAT / VPN / Cloudflare Warp into one key —
+    // and since transients keyed on this value control cart-drawer auto-
+    // open and GA4 add_to_cart dedup, that leaked user A's events onto
+    // user B's next page load.
+    //
+    // Mix in random_bytes + microtime so the key is unique per request.
+    // This degrades the UX — auto-open and GA4-dedup won't work across
+    // requests for fully-cached anonymous traffic — but it prevents the
+    // cross-user contamination that the harsh audit caught.
+    $entropy = '';
+    if (function_exists('random_bytes')) {
+        try { $entropy = bin2hex(random_bytes(8)); } catch (Throwable $e) { $entropy = ''; }
+    }
+    if ($entropy === '') $entropy = (string) mt_rand();
     return 'fp:' . wp_hash(
         ($_SERVER['REMOTE_ADDR'] ?? '') . '|' .
-        substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 200)
+        substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 200) . '|' .
+        microtime(true) . '|' . $entropy
     );
 }
 

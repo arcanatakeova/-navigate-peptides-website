@@ -10,7 +10,7 @@ get_header();
 
 <section class="nav-page-hero">
     <div class="nav-container">
-        <h1 class="nav-page-hero__title"><?php wp_title(''); ?></h1>
+        <h1 class="nav-page-hero__title"><?php echo esc_html(wp_get_document_title()); ?></h1>
     </div>
 </section>
 
@@ -29,7 +29,7 @@ get_header();
             </div>
             <?php the_posts_pagination(['class' => 'nav-pagination']); ?>
         <?php else : ?>
-            <p class="nav-text-muted">No content found.</p>
+            <p class="nav-text-muted"><?php esc_html_e('No content found.', 'navigate-peptides'); ?></p>
         <?php endif; ?>
     </div>
 </section>
