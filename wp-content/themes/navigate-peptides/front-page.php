@@ -44,26 +44,14 @@ $theme_uri = get_template_directory_uri();
             </div>
         </div>
 
-        <!-- Center: 3D vial (rotating model-viewer) with branded SVG fallback
-             rendered as a sibling. The SVG is ALWAYS visible; model-viewer
-             sits on top and covers it once the 3D model has rendered. If
-             WebGL fails / model-viewer crashes / the GLB can't decode, the
-             SVG shows through. This sidesteps model-viewer's internal
-             poster-slot logic, which was failing silently in some browsers
-             and leaving the hero middle column empty.
-
-             Shipped compound is GHK-Cu; the right-hand spec panel MUST
-             match — swapping the vial requires swapping the spec block. -->
+        <!-- Center: 3D vial. The GLB is fully branded — glass body, amber
+             crimp cap, lyophilized powder, Navigate Peptides paper label
+             with wordmark + spec strip + RUO chip. No SVG fallback; if
+             WebGL fails the container is empty (acceptable — the spec
+             panel to the right carries the compound identity).
+             Shipped compound is GHK-Cu; swapping vials requires swapping
+             the spec block. -->
         <div class="nav-hero__vial">
-            <img
-                class="nav-hero__vial-fallback"
-                src="<?php echo esc_url($theme_uri . '/assets/images/vial-brand.svg'); ?>"
-                alt="Navigate Peptides GHK-Cu research vial"
-                width="420"
-                height="640"
-                fetchpriority="high"
-                decoding="async"
-            >
             <model-viewer
                 src="<?php echo esc_url($theme_uri . '/assets/models/vial.glb'); ?>"
                 alt="Navigate Peptides GHK-Cu research vial — 3D interactive model"
@@ -72,11 +60,11 @@ $theme_uri = get_template_directory_uri();
                 interaction-prompt="none"
                 rotation-per-second="12deg"
                 camera-orbit="20deg 75deg 105%"
-                min-camera-orbit="auto auto 80%"
-                max-camera-orbit="auto auto 150%"
+                min-camera-orbit="auto auto 60%"
+                max-camera-orbit="auto auto 160%"
                 environment-image="neutral"
-                shadow-intensity="0.4"
-                exposure="1.1"
+                shadow-intensity="0.5"
+                exposure="1.15"
                 loading="eager"
             ></model-viewer>
         </div>
