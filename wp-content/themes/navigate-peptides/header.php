@@ -12,8 +12,10 @@
     <?php
     // Google model-viewer loads on:
     //   - Home (hero always ships the rotating vial.glb)
+    //   - Quality page (interactive 3-vial trio in template-quality.php)
     //   - Single-product pages where admin has set _nav_3d_model_url
-    $nav_load_model_viewer = is_front_page();
+    $nav_load_model_viewer = is_front_page()
+        || is_page_template('page-templates/template-quality.php');
     if (!$nav_load_model_viewer && function_exists('is_product') && is_product()) {
         $glb = get_post_meta(get_the_ID(), '_nav_3d_model_url', true);
         $nav_load_model_viewer = ! empty($glb);
