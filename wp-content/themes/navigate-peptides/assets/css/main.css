@@ -4571,9 +4571,9 @@ a:focus-visible {
 .nav-product-card__image {
     position: relative;
     width: 100%;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 4 / 5;
     background:
-        radial-gradient(ellipse at 50% 40%, rgba(143, 166, 149, 0.08) 0%, rgba(10, 19, 17, 0) 68%),
+        radial-gradient(ellipse at 50% 38%, rgba(143, 166, 149, 0.10) 0%, rgba(10, 19, 17, 0) 65%),
         #0a1311;
     display: grid;
     place-items: center;
@@ -4583,12 +4583,22 @@ a:focus-visible {
 .nav-product-card__image img,
 .nav-product-card__image .attachment-product-card,
 .nav-product-card__image .wp-post-image,
+.nav-product-card__img,
 .nav-product-card__placeholder-img {
-    max-width: 72%;
-    max-height: 82%;
+    max-width: 92%;
+    max-height: 100%;
     width: auto;
     height: auto;
     object-fit: contain;
+    /* Floated shadow so the vial reads as a product photo, not an icon. */
+    filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.45));
+}
+/* Category SVG placeholder doesn't need the heavy drop-shadow */
+.nav-product-card__img[src$=".svg"],
+.nav-product-card__placeholder-img {
+    filter: none;
+    max-width: 68%;
+    max-height: 76%;
 }
 
 .nav-product-card__body {
