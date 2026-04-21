@@ -46,30 +46,29 @@ get_header();
                 <rect width="100%" height="100%" fill="url(#nav-hex)" mask="url(#nav-hex-mask)"/>
             </svg>
 
-            <!-- Left: 3D vial. Anchor wrap — short clicks navigate to
-                 the GHK-Cu product, drags stay inside model-viewer so
-                 camera-controls still work. -->
+            <!-- Left: 3D vial. The button below is the product link —
+                 the model-viewer itself stays interactive so camera-
+                 controls (drag to rotate / zoom) aren't hijacked. -->
             <div class="nav-about-hero__viewer-wrap">
+                <model-viewer
+                    class="nav-about-hero__viewer"
+                    src="<?php echo esc_url($about_glb); ?>"
+                    alt="Navigate Peptides research vial — interactive 3D"
+                    auto-rotate
+                    camera-controls
+                    interaction-prompt="none"
+                    rotation-per-second="14deg"
+                    camera-orbit="25deg 75deg 95%"
+                    min-camera-orbit="auto auto 70%"
+                    max-camera-orbit="auto auto 150%"
+                    environment-image="neutral"
+                    shadow-intensity="0.6"
+                    exposure="1.2"
+                    loading="eager"
+                ></model-viewer>
                 <a href="<?php echo esc_url(home_url('/product/ghk-cu/')); ?>"
-                   class="nav-about-hero__viewer-link"
-                   aria-label="View GHK-Cu product details">
-                    <model-viewer
-                        class="nav-about-hero__viewer"
-                        src="<?php echo esc_url($about_glb); ?>"
-                        alt="Navigate Peptides research vial — interactive 3D"
-                        auto-rotate
-                        camera-controls
-                        interaction-prompt="none"
-                        rotation-per-second="14deg"
-                        camera-orbit="25deg 75deg 95%"
-                        min-camera-orbit="auto auto 70%"
-                        max-camera-orbit="auto auto 150%"
-                        environment-image="neutral"
-                        shadow-intensity="0.6"
-                        exposure="1.2"
-                        loading="eager"
-                    ></model-viewer>
-                    <span class="nav-about-hero__hint" aria-hidden="true">View GHK-Cu →</span>
+                   class="nav-about-hero__cta">
+                    View GHK-Cu product <span aria-hidden="true">→</span>
                 </a>
             </div>
 

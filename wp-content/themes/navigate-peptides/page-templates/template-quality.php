@@ -41,9 +41,7 @@ get_header();
                 $src = $theme_uri . '/' . $rel . ($ver ? '?v=' . $ver : '');
             ?>
                 <figure class="nav-vial-trio__cell">
-                    <a href="<?php echo esc_url(home_url($v['url'])); ?>"
-                       class="nav-vial-trio__link"
-                       aria-label="View <?php echo esc_attr($v['label']); ?> product details">
+                    <div class="nav-vial-trio__stage">
                     <model-viewer
                         class="nav-vial-trio__viewer"
                         src="<?php echo esc_url($src); ?>"
@@ -60,13 +58,13 @@ get_header();
                         exposure="1.15"
                         loading="eager"
                     ></model-viewer>
-                    <span class="nav-vial-trio__hint" aria-hidden="true">View product →</span>
-                    </a>
+                    </div>
                     <figcaption class="nav-vial-trio__meta">
-                        <a class="nav-vial-trio__name-link" href="<?php echo esc_url(home_url($v['url'])); ?>">
-                            <span class="nav-vial-trio__name"><?php echo esc_html($v['label']); ?></span>
-                        </a>
+                        <span class="nav-vial-trio__name"><?php echo esc_html($v['label']); ?></span>
                         <span class="nav-vial-trio__desc"><?php echo esc_html($v['desc']); ?></span>
+                        <a class="nav-vial-trio__cta" href="<?php echo esc_url(home_url($v['url'])); ?>">
+                            View product <span aria-hidden="true">→</span>
+                        </a>
                     </figcaption>
                 </figure>
             <?php endforeach; ?>
