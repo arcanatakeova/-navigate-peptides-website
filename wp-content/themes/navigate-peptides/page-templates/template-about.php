@@ -61,10 +61,9 @@ get_header();
                         camera-controls
                         interaction-prompt="none"
                         rotation-per-second="14deg"
-                        camera-orbit="25deg 75deg 65%"
-                        min-camera-orbit="auto auto 50%"
-                        max-camera-orbit="auto auto 140%"
-                        field-of-view="28deg"
+                        camera-orbit="25deg 75deg 95%"
+                        min-camera-orbit="auto auto 70%"
+                        max-camera-orbit="auto auto 150%"
                         environment-image="neutral"
                         shadow-intensity="0.6"
                         exposure="1.2"
