@@ -2771,30 +2771,32 @@ body.admin-bar .nav-header {
     color: var(--nav-text-muted);
 }
 
-/* Payment chip — flat rectangle that hosts the real brand SVG.
-   Card networks come with their own colored backgrounds baked into
-   the SVG; crypto logos are circular on transparent, so we give
-   every chip a uniform off-white pad and a soft border to create a
-   single cohesive trust row regardless of logo source. */
+/* Payment chips — no chip background. Card SVGs ship with their own
+   colored brand backgrounds baked in; crypto + ACH SVGs use a dark
+   brand-matched fill so they sit directly on the footer without a
+   white wrapper. Uniform height + auto width creates a clean trust
+   row with natural rhythm. */
 .nav-footer__payment-method {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 58px;
-    height: 36px;
-    padding: 4px;
-    border: 1px solid rgba(234, 234, 234, 0.12);
-    border-radius: 4px;
-    background: #ffffff;
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
-    overflow: hidden;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow: visible;
+    transition: transform 0.2s var(--nav-ease), filter 0.2s var(--nav-ease);
+}
+.nav-footer__payment-method:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.06);
 }
 .nav-footer__payment-method img {
-    max-width: 100%;
-    max-height: 100%;
+    height: 100%;
     width: auto;
-    height: auto;
-    object-fit: contain;
+    max-width: none;
+    display: block;
+    border-radius: 4px;
 }
 
 /* Legal link row in footer bottom bar */

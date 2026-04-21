@@ -129,7 +129,6 @@
         <!-- Accepted Payment Methods — trust signal, compliance-safe.
              Real brand marks read as more legitimate than text labels. -->
         <div class="nav-footer__payments" aria-label="<?php esc_attr_e('Accepted payment methods', 'navigate-peptides'); ?>">
-            <span class="nav-footer__payments-label"><?php esc_html_e('Accepted', 'navigate-peptides'); ?></span>
             <?php
             $nav_payments = [
                 'visa'       => __('Visa', 'navigate-peptides'),
