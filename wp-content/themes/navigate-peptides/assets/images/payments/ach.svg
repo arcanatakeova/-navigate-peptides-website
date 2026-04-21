@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 40" role="img" aria-label="ACH Bank Transfer">
+  <rect width="64" height="40" rx="5" fill="#ffffff"/>
+  <g stroke="#1f3a34" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M18 18l14-6 14 6"/>
+    <path d="M19 20v8M25 20v8M31 20v8M37 20v8M43 20v8"/>
+    <path d="M17 30h30"/>
+  </g>
+  <g font-family="Helvetica, Arial, sans-serif" font-weight="800" fill="#1f3a34" text-anchor="middle">
+    <text x="32" y="38" font-size="5.5" letter-spacing="1">ACH</text>
+  </g>
+</svg>

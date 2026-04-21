@@ -2771,16 +2771,30 @@ body.admin-bar .nav-header {
     color: var(--nav-text-muted);
 }
 
+/* Payment chip — flat rectangle that hosts the real brand SVG.
+   Card networks come with their own colored backgrounds baked into
+   the SVG; crypto logos are circular on transparent, so we give
+   every chip a uniform off-white pad and a soft border to create a
+   single cohesive trust row regardless of logo source. */
 .nav-footer__payment-method {
-    font-family: var(--nav-font-body);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    color: var(--nav-text-secondary);
-    padding: 4px 10px;
-    border: 1px solid rgba(234, 234, 234, 0.08);
-    border-radius: 2px;
-    background: rgba(10, 16, 14, 0.35);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 36px;
+    padding: 4px;
+    border: 1px solid rgba(234, 234, 234, 0.12);
+    border-radius: 4px;
+    background: #ffffff;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+}
+.nav-footer__payment-method img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
 }
 
 /* Legal link row in footer bottom bar */
