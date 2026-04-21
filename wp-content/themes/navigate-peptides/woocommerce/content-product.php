@@ -52,7 +52,7 @@ $cat_slug  = ($terms && !is_wp_error($terms)) ? $terms[0]->slug : '';
             <?php endif; ?>
             <div class="nav-product-card__footer">
                 <span class="nav-product-card__price"><?php echo $product->get_price_html(); ?></span>
-                <span class="nav-product-card__action"><?php esc_html_e('View →', 'navigate-peptides'); ?></span>
+                <span class="nav-product-card__action"><?php esc_html_e('View peptide →', 'navigate-peptides'); ?></span>
             </div>
         </div>
     </a>

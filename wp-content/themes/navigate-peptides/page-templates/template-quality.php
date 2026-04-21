@@ -63,7 +63,7 @@ get_header();
                         <span class="nav-vial-trio__name"><?php echo esc_html($v['label']); ?></span>
                         <span class="nav-vial-trio__desc"><?php echo esc_html($v['desc']); ?></span>
                         <a class="nav-vial-trio__cta" href="<?php echo esc_url(home_url($v['url'])); ?>">
-                            View product <span aria-hidden="true">→</span>
+                            View peptide <span aria-hidden="true">→</span>
                         </a>
                     </figcaption>
                 </figure>
