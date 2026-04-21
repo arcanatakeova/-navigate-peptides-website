@@ -1,0 +1,105 @@
+name: Deploy theme via SFTP
+
+# Fallback deploy path. Primary deploy path is wordpress.com's native GitHub
+# Deployments — see docs/DEPLOY for setup. This workflow exists so we can
+# push via SFTP when the native path isn't usable (multi-env, CI-gated
+# deploys, or plan limitations).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'wp-content/themes/navigate-peptides/**'
+      - '.github/workflows/deploy-wpcom-sftp.yml'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (list files that would deploy, don''t upload)'
+        type: boolean
+        default: false
+
+# Prevent two deploys racing to the same target.
+concurrency:
+  group: deploy-wpcom-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Sync theme to wordpress.com
+    runs-on: ubuntu-latest
+    # Gating the workflow on a GitHub "production" environment lets you add
+    # required reviewers, deployment branches policy, and environment-scoped
+    # secrets from Settings → Environments. Delete the `environment:` line
+    # if you don't want gating.
+    environment: production
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify secrets are configured
+        run: |
+          missing=""
+          [ -z "${{ secrets.WPCOM_SFTP_HOST }}" ]     && missing="$missing WPCOM_SFTP_HOST"
+          [ -z "${{ secrets.WPCOM_SFTP_USER }}" ]     && missing="$missing WPCOM_SFTP_USER"
+          [ -z "${{ secrets.WPCOM_SFTP_PASSWORD }}" ] && missing="$missing WPCOM_SFTP_PASSWORD"
+          [ -z "${{ secrets.WPCOM_THEME_PATH }}" ]    && missing="$missing WPCOM_THEME_PATH"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing required secret(s):$missing"
+            echo "See docs/DEPLOY → Path B for setup."
+            exit 1
+          fi
+
+      - name: Deploy via lftp (SFTP sync)
+        env:
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+          HOST:    ${{ secrets.WPCOM_SFTP_HOST }}
+          PORT:    ${{ secrets.WPCOM_SFTP_PORT || 22 }}
+          USER:    ${{ secrets.WPCOM_SFTP_USER }}
+          PASS:    ${{ secrets.WPCOM_SFTP_PASSWORD }}
+          TARGET:  ${{ secrets.WPCOM_THEME_PATH }}
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -qq -y lftp
+
+          SRC="wp-content/themes/navigate-peptides/"
+
+          # Exclude files that shouldn't ship to production.
+          EXCLUDES='
+            --exclude-glob .DS_Store
+            --exclude-glob .git
+            --exclude-glob .gitignore
+            --exclude-glob .github
+            --exclude-glob node_modules
+          '
+
+          DRY=""
+          if [ "$DRY_RUN" = "true" ]; then
+            DRY="--dry-run -v"
+            echo "::notice::DRY RUN — no files will be uploaded."
+          fi
+
+          # lftp's mirror -R uploads $SRC → remote $TARGET.
+          # --delete removes remote files not in repo (keeps server = repo).
+          # --parallel=4 speeds up small-file theme pushes.
+          # --only-newer skips files whose mtime matches to avoid re-writing.
+          # set net:timeout + ssl:verify-certificate for robustness.
+          lftp \
+            -c "
+              set sftp:auto-confirm yes;
+              set net:timeout 20;
+              set net:max-retries 2;
+              set ssl:verify-certificate no;
+              open -u '$USER','$PASS' -p $PORT sftp://$HOST;
+              mirror -R $DRY --delete --parallel=4 --only-newer $EXCLUDES '$SRC' '$TARGET';
+              bye
+            "
+
+      - name: Post-deploy summary
+        if: success() && github.event.inputs.dry_run != 'true'
+        run: |
+          echo "### Deployed commit ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Ref: ${{ github.ref }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Actor: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Target: \`${{ secrets.WPCOM_THEME_PATH }}\` on \`${{ secrets.WPCOM_SFTP_HOST }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- If the site still shows old content, bust the wordpress.com Varnish cache from the dashboard." >> $GITHUB_STEP_SUMMARY
