@@ -9,10 +9,10 @@
  * This module emits:
  *   - A meta generator tag in <head>.
  *   - A view-source HTML banner comment at the top of every page.
- *   - A visible "Built by Arcana Operations Developers" credit link
+ *   - A visible "Designed by Arcana Operations Developers" credit link
  *     rendered in the footer via nav_render_arcana_credit().
  *   - An admin footer credit in wp-admin.
- *   - A login screen "Built by" link on the custom login page.
+ *   - A login screen "Designed by" link on the custom login page.
  *
  * @package NavigatePeptides
  * @author  Arcana Operations Developers <hello@arcanaoperations.com>
@@ -40,7 +40,7 @@ function nav_render_arcana_credit(): string {
             <span class="nav-arcana-credit__arrow" aria-hidden="true">&rarr;</span>
         </a>',
         esc_url(NAV_ARCANA_URL),
-        esc_html__('Built by', 'navigate-peptides'),
+        esc_html__('Designed by', 'navigate-peptides'),
         esc_html(NAV_ARCANA_NAME),
         esc_html__('Custom WordPress sites', 'navigate-peptides')
     );
@@ -78,7 +78,7 @@ add_action('wp_head', function () {
 add_filter('admin_footer_text', function () {
     return sprintf(
         /* translators: 1: agency name, 2: tagline, 3: URL */
-        __('Built by <a href="%3$s" target="_blank" rel="noopener"><strong>%1$s</strong></a> — %2$s.', 'navigate-peptides'),
+        __('Designed by <a href="%3$s" target="_blank" rel="noopener"><strong>%1$s</strong></a> — %2$s.', 'navigate-peptides'),
         esc_html(NAV_ARCANA_NAME),
         esc_html__('custom WordPress sites and WooCommerce stores', 'navigate-peptides'),
         esc_url(NAV_ARCANA_URL)
@@ -93,7 +93,7 @@ add_action('login_footer', function () {
         '<p class="nav-arcana-login-credit" style="text-align:center;margin-top:24px;font-family:monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#888;">
             %1$s <a href="%4$s" target="_blank" rel="noopener" style="color:#9C843E;text-decoration:none;">%2$s</a> · %3$s
         </p>',
-        esc_html__('Built by', 'navigate-peptides'),
+        esc_html__('Designed by', 'navigate-peptides'),
         esc_html(NAV_ARCANA_NAME),
         esc_html__('arcanaoperations.com', 'navigate-peptides'),
         esc_url(NAV_ARCANA_URL)
