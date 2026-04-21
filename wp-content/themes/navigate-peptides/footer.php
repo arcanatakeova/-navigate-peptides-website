@@ -126,17 +126,38 @@
         <!-- Divider -->
         <hr class="nav-footer__divider">
 
-        <!-- Accepted Payment Methods — trust signal, compliance-safe -->
+        <!-- Accepted Payment Methods — trust signal, compliance-safe.
+             Real brand marks read as more legitimate than text labels. -->
         <div class="nav-footer__payments" aria-label="<?php esc_attr_e('Accepted payment methods', 'navigate-peptides'); ?>">
             <span class="nav-footer__payments-label"><?php esc_html_e('Accepted', 'navigate-peptides'); ?></span>
-            <span class="nav-footer__payment-method">Visa</span>
-            <span class="nav-footer__payment-method">Mastercard</span>
-            <span class="nav-footer__payment-method">Amex</span>
-            <span class="nav-footer__payment-method">Discover</span>
-            <span class="nav-footer__payment-method">Bitcoin</span>
-            <span class="nav-footer__payment-method">Ethereum</span>
-            <span class="nav-footer__payment-method">USDC</span>
-            <span class="nav-footer__payment-method">ACH</span>
+            <?php
+            $nav_payments = [
+                'visa'       => __('Visa', 'navigate-peptides'),
+                'mastercard' => __('Mastercard', 'navigate-peptides'),
+                'amex'       => __('American Express', 'navigate-peptides'),
+                'discover'   => __('Discover', 'navigate-peptides'),
+                'bitcoin'    => __('Bitcoin', 'navigate-peptides'),
+                'ethereum'   => __('Ethereum', 'navigate-peptides'),
+                'usdc'       => __('USD Coin', 'navigate-peptides'),
+                'ach'        => __('ACH bank transfer', 'navigate-peptides'),
+            ];
+            $pay_ver = function_exists('nav_asset_version')
+                ? nav_asset_version('assets/images/payments/visa.svg') : '';
+            foreach ($nav_payments as $slug => $label) :
+                $src = get_template_directory_uri() . '/assets/images/payments/' . $slug . '.svg'
+                     . ($pay_ver ? '?v=' . $pay_ver : '');
+            ?>
+                <span class="nav-footer__payment-method" role="img" aria-label="<?php echo esc_attr($label); ?>">
+                    <img
+                        src="<?php echo esc_url($src); ?>"
+                        alt="<?php echo esc_attr($label); ?>"
+                        loading="lazy"
+                        decoding="async"
+                        width="52"
+                        height="32"
+                    >
+                </span>
+            <?php endforeach; ?>
         </div>
 
         <!-- Sitewide Compliance Disclaimer -->
