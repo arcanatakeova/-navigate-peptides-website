@@ -177,6 +177,11 @@ require_once NAV_THEME_DIR . '/inc/minicart.php';
 require_once NAV_THEME_DIR . '/inc/consent.php';
 
 /* ------------------------------------------------------------------
+ * 6f. Newsletter / subscriber capture (footer form + REST endpoint)
+ * ----------------------------------------------------------------*/
+require_once NAV_THEME_DIR . '/inc/subscribe.php';
+
+/* ------------------------------------------------------------------
  * 7. Security Headers
  * ----------------------------------------------------------------*/
 add_action('send_headers', function () {

@@ -81,6 +81,48 @@
             </div>
         </div>
 
+        <!-- Newsletter signup — posts to /wp-json/nav/v1/subscribe -->
+        <section class="nav-newsletter" aria-labelledby="nav-newsletter-title">
+            <div class="nav-newsletter__copy">
+                <h3 id="nav-newsletter-title" class="nav-newsletter__title">
+                    <?php esc_html_e('Research briefing', 'navigate-peptides'); ?>
+                </h3>
+                <p class="nav-newsletter__lede">
+                    <?php esc_html_e('New compound additions, COA releases, and research commentary — no promotions, no hype.', 'navigate-peptides'); ?>
+                </p>
+            </div>
+            <form class="nav-newsletter__form" data-nav-subscribe novalidate>
+                <label class="screen-reader-text" for="nav-newsletter-email"><?php esc_html_e('Email address', 'navigate-peptides'); ?></label>
+                <input
+                    id="nav-newsletter-email"
+                    type="email"
+                    name="email"
+                    class="nav-newsletter__input"
+                    placeholder="<?php esc_attr_e('you@lab.edu', 'navigate-peptides'); ?>"
+                    required
+                    autocomplete="email"
+                    inputmode="email"
+                >
+                <!-- Honeypot — hidden from humans; bots often fill every text field -->
+                <input
+                    type="text"
+                    name="nav_hp"
+                    tabindex="-1"
+                    autocomplete="off"
+                    aria-hidden="true"
+                    class="nav-newsletter__hp"
+                >
+                <button type="submit" class="nav-newsletter__submit">
+                    <span class="nav-newsletter__submit-label"><?php esc_html_e('Subscribe', 'navigate-peptides'); ?></span>
+                    <span aria-hidden="true">→</span>
+                </button>
+                <p class="nav-newsletter__feedback" role="status" aria-live="polite"></p>
+                <p class="nav-newsletter__disclaimer">
+                    <?php esc_html_e('By subscribing you agree to receive occasional research emails. Unsubscribe anytime.', 'navigate-peptides'); ?>
+                </p>
+            </form>
+        </section>
+
         <!-- Divider -->
         <hr class="nav-footer__divider">
 

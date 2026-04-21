@@ -350,4 +350,70 @@
         });
     }
 
+    /* ------------------------------------------------------------------
+     * Newsletter form — POST /wp-json/nav/v1/subscribe
+     * Submits over fetch so the user stays on the page; shows inline
+     * success/error feedback without a round-trip.
+     * ----------------------------------------------------------------*/
+    (function () {
+        var forms = document.querySelectorAll('[data-nav-subscribe]');
+        if (!forms.length) return;
+
+        var endpoint = (window.navConfig && window.navConfig.subscribeUrl)
+            || '/wp-json/nav/v1/subscribe';
+
+        Array.prototype.forEach.call(forms, function (form) {
+            var feedback = form.querySelector('.nav-newsletter__feedback');
+            var submit   = form.querySelector('[type="submit"]');
+            var input    = form.querySelector('input[name="email"]');
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                if (!input || !input.value) return;
+
+                if (feedback) {
+                    feedback.textContent = '';
+                    feedback.removeAttribute('data-state');
+                }
+                if (submit) submit.disabled = true;
+
+                var data = new FormData(form);
+                var body = {
+                    email:  data.get('email'),
+                    source: data.get('source') || 'footer',
+                    nav_hp: data.get('nav_hp') || ''
+                };
+
+                fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify(body)
+                })
+                    .then(function (res) {
+                        return res.json().then(function (json) { return { ok: res.ok, json: json }; });
+                    })
+                    .then(function (r) {
+                        if (submit) submit.disabled = false;
+                        if (!feedback) return;
+                        if (r.ok && r.json && r.json.success) {
+                            feedback.textContent = r.json.message || 'Thanks — you\'re on the list.';
+                            feedback.setAttribute('data-state', 'success');
+                            form.reset();
+                        } else {
+                            var msg = (r.json && (r.json.message || r.json.code)) || 'Something went wrong. Try again.';
+                            feedback.textContent = msg;
+                            feedback.setAttribute('data-state', 'error');
+                        }
+                    })
+                    .catch(function () {
+                        if (submit) submit.disabled = false;
+                        if (!feedback) return;
+                        feedback.textContent = 'Network error. Please try again.';
+                        feedback.setAttribute('data-state', 'error');
+                    });
+            });
+        });
+    })();
+
 })();
