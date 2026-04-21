@@ -44,39 +44,23 @@ $theme_uri = get_template_directory_uri();
             </div>
         </div>
 
-        <!-- Center: 3D Vial (model-viewer or fallback image) —
-             The rendered vial artwork we ship is GHK-Cu; the hero spec panel
-             and all labels below MUST match the rendered compound. Swapping
-             vial art requires swapping the spec block too. -->
+        <!-- Center: Branded research vial — signature SVG illustration.
+             Labels (wordmark + spec strip) are baked into the SVG; the spec
+             panel to the right MUST match the vial's compound (GHK-Cu) so
+             swapping the vial requires re-exporting the SVG + updating the
+             right-hand panel. The SVG ships the Navigate Peptides brand
+             marks and RUO chip inline, so the image + identity arrive in
+             one request. No model-viewer CDN, no 793KB PNG fallback. -->
         <div class="nav-hero__vial">
-            <model-viewer
-                src="<?php echo esc_url($theme_uri . '/assets/models/vial.glb'); ?>"
-                alt="Navigate Peptides GHK-Cu research vial — 3D interactive model"
-                auto-rotate
-                camera-controls
-                interaction-prompt="none"
-                rotation-per-second="12deg"
-                camera-orbit="20deg 75deg 105%"
-                min-camera-orbit="auto auto 80%"
-                max-camera-orbit="auto auto 150%"
-                environment-image="neutral"
-                shadow-intensity="0.4"
-                exposure="1.1"
-                style="width:100%;height:100%;"
-                loading="eager"
+            <img
+                src="<?php echo esc_url($theme_uri . '/assets/images/vial-brand.svg'); ?>"
+                alt="Navigate Peptides GHK-Cu research vial — amber-capped glass vial with the Navigate Peptides wordmark, spec strip (MW 340.4, ≥99% HPLC, lyophilized), and RUO marking on the label"
+                width="420"
+                height="640"
+                fetchpriority="high"
+                decoding="async"
+                class="nav-hero__vial-img"
             >
-                <!-- Fallback for no WebGL / JS disabled. Picture source prefers webp. -->
-                <picture slot="poster">
-                    <source srcset="<?php echo esc_url($theme_uri . '/assets/images/vial-ghkcu-single.webp'); ?>" type="image/webp">
-                    <img
-                        src="<?php echo esc_url($theme_uri . '/assets/images/vial-ghkcu-single.png'); ?>"
-                        alt="Navigate Peptides GHK-Cu research vial"
-                        width="600"
-                        height="800"
-                        fetchpriority="high"
-                    >
-                </picture>
-            </model-viewer>
         </div>
 
         <!-- Right: Product Information Panel — GHK-Cu to match the rendered vial -->

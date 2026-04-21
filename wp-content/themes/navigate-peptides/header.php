@@ -9,9 +9,20 @@
     <link rel="icon" type="image/svg+xml" href="<?php echo esc_url(get_template_directory_uri() . '/assets/images/favicon.svg'); ?>">
     <link rel="icon" type="image/png" sizes="32x32" href="<?php echo esc_url(get_template_directory_uri() . '/assets/images/favicon.svg'); ?>">
     <meta name="theme-color" content="#2A3B36">
-    <?php if (is_front_page() || (function_exists('is_product') && is_product())) : ?>
-    <!-- Google model-viewer — only loaded on pages that render one. Version
-         pinned at 4.0.0. crossorigin + no-referrer reduce CDN fingerprinting. -->
+    <?php
+    // Google model-viewer is only needed on single-product pages where the
+    // admin has opted into a per-product GLB (_nav_3d_model_url). Homepage
+    // now uses the branded SVG vial — no 3D model, no CDN dependency.
+    $nav_load_model_viewer = false;
+    if (function_exists('is_product') && is_product()) {
+        $glb = get_post_meta(get_the_ID(), '_nav_3d_model_url', true);
+        $nav_load_model_viewer = ! empty($glb);
+    }
+    if ($nav_load_model_viewer) :
+    ?>
+    <!-- Loaded only when this single-product page has a GLB configured.
+         Version pinned at 4.0.0. crossorigin + no-referrer reduce CDN
+         fingerprinting. -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <?php endif; ?>
 
