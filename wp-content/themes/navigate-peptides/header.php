@@ -196,10 +196,6 @@ if ($announcement) :
                 </a>
             <?php endif; ?>
 
-            <a href="<?php echo esc_url(nav_get_contact_url()); ?>" class="nav-btn nav-btn--primary nav-header__cta">
-                <?php esc_html_e('Request Access', 'navigate-peptides'); ?>
-            </a>
-
             <button
                 class="nav-header__toggle"
                 id="nav-mobile-toggle"
@@ -256,9 +252,6 @@ if ($announcement) :
                 ]);
             }
             ?>
-            <a href="<?php echo esc_url(nav_get_contact_url()); ?>" class="nav-btn nav-btn--primary nav-btn--full">
-                Request Access
-            </a>
         </div>
     </div>
 </header>
