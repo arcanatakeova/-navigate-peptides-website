@@ -44,23 +44,40 @@ $theme_uri = get_template_directory_uri();
             </div>
         </div>
 
-        <!-- Center: Branded research vial — signature SVG illustration.
-             Labels (wordmark + spec strip) are baked into the SVG; the spec
-             panel to the right MUST match the vial's compound (GHK-Cu) so
-             swapping the vial requires re-exporting the SVG + updating the
-             right-hand panel. The SVG ships the Navigate Peptides brand
-             marks and RUO chip inline, so the image + identity arrive in
-             one request. No model-viewer CDN, no 793KB PNG fallback. -->
+        <!-- Center: 3D vial (rotating model-viewer) with branded SVG poster
+             as the WebGL fallback. Shipped compound is GHK-Cu; the right-
+             hand spec panel MUST match — swapping the vial requires
+             swapping the spec block too. -->
         <div class="nav-hero__vial">
-            <img
-                src="<?php echo esc_url($theme_uri . '/assets/images/vial-brand.svg'); ?>"
-                alt="Navigate Peptides GHK-Cu research vial — amber-capped glass vial with the Navigate Peptides wordmark, spec strip (MW 340.4, ≥99% HPLC, lyophilized), and RUO marking on the label"
-                width="420"
-                height="640"
-                fetchpriority="high"
-                decoding="async"
-                class="nav-hero__vial-img"
+            <model-viewer
+                src="<?php echo esc_url($theme_uri . '/assets/models/vial.glb'); ?>"
+                alt="Navigate Peptides GHK-Cu research vial — 3D interactive model"
+                auto-rotate
+                camera-controls
+                interaction-prompt="none"
+                rotation-per-second="12deg"
+                camera-orbit="20deg 75deg 105%"
+                min-camera-orbit="auto auto 80%"
+                max-camera-orbit="auto auto 150%"
+                environment-image="neutral"
+                shadow-intensity="0.4"
+                exposure="1.1"
+                style="width:100%;height:100%;"
+                loading="eager"
             >
+                <!-- Fallback for no WebGL / model-viewer failure. Uses the
+                     branded SVG so the brand identity is preserved when 3D
+                     can't render (rather than the old stock-looking PNG). -->
+                <img
+                    slot="poster"
+                    src="<?php echo esc_url($theme_uri . '/assets/images/vial-brand.svg'); ?>"
+                    alt="Navigate Peptides GHK-Cu research vial"
+                    width="420"
+                    height="640"
+                    fetchpriority="high"
+                    decoding="async"
+                >
+            </model-viewer>
         </div>
 
         <!-- Right: Product Information Panel — GHK-Cu to match the rendered vial -->

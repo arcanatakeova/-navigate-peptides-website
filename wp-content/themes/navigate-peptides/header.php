@@ -10,11 +10,11 @@
     <link rel="icon" type="image/png" sizes="32x32" href="<?php echo esc_url(get_template_directory_uri() . '/assets/images/favicon.svg'); ?>">
     <meta name="theme-color" content="#2A3B36">
     <?php
-    // Google model-viewer is only needed on single-product pages where the
-    // admin has opted into a per-product GLB (_nav_3d_model_url). Homepage
-    // now uses the branded SVG vial — no 3D model, no CDN dependency.
-    $nav_load_model_viewer = false;
-    if (function_exists('is_product') && is_product()) {
+    // Google model-viewer loads on:
+    //   - Home (hero always ships the rotating vial.glb)
+    //   - Single-product pages where admin has set _nav_3d_model_url
+    $nav_load_model_viewer = is_front_page();
+    if (!$nav_load_model_viewer && function_exists('is_product') && is_product()) {
         $glb = get_post_meta(get_the_ID(), '_nav_3d_model_url', true);
         $nav_load_model_viewer = ! empty($glb);
     }
