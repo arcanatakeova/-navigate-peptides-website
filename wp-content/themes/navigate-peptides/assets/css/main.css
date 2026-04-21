@@ -1725,9 +1725,11 @@ body.admin-bar .nav-header {
 
 .nav-vial-trio__viewer {
     width: 100%;
-    /* Taller cells so the vial dominates each card instead of floating */
-    aspect-ratio: 3 / 4;
-    min-height: 440px;
+    /* Taller cells so the vial dominates each card instead of floating.
+       Extra vertical padding prevents the bottom of the vial from
+       clipping against the edge of the canvas at the default camera orbit. */
+    aspect-ratio: 3 / 4.2;
+    min-height: 480px;
     background: transparent;
     --poster-color: transparent;
 }
@@ -1775,9 +1777,9 @@ body.admin-bar .nav-header {
         padding: var(--nav-gap-md) var(--nav-gap-md);
     }
     .nav-vial-trio__viewer {
-        aspect-ratio: 4 / 5;
+        aspect-ratio: 3 / 4.2;
         min-height: 0;
-        max-height: 70vh;
+        max-height: 75vh;
     }
     /* Touch devices don't have :hover — keep the affordance visible */
     .nav-vial-trio__hint {
