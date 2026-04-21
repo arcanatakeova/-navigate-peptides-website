@@ -32,18 +32,51 @@ $cat_slug  = ($terms && !is_wp_error($terms)) ? $terms[0]->slug : '';
         <div class="nav-product-card__accent"></div>
         <div class="nav-product-card__image">
             <?php
+            $glb_url  = (string) get_post_meta($product->get_id(), '_nav_3d_model_url', true);
             $card_img = nav_get_product_card_image($product);
             ?>
-            <img
-                src="<?php echo esc_url($card_img['src']); ?>"
-                <?php if (!empty($card_img['srcset'])) : ?>srcset="<?php echo esc_attr($card_img['srcset']); ?>"<?php endif; ?>
-                alt="<?php the_title_attribute(); ?>"
-                class="nav-product-card__img"
-                loading="lazy"
-                decoding="async"
-                width="<?php echo esc_attr((string) $card_img['width']); ?>"
-                height="<?php echo esc_attr((string) $card_img['height']); ?>"
-            >
+            <?php if ($glb_url) : ?>
+                <model-viewer
+                    class="nav-product-card__viewer"
+                    src="<?php echo esc_url($glb_url); ?>"
+                    alt="<?php echo esc_attr(get_the_title()); ?> — 3D vial"
+                    auto-rotate
+                    rotation-per-second="20deg"
+                    interaction-prompt="none"
+                    disable-zoom
+                    disable-pan
+                    disable-tap
+                    camera-orbit="0deg 75deg 110%"
+                    environment-image="neutral"
+                    shadow-intensity="0.6"
+                    exposure="1.2"
+                    loading="lazy"
+                    reveal="auto"
+                    aria-hidden="true"
+                >
+                    <img
+                        slot="poster"
+                        src="<?php echo esc_url($card_img['src']); ?>"
+                        alt=""
+                        class="nav-product-card__img"
+                        loading="lazy"
+                        decoding="async"
+                        width="<?php echo esc_attr((string) $card_img['width']); ?>"
+                        height="<?php echo esc_attr((string) $card_img['height']); ?>"
+                    >
+                </model-viewer>
+            <?php else : ?>
+                <img
+                    src="<?php echo esc_url($card_img['src']); ?>"
+                    <?php if (!empty($card_img['srcset'])) : ?>srcset="<?php echo esc_attr($card_img['srcset']); ?>"<?php endif; ?>
+                    alt="<?php the_title_attribute(); ?>"
+                    class="nav-product-card__img"
+                    loading="lazy"
+                    decoding="async"
+                    width="<?php echo esc_attr((string) $card_img['width']); ?>"
+                    height="<?php echo esc_attr((string) $card_img['height']); ?>"
+                >
+            <?php endif; ?>
         </div>
         <div class="nav-product-card__body">
             <h3 class="nav-product-card__title"><?php echo esc_html(get_the_title()); ?></h3>

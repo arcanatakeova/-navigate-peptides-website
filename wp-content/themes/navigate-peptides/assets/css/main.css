@@ -4957,6 +4957,25 @@ a:focus-visible {
     max-height: 76%;
 }
 
+/* Live 3D viewer inside the card — identical render pipeline to the
+   single-product hero, so the thumbnail matches the interactive model
+   pixel-for-pixel (no color drift from a static Blender render). */
+.nav-product-card__viewer {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    --poster-color: transparent;
+    /* Let clicks pass through to the wrapping anchor so the whole
+       card is clickable; the viewer is presentation-only here. */
+    pointer-events: none;
+}
+.nav-product-card__viewer [slot="poster"] {
+    background: transparent;
+    max-width: 92%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
 .nav-product-card__body {
     display: flex;
     flex-direction: column;
