@@ -850,31 +850,37 @@ body.admin-bar .nav-header {
     margin-top: 40px;
 }
 
-/* Hero 3D vial (rotating model-viewer). The model handles rotation,
-   lighting, and shadow intrinsically. Drop-shadow on the container adds
-   depth against the dark hero background for the poster-fallback path. */
+/* Hero 3D vial — stacked: branded SVG fills the container as the guaranteed
+   fallback; model-viewer sits on top and covers the SVG once its WebGL
+   canvas paints. If WebGL fails, GLB decode fails, or model-viewer fails
+   to register at all, the SVG remains visible. Container uses a real
+   height (not min-height) so absolute-positioned children size correctly. */
 .nav-hero__vial {
+    position: relative;
     display: none;
-    min-height: 400px;
-    align-items: center;
-    justify-content: center;
-}
-
-.nav-hero__vial model-viewer {
+    height: 560px;
     width: 100%;
     max-width: 520px;
-    height: 560px;
-    border-radius: var(--nav-radius-lg);
-    filter: drop-shadow(0 36px 56px rgba(0, 0, 0, 0.55));
+    margin: 0 auto;
 }
 
-/* Poster fallback — when WebGL fails, model-viewer shows the <img slot="poster">.
-   Style it the same way the old SVG block was presented so the fallback
-   state is visually coherent with the rotating state. */
-.nav-hero__vial model-viewer img[slot="poster"] {
+.nav-hero__vial-fallback {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: contain;
+    filter: drop-shadow(0 36px 56px rgba(0, 0, 0, 0.55));
+    z-index: 1;
+}
+
+.nav-hero__vial model-viewer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 2;
 }
 
 /* Product Info Panel (right column on desktop, full-width below vial on mobile).
@@ -1073,12 +1079,12 @@ body.admin-bar .nav-header {
         align-items: center;
         gap: var(--nav-gap-xl);
     }
-    .nav-hero__vial { display: block; min-height: 560px; }
+    .nav-hero__vial { display: block; height: 560px; }
     .nav-hero__info-panel { display: block; }
 }
 
 @media (min-width: 1280px) {
-    .nav-hero__vial { min-height: 620px; }
+    .nav-hero__vial { height: 620px; }
 }
 
 /* ==========================================================================
@@ -2431,10 +2437,8 @@ body.admin-bar .nav-header {
         grid-template-columns: 1fr 1fr;
     }
     .nav-hero__vial {
-        display: flex;
-        min-height: 380px;
-        align-items: center;
-        justify-content: center;
+        display: block;
+        height: 420px;
     }
     .nav-hero__info-panel {
         display: block;

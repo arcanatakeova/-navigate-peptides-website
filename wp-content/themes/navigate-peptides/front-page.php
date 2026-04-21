@@ -44,11 +44,26 @@ $theme_uri = get_template_directory_uri();
             </div>
         </div>
 
-        <!-- Center: 3D vial (rotating model-viewer) with branded SVG poster
-             as the WebGL fallback. Shipped compound is GHK-Cu; the right-
-             hand spec panel MUST match — swapping the vial requires
-             swapping the spec block too. -->
+        <!-- Center: 3D vial (rotating model-viewer) with branded SVG fallback
+             rendered as a sibling. The SVG is ALWAYS visible; model-viewer
+             sits on top and covers it once the 3D model has rendered. If
+             WebGL fails / model-viewer crashes / the GLB can't decode, the
+             SVG shows through. This sidesteps model-viewer's internal
+             poster-slot logic, which was failing silently in some browsers
+             and leaving the hero middle column empty.
+
+             Shipped compound is GHK-Cu; the right-hand spec panel MUST
+             match — swapping the vial requires swapping the spec block. -->
         <div class="nav-hero__vial">
+            <img
+                class="nav-hero__vial-fallback"
+                src="<?php echo esc_url($theme_uri . '/assets/images/vial-brand.svg'); ?>"
+                alt="Navigate Peptides GHK-Cu research vial"
+                width="420"
+                height="640"
+                fetchpriority="high"
+                decoding="async"
+            >
             <model-viewer
                 src="<?php echo esc_url($theme_uri . '/assets/models/vial.glb'); ?>"
                 alt="Navigate Peptides GHK-Cu research vial — 3D interactive model"
@@ -62,22 +77,8 @@ $theme_uri = get_template_directory_uri();
                 environment-image="neutral"
                 shadow-intensity="0.4"
                 exposure="1.1"
-                style="width:100%;height:100%;"
                 loading="eager"
-            >
-                <!-- Fallback for no WebGL / model-viewer failure. Uses the
-                     branded SVG so the brand identity is preserved when 3D
-                     can't render (rather than the old stock-looking PNG). -->
-                <img
-                    slot="poster"
-                    src="<?php echo esc_url($theme_uri . '/assets/images/vial-brand.svg'); ?>"
-                    alt="Navigate Peptides GHK-Cu research vial"
-                    width="420"
-                    height="640"
-                    fetchpriority="high"
-                    decoding="async"
-                >
-            </model-viewer>
+            ></model-viewer>
         </div>
 
         <!-- Right: Product Information Panel — GHK-Cu to match the rendered vial -->
