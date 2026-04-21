@@ -27,8 +27,16 @@
     $nav_load_model_viewer = is_front_page()
         || in_array($nav_tpl_basename, ['template-quality.php', 'template-about.php'], true);
     if (!$nav_load_model_viewer && function_exists('is_product') && is_product()) {
-        $glb = get_post_meta(get_the_ID(), '_nav_3d_model_url', true);
-        $nav_load_model_viewer = ! empty($glb);
+        // Single-product always needs it (hero + related cards).
+        $nav_load_model_viewer = true;
+    }
+    if (!$nav_load_model_viewer
+        && function_exists('is_shop')
+        && (is_shop() || is_product_category() || is_product_tag())
+    ) {
+        // Archive cards render inline <model-viewer> posters so the
+        // thumbnail matches the hero rendering pixel-for-pixel.
+        $nav_load_model_viewer = true;
     }
     if ($nav_load_model_viewer) :
     ?>
