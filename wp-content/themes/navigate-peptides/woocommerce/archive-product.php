@@ -143,7 +143,7 @@ $cat_color     = $is_category ? nav_get_category_color($current_cat->slug) : '#4
                             <p class="nav-product-card__excerpt"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 15)); ?></p>
                             <div class="nav-product-card__footer">
                                 <span class="nav-product-card__price"><?php echo $product->get_price_html(); ?></span>
-                                <span class="nav-product-card__action"><?php esc_html_e('Details →', 'navigate-peptides'); ?></span>
+                                <span class="nav-product-card__action"><?php esc_html_e('View peptide →', 'navigate-peptides'); ?></span>
                             </div>
                             <p class="nav-product-card__disclaimer"><?php echo esc_html(nav_get_disclaimer('product')); ?></p>
                         </div>

@@ -68,7 +68,7 @@ get_header();
                 ></model-viewer>
                 <a href="<?php echo esc_url(home_url('/product/ghk-cu/')); ?>"
                    class="nav-about-hero__cta">
-                    View GHK-Cu product <span aria-hidden="true">→</span>
+                    View GHK-Cu peptide <span aria-hidden="true">→</span>
                 </a>
             </div>
 
