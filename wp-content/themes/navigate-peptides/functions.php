@@ -204,27 +204,40 @@ add_action('send_headers', function () {
         ? "'self' " . esc_url(admin_url())
         : "'self'";
 
-    // 'unsafe-inline' on style-src: required by Woo + theme inline <style>.
-    // ajax.googleapis.com: Google <model-viewer> CDN in header.php.
-    // fonts.googleapis.com: Google Fonts CSS.
-    // GA4 hosts: only appended when GA4 is configured — keeps the CSP
-    // tight on sites that don't ship the gtag snippet, and prevents the
-    // previously-silent breakage where CSP blocked googletagmanager.com
-    // and connect-src 'self' blocked all analytics beacons.
-    $script_src  = "'self' https://ajax.googleapis.com https://fonts.googleapis.com 'unsafe-inline'";
-    $connect_src = "'self'";
-    $img_src     = "'self' data: https:";
+    // CSP notes:
+    //   * 'wasm-unsafe-eval' — required by Google model-viewer 4.0 (it
+    //     uses WebAssembly internally for draco/ktx2 decoding).
+    //   * worker-src 'self' blob: — model-viewer spawns Web Workers from
+    //     blob URLs it synthesizes; without this they silently fail and
+    //     WebGL init errors, so the vial never renders.
+    //   * blob: in img-src — model-viewer creates blob image URLs.
+    //   * *.wp.com / *.wordpress.com — wordpress.com injects its own stats,
+    //     metrics (bilmur), and font proxy (fonts-api.wp.com) into every
+    //     page. Our generic WordPress CSP from Round 7 was blocking them,
+    //     which on wp.com also intermittently breaks the font pipeline.
+    //   * ajax.googleapis.com / fonts.googleapis.com — our own deps.
+    //   * GA4 hosts — appended only when nav_ga4_id() is set.
+    $script_src  = "'self' 'unsafe-inline' 'wasm-unsafe-eval' "
+                 . "https://ajax.googleapis.com https://fonts.googleapis.com "
+                 . "https://*.wp.com https://*.wordpress.com";
+    $connect_src = "'self' blob: https://*.wp.com https://*.wordpress.com";
+    $img_src     = "'self' data: blob: https:";
+    $style_src   = "'self' 'unsafe-inline' "
+                 . "https://fonts.googleapis.com "
+                 . "https://*.wp.com https://*.wordpress.com";
+    $font_src    = "'self' data: https://fonts.gstatic.com https://*.wp.com https://*.wordpress.com";
+    $worker_src  = "'self' blob:";
     if (function_exists('nav_ga4_id') && nav_ga4_id() !== '') {
         $script_src  .= ' https://www.googletagmanager.com';
         $connect_src .= ' https://www.google-analytics.com https://*.analytics.google.com https://*.g.doubleclick.net';
-        // GA4 sets a 1x1 collect pixel in some transports; img-src already permissive.
     }
     $csp = "default-src 'self'; "
         . "script-src {$script_src}; "
-        . "style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; "
-        . "font-src 'self' https://fonts.gstatic.com data:; "
+        . "style-src {$style_src}; "
+        . "font-src {$font_src}; "
         . "img-src {$img_src}; "
         . "connect-src {$connect_src}; "
+        . "worker-src {$worker_src}; "
         . "frame-ancestors 'self'; "
         . "base-uri 'self'; "
         . "form-action {$form_action};";
