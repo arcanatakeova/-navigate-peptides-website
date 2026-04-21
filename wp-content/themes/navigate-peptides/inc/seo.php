@@ -329,12 +329,15 @@ function nav_seo_og_image(): array {
         }
     }
 
-    // Theme fallback — branded hero. WebP first for modern, PNG for OG crawlers.
+    // Theme fallback — dedicated on-brand social share image (1200×630).
+    // Dark bg, wordmark, "Engineered. Intelligent." display, branded vial
+    // with full label — replaces the generic "Made in the USA" placeholder
+    // that was showing in iMessage/Slack/FB previews.
     return [
-        'url'    => get_template_directory_uri() . '/assets/images/hero-three-vials.png',
+        'url'    => get_template_directory_uri() . '/assets/images/og-social-share.png',
         'width'  => 1200,
         'height' => 630,
-        'alt'    => 'Navigate Peptides — research-grade peptide vials',
+        'alt'    => 'Navigate Peptides — precision peptide research',
     ];
 }
 
