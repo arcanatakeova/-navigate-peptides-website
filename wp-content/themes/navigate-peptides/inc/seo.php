@@ -139,6 +139,19 @@ function nav_seo_has_competing_plugin(): bool {
     return (bool) apply_filters('nav_seo_has_competing_plugin', $has);
 }
 
+/*
+ * Suppress Jetpack / wpcom Open Graph emitters. On Atomic (wp.com Business)
+ * Jetpack auto-emits its own og:image via the "shareable image" service at
+ * s0.wp.com/_si/ — that produces a low-quality grey card that shows as a
+ * SECOND link preview in iMessage alongside our branded card. We emit a
+ * full OG block of our own below, so silence JP's output entirely.
+ */
+add_filter('jetpack_enable_open_graph', '__return_false');
+add_filter('jetpack_enable_opengraph',  '__return_false'); // older JP alias
+add_filter('jetpack_open_graph_output_tags', '__return_empty_array');
+add_filter('jetpack_photon_skip_image',  '__return_true');  // don't rewrite our og-social-share.png to Photon CDN
+add_filter('jetpack_shareable_image_url', '__return_empty_string');
+
 /**
  * Append the paged suffix (/page/N/) to a canonical URL when the current
  * request is page 2+ of a paginated archive or search. Without this, page

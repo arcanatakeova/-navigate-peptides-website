@@ -19,20 +19,46 @@ get_header();
 
 <section class="nav-section">
     <div class="nav-container">
-        <!-- Visual: Lab vials. mtime-versioned so a redeploy busts the
-             browser cache — wp.com ships static assets with long TTLs
-             and without the ?v= users see the previous render. -->
+        <!-- Interactive 3D vial trio — each compound has its own GLB
+             with a compound-specific label. Users can rotate/zoom each
+             vial individually. mtime-versioned so redeploys bust cache. -->
         <?php
-        $hero_ver = function_exists('nav_asset_version')
-            ? nav_asset_version('assets/images/hero-three-vials.png')
-            : '';
-        $hero_q   = $hero_ver ? '?v=' . $hero_ver : '';
+        $theme_uri = get_template_directory_uri();
+        $vials = [
+            ['slug' => 'ghkcu',  'label' => 'GHK-Cu',  'desc' => 'Copper Tripeptide-1 · 340.4 g/mol'],
+            ['slug' => 'bpc157', 'label' => 'BPC-157', 'desc' => 'Body Protection Compound · 1419.5 g/mol'],
+            ['slug' => 'tb500',  'label' => 'TB-500',  'desc' => 'Thymosin β-4 Fragment · 889.0 g/mol'],
+        ];
         ?>
-        <div class="nav-about-visual">
-            <picture>
-                <source srcset="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-three-vials.webp' . $hero_q); ?>" type="image/webp">
-                <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/hero-three-vials.png' . $hero_q); ?>" alt="Navigate Peptides research compound vials" loading="lazy" width="1200" height="400">
-            </picture>
+        <div class="nav-vial-trio" aria-label="Interactive 3D peptide vial showcase">
+            <?php foreach ($vials as $v):
+                $rel = 'assets/models/vial-' . $v['slug'] . '.glb';
+                $ver = function_exists('nav_asset_version') ? nav_asset_version($rel) : '';
+                $src = $theme_uri . '/' . $rel . ($ver ? '?v=' . $ver : '');
+            ?>
+                <figure class="nav-vial-trio__cell">
+                    <model-viewer
+                        class="nav-vial-trio__viewer"
+                        src="<?php echo esc_url($src); ?>"
+                        alt="<?php echo esc_attr($v['label']); ?> research vial — interactive 3D"
+                        auto-rotate
+                        camera-controls
+                        interaction-prompt="none"
+                        rotation-per-second="18deg"
+                        camera-orbit="20deg 75deg 110%"
+                        min-camera-orbit="auto auto 75%"
+                        max-camera-orbit="auto auto 175%"
+                        environment-image="neutral"
+                        shadow-intensity="0.6"
+                        exposure="1.15"
+                        loading="lazy"
+                    ></model-viewer>
+                    <figcaption class="nav-vial-trio__meta">
+                        <span class="nav-vial-trio__name"><?php echo esc_html($v['label']); ?></span>
+                        <span class="nav-vial-trio__desc"><?php echo esc_html($v['desc']); ?></span>
+                    </figcaption>
+                </figure>
+            <?php endforeach; ?>
         </div>
 
         <div class="nav-card-grid nav-card-grid--2">
