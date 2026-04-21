@@ -506,10 +506,14 @@ add_action('woocommerce_process_product_meta', function ($post_id) {
     }
 
     if (! empty($found)) {
+        // 15 minutes covers slow admin redirects (plugin-heavy hosts can take
+        // many seconds to load the edit screen after save). The prior value
+        // `30` was interpreted as seconds, not minutes — the warning was
+        // already gone by the time the admin saw the screen on most hosts.
         set_transient(
             'nav_compliance_warning_' . $post_id,
             $found,
-            30
+            15 * MINUTE_IN_SECONDS
         );
     }
 }, 20);

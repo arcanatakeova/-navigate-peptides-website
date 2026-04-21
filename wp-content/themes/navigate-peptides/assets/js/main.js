@@ -202,7 +202,6 @@
             if (fired) return;
             fired = true;
             mv.removeEventListener('error', handler);
-            console.warn('[nav] 3D model failed to load, showing poster', mv.src);
 
             // Prefer <picture> so <source type=image/webp> stays attached.
             var picture = mv.querySelector('picture');

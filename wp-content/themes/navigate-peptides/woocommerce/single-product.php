@@ -117,7 +117,13 @@ while (have_posts()) : the_post();
 
                 <!-- 3. Short Scientific Description -->
                 <div class="nav-product-single__desc">
-                    <?php echo wpautop(wp_kses_post($product->get_short_description())); ?>
+                    <?php
+                    // Use the WooCommerce-standard filter so shortcodes + Gutenberg
+                    // blocks + wpautop + wptexturize all run. Previously we called
+                    // wp_kses_post + wpautop directly, which dropped shortcode
+                    // expansion and block rendering.
+                    echo apply_filters('woocommerce_short_description', $product->get_short_description());
+                    ?>
                 </div>
 
                 <!-- Technical Specifications -->

@@ -69,28 +69,54 @@ function nav_seo_scrub(string $text): string {
 
     // Pairs: prohibited pattern => compliant replacement.
     // Case-insensitive; \b boundaries to avoid partial matches.
+    // Expanded 2026-04: audit caught blind spots (sub-q / SC inject / IM
+    // inject / bioavailable / potency / efficacy / cycle / stack /
+    // muscle growth / clinically proven / FDA approved) that the original
+    // map didn't cover. Processors read every rendered string.
     $map = [
-        '/\bdos(?:e|ing|age)\b/i'          => 'reconstitution concentration',
-        '/\binject(?:ion|ing|ions)?\b/i'   => 'laboratory handling',
-        '/\bsubcutaneous\b/i'              => 'laboratory application',
-        '/\bintramuscular\b/i'             => 'laboratory application',
-        '/\bheal(?:ing|s)?\b/i'            => 'pathway modulation',
-        '/\brecover(?:y|ing)?\b/i'         => 'pathway response',
-        '/\btreat(?:ment|s|ing)?\b/i'      => 'investigation',
-        '/\btherap(?:y|ies|eutic)\b/i'     => 'investigational',
-        '/\bpatients?\b/i'                 => 'research subjects',
-        '/\bwellness\b/i'                  => 'molecular research',
-        '/\bperformance\b/i'               => 'mechanism',
-        '/\banti[- ]aging\b/i'             => 'longevity pathway',
-        '/\b(fat|weight)[- ]loss\b/i'      => 'metabolic pathway research',
-        '/\bpharmaceutical grade\b/i'      => 'research grade',
-        '/\bbefore and after\b/i'          => 'pre- and post-study',
-        '/\btestimonial\b/i'               => 'research citation',
-        '/\bcure[sd]?\b/i'                 => 'investigational',
-        '/\bbenefits?\b/i'                 => 'mechanisms',
-        '/\bprotocol\b/i'                  => 'procedure',
+        '/\bdos(?:e|ing|age)\b/i'                  => 'reconstitution concentration',
+        '/\binject(?:ion|ing|ions|able)?\b/i'      => 'laboratory handling',
+        '/\bsubcutaneous\b/i'                      => 'laboratory application',
+        '/\bintramuscular\b/i'                     => 'laboratory application',
+        '/\bsub[- ]?q(?:s)?\b/i'                   => 'laboratory application',
+        '/\b(?:SC|IM)[ -]?inject(?:ion|ing|ions)?\b/i' => 'laboratory application',
+        '/\bheal(?:ing|s)?\b/i'                    => 'pathway modulation',
+        '/\brecover(?:y|ing)?\b/i'                 => 'pathway response',
+        '/\btreat(?:ment|s|ing)?\b/i'              => 'investigation',
+        '/\btherap(?:y|ies|eutic)\b/i'             => 'investigational',
+        '/\bpatients?\b/i'                         => 'research subjects',
+        '/\bwellness\b/i'                          => 'molecular research',
+        '/\bperformance\b/i'                       => 'mechanism',
+        '/\banti[- ]aging\b/i'                     => 'longevity pathway',
+        '/\b(fat|weight)[- ]loss\b/i'              => 'metabolic pathway research',
+        '/\bmuscle[- ]growth\b/i'                  => 'myocellular pathway research',
+        '/\bpharmaceutical grade\b/i'              => 'research grade',
+        '/\bFDA[- ]approved\b/i'                   => 'research grade',
+        '/\bclinically[- ]proven\b/i'              => 'investigational',
+        '/\bbefore and after\b/i'                  => 'pre- and post-study',
+        '/\btestimonial\b/i'                       => 'research citation',
+        '/\bcure[sd]?\b/i'                         => 'investigational',
+        '/\bbenefits?\b/i'                         => 'mechanisms',
+        '/\bprotocol\b/i'                          => 'procedure',
+        '/\bcycle(s|d)?\b/i'                       => 'phase$1',
+        '/\bstack(s|ed|ing)?\b/i'                  => 'combination$1',
+        '/\bbioavailab(le|ility)\b/i'              => 'structural propert$1',
+        '/\bpotenc(y|ies)\b/i'                     => 'molecular activit$1',
+        '/\befficacy\b/i'                          => 'mechanism profile',
     ];
     return (string) preg_replace(array_keys($map), array_values($map), $text);
+}
+
+/**
+ * Scrub a short identifier-like string (product name, term name, tag name)
+ * for use in schema/OG/Twitter output. Same map as nav_seo_scrub but
+ * short-circuits empty input and returns the original on regex failure.
+ */
+function nav_seo_scrub_name($text): string {
+    $text = (string) $text;
+    if ($text === '') return $text;
+    $scrubbed = nav_seo_scrub($text);
+    return $scrubbed ?: $text;
 }
 
 /**
@@ -343,8 +369,8 @@ add_filter('document_title_parts', function (array $parts) {
     if (is_singular('product') && function_exists('wc_get_product')) {
         $product  = wc_get_product(get_the_ID());
         if ($product) {
-            $subtitle = get_post_meta($product->get_id(), '_nav_technical_subtitle', true);
-            $title    = $product->get_name();
+            $subtitle = nav_seo_scrub_name(get_post_meta($product->get_id(), '_nav_technical_subtitle', true));
+            $title    = nav_seo_scrub_name($product->get_name());
             if ($subtitle) {
                 $parts['title'] = $title . ' — ' . $subtitle;
             } else {
@@ -359,7 +385,7 @@ add_filter('document_title_parts', function (array $parts) {
     if (is_product_category()) {
         $term = get_queried_object();
         if ($term) {
-            $parts['title'] = $term->name . ' Peptide Compounds';
+            $parts['title'] = nav_seo_scrub_name($term->name) . ' Peptide Compounds';
         }
         $parts['site'] = NAV_SEO_SITE_NAME;
         return $parts;
@@ -369,7 +395,7 @@ add_filter('document_title_parts', function (array $parts) {
     if (is_category() || is_tag() || is_tax()) {
         $term = get_queried_object();
         if ($term) {
-            $parts['title'] = $term->name;
+            $parts['title'] = nav_seo_scrub_name($term->name);
         }
         $parts['site'] = NAV_SEO_SITE_NAME;
         return $parts;
@@ -468,13 +494,13 @@ add_action('wp_head', function () {
 
         $cats = get_the_category();
         foreach ($cats as $cat) {
-            echo '<meta property="article:section" content="' . esc_attr($cat->name) . '">' . "\n";
+            echo '<meta property="article:section" content="' . esc_attr(nav_seo_scrub_name($cat->name)) . '">' . "\n";
         }
 
         $tags = get_the_tags();
         if ($tags) {
             foreach ($tags as $tag) {
-                echo '<meta property="article:tag" content="' . esc_attr($tag->name) . '">' . "\n";
+                echo '<meta property="article:tag" content="' . esc_attr(nav_seo_scrub_name($tag->name)) . '">' . "\n";
             }
         }
 
@@ -584,10 +610,12 @@ add_action('wp_head', function () {
     $position = 1;
 
     $add = function (string $name, string $url = '') use (&$items, &$position) {
+        // Scrub every breadcrumb label — user-editable term/post names flow
+        // through this helper and end up in Google's rich-result output.
         $item = [
             '@type'    => 'ListItem',
             'position' => $position++,
-            'name'     => $name,
+            'name'     => nav_seo_scrub_name($name),
         ];
         if ($url) $item['item'] = $url;
         $items[] = $item;
@@ -703,7 +731,7 @@ add_action('wp_head', function () {
         '@context'    => 'https://schema.org',
         '@type'       => 'Product',
         '@id'         => $url . '#product',
-        'name'        => $product->get_name(),
+        'name'        => nav_seo_scrub_name($product->get_name()),
         'sku'         => $sku,
         'url'         => $url,
         'image'       => $image_url,
@@ -834,12 +862,13 @@ add_action('wp_head', function () {
 
     $cats = get_the_category();
     if ($cats && !empty($cats[0])) {
-        $schema['articleSection'] = $cats[0]->name;
+        $schema['articleSection'] = nav_seo_scrub_name($cats[0]->name);
     }
 
     $tags = get_the_tags();
     if ($tags) {
-        $schema['keywords'] = implode(', ', wp_list_pluck($tags, 'name'));
+        $scrubbed_tags = array_map('nav_seo_scrub_name', wp_list_pluck($tags, 'name'));
+        $schema['keywords'] = implode(', ', $scrubbed_tags);
     }
 
     echo nav_seo_json_ld($schema);
@@ -859,7 +888,7 @@ add_action('wp_head', function () {
     $url  = nav_seo_canonical_url();
     if (!$url) return;  // Don't emit a schema with an empty @id.
 
-    $name = $term && isset($term->name) ? $term->name : 'Compounds';
+    $name = nav_seo_scrub_name($term && isset($term->name) ? $term->name : 'Compounds');
 
     // Include paged suffix in @id so page 2, 3, ... don't collide with page 1.
     $paged = max(1, (int) get_query_var('paged'));
