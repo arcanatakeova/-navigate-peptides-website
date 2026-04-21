@@ -1653,9 +1653,67 @@ body.admin-bar .nav-header {
     min-width: 0;
 }
 
+.nav-vial-trio__link {
+    position: relative;
+    display: block;
+    width: 100%;
+    text-decoration: none;
+    color: inherit;
+    cursor: grab;
+    border-radius: var(--nav-radius-md);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.nav-vial-trio__link:hover {
+    box-shadow: 0 0 0 1px rgba(143, 166, 149, 0.32),
+                0 18px 40px -20px rgba(0, 0, 0, 0.6);
+    transform: translateY(-2px);
+}
+.nav-vial-trio__link:active { cursor: grabbing; }
+.nav-vial-trio__link:focus-visible {
+    outline: 2px solid var(--nav-accent, #8fa695);
+    outline-offset: 3px;
+}
+
+.nav-vial-trio__hint {
+    position: absolute;
+    left: 50%;
+    bottom: var(--nav-gap-md);
+    transform: translateX(-50%) translateY(8px);
+    padding: 8px 14px;
+    font-family: var(--nav-font-mono, "SF Mono", Menlo, monospace);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #ece9df;
+    background: rgba(10, 19, 17, 0.78);
+    border: 1px solid rgba(143, 166, 149, 0.4);
+    border-radius: 999px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    white-space: nowrap;
+}
+.nav-vial-trio__link:hover .nav-vial-trio__hint,
+.nav-vial-trio__link:focus-visible .nav-vial-trio__hint {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.nav-vial-trio__name-link {
+    color: inherit;
+    text-decoration: none;
+}
+.nav-vial-trio__name-link:hover .nav-vial-trio__name {
+    color: var(--nav-accent, #8fa695);
+}
+
 .nav-vial-trio__viewer {
     width: 100%;
+    /* Taller cells so the vial dominates each card instead of floating */
     aspect-ratio: 3 / 4;
+    min-height: 440px;
     background: transparent;
     --poster-color: transparent;
 }
@@ -1684,15 +1742,34 @@ body.admin-bar .nav-header {
     color: var(--nav-text-muted, #8fa695);
 }
 
-@media (max-width: 900px) {
+/* Tablet: 2 columns */
+@media (max-width: 1024px) and (min-width: 641px) {
+    .nav-vial-trio {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .nav-vial-trio__cell:nth-child(3) {
+        grid-column: span 2;
+        max-width: 50%;
+        justify-self: center;
+    }
+}
+/* Mobile: 1 column, full-bleed cells, always-visible hint */
+@media (max-width: 640px) {
     .nav-vial-trio {
         grid-template-columns: 1fr;
-        gap: var(--nav-gap-md);
-        padding: var(--nav-gap-lg) var(--nav-gap-md);
+        gap: var(--nav-gap-lg);
+        padding: var(--nav-gap-md) var(--nav-gap-md);
     }
     .nav-vial-trio__viewer {
         aspect-ratio: 4 / 5;
-        max-height: 520px;
+        min-height: 0;
+        max-height: 70vh;
+    }
+    /* Touch devices don't have :hover — keep the affordance visible */
+    .nav-vial-trio__hint {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+        bottom: var(--nav-gap-sm);
     }
 }
 
@@ -1700,18 +1777,20 @@ body.admin-bar .nav-header {
 .nav-about-hero {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    /* Vial side dominates the composition — 1.35fr vs 1fr so the
+       interactive 3D element reads as the hero element, not a prop. */
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
     gap: var(--nav-gap-xl);
     align-items: center;
     margin-bottom: var(--nav-gap-2xl);
     padding: var(--nav-gap-2xl);
     background:
-        radial-gradient(ellipse at 30% 40%, rgba(143, 166, 149, 0.08) 0%, rgba(10, 19, 17, 0) 65%),
+        radial-gradient(ellipse at 30% 40%, rgba(143, 166, 149, 0.1) 0%, rgba(10, 19, 17, 0) 65%),
         linear-gradient(135deg, #0c1614 0%, #050907 100%);
     border: 1px solid var(--nav-border-subtle);
     border-radius: var(--nav-radius-lg);
     overflow: hidden;
-    min-height: 560px;
+    min-height: 720px;
 }
 
 .nav-about-hero__motif {
@@ -1732,10 +1811,55 @@ body.admin-bar .nav-header {
     align-items: center;
 }
 
+.nav-about-hero__viewer-link {
+    position: relative;
+    display: block;
+    width: 100%;
+    text-decoration: none;
+    color: inherit;
+    cursor: grab;
+    border-radius: var(--nav-radius-md);
+}
+.nav-about-hero__viewer-link:active { cursor: grabbing; }
+.nav-about-hero__viewer-link:focus-visible {
+    outline: 2px solid var(--nav-accent, #8fa695);
+    outline-offset: 6px;
+}
+
+.nav-about-hero__hint {
+    position: absolute;
+    left: 50%;
+    bottom: 8px;
+    transform: translateX(-50%) translateY(8px);
+    padding: 10px 18px;
+    font-family: var(--nav-font-mono, "SF Mono", Menlo, monospace);
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #ece9df;
+    background: rgba(10, 19, 17, 0.78);
+    border: 1px solid rgba(143, 166, 149, 0.4);
+    border-radius: 999px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    white-space: nowrap;
+}
+.nav-about-hero__viewer-link:hover .nav-about-hero__hint,
+.nav-about-hero__viewer-link:focus-visible .nav-about-hero__hint {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
 .nav-about-hero__viewer {
     width: 100%;
-    aspect-ratio: 4 / 5;
-    max-height: 560px;
+    /* Taller aspect + no tight max-height so the vial dominates the
+       hero canvas instead of floating in a pool of empty dark space. */
+    aspect-ratio: 3 / 4;
+    min-height: 640px;
+    max-height: 820px;
     background: transparent;
     --poster-color: transparent;
 }
@@ -1811,15 +1935,50 @@ body.admin-bar .nav-header {
     letter-spacing: -0.005em;
 }
 
-@media (max-width: 900px) {
+/* Tablet: stack viewer + statement, but keep viewer large */
+@media (max-width: 1024px) {
     .nav-about-hero {
         grid-template-columns: 1fr;
-        padding: var(--nav-gap-xl) var(--nav-gap-lg);
+        gap: var(--nav-gap-xl);
+        padding: var(--nav-gap-xl);
         min-height: 0;
     }
     .nav-about-hero__viewer {
-        max-height: 440px;
+        min-height: 520px;
+        max-height: 75vh;
         aspect-ratio: 4 / 5;
+    }
+    .nav-about-hero__statement {
+        text-align: center;
+        align-items: center;
+    }
+    .nav-about-hero__lede { text-align: center; }
+    .nav-about-hero__metrics { width: 100%; max-width: 640px; }
+}
+/* Mobile: tighter padding + always-visible hint */
+@media (max-width: 640px) {
+    .nav-about-hero {
+        padding: var(--nav-gap-lg) var(--nav-gap-md);
+        gap: var(--nav-gap-lg);
+    }
+    .nav-about-hero__viewer {
+        min-height: 420px;
+        max-height: 72vh;
+    }
+    .nav-about-hero__hint {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    .nav-about-hero__metrics {
+        grid-template-columns: 1fr;
+        gap: var(--nav-gap-sm);
+        text-align: left;
+    }
+    .nav-about-hero__metrics div {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: var(--nav-gap-sm);
     }
 }
 

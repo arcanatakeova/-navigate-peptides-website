@@ -24,10 +24,14 @@ get_header();
              vial individually. mtime-versioned so redeploys bust cache. -->
         <?php
         $theme_uri = get_template_directory_uri();
+        // Each vial links to its WooCommerce product page. Uses the Woo
+        // product slug where we have one; falls back to the compounds
+        // archive filter. wc_get_page_permalink('shop') isn't useful here
+        // — we want per-compound product URLs.
         $vials = [
-            ['slug' => 'ghkcu',  'label' => 'GHK-Cu',  'desc' => 'Copper Tripeptide-1 · 340.4 g/mol'],
-            ['slug' => 'bpc157', 'label' => 'BPC-157', 'desc' => 'Body Protection Compound · 1419.5 g/mol'],
-            ['slug' => 'tb500',  'label' => 'TB-500',  'desc' => 'Thymosin β-4 Fragment · 889.0 g/mol'],
+            ['slug' => 'ghkcu',  'label' => 'GHK-Cu',  'desc' => 'Copper Tripeptide-1 · 340.4 g/mol',      'url' => '/product/ghk-cu/'],
+            ['slug' => 'bpc157', 'label' => 'BPC-157', 'desc' => 'Body Protection Compound · 1419.5 g/mol', 'url' => '/product/bpc-157/'],
+            ['slug' => 'tb500',  'label' => 'TB-500',  'desc' => 'Thymosin β-4 Fragment · 889.0 g/mol',    'url' => '/product/tb-500/'],
         ];
         ?>
         <div class="nav-vial-trio" aria-label="Interactive 3D peptide vial showcase">
@@ -37,6 +41,9 @@ get_header();
                 $src = $theme_uri . '/' . $rel . ($ver ? '?v=' . $ver : '');
             ?>
                 <figure class="nav-vial-trio__cell">
+                    <a href="<?php echo esc_url(home_url($v['url'])); ?>"
+                       class="nav-vial-trio__link"
+                       aria-label="View <?php echo esc_attr($v['label']); ?> product details">
                     <model-viewer
                         class="nav-vial-trio__viewer"
                         src="<?php echo esc_url($src); ?>"
@@ -45,16 +52,21 @@ get_header();
                         camera-controls
                         interaction-prompt="none"
                         rotation-per-second="18deg"
-                        camera-orbit="20deg 75deg 110%"
-                        min-camera-orbit="auto auto 75%"
-                        max-camera-orbit="auto auto 175%"
+                        camera-orbit="20deg 75deg 70%"
+                        min-camera-orbit="auto auto 50%"
+                        max-camera-orbit="auto auto 150%"
+                        field-of-view="26deg"
                         environment-image="neutral"
                         shadow-intensity="0.6"
                         exposure="1.15"
-                        loading="lazy"
+                        loading="eager"
                     ></model-viewer>
+                    <span class="nav-vial-trio__hint" aria-hidden="true">View product →</span>
+                    </a>
                     <figcaption class="nav-vial-trio__meta">
-                        <span class="nav-vial-trio__name"><?php echo esc_html($v['label']); ?></span>
+                        <a class="nav-vial-trio__name-link" href="<?php echo esc_url(home_url($v['url'])); ?>">
+                            <span class="nav-vial-trio__name"><?php echo esc_html($v['label']); ?></span>
+                        </a>
                         <span class="nav-vial-trio__desc"><?php echo esc_html($v['desc']); ?></span>
                     </figcaption>
                 </figure>
