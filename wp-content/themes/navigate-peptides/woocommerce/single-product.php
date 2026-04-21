@@ -68,8 +68,8 @@ while (have_posts()) : the_post();
                             auto-rotate
                             camera-controls
                             interaction-prompt="none"
-                            rotation-per-second="14deg"
-                            camera-orbit="20deg 75deg 115%"
+                            rotation-per-second="32deg"
+                            camera-orbit="0deg 75deg 115%"
                             min-camera-orbit="auto auto 85%"
                             max-camera-orbit="auto auto 200%"
                             environment-image="neutral"
