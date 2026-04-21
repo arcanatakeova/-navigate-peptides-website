@@ -68,15 +68,19 @@ $theme_uri = get_template_directory_uri();
                 auto-rotate
                 camera-controls
                 interaction-prompt="none"
-                rotation-per-second="12deg"
-                camera-orbit="20deg 75deg 105%"
-                min-camera-orbit="auto auto 60%"
-                max-camera-orbit="auto auto 160%"
+                rotation-per-second="14deg"
+                camera-orbit="22deg 75deg 95%"
+                min-camera-orbit="auto auto 65%"
+                max-camera-orbit="auto auto 150%"
                 environment-image="neutral"
-                shadow-intensity="0.5"
-                exposure="1.15"
+                shadow-intensity="0.6"
+                exposure="1.2"
                 loading="eager"
             ></model-viewer>
+            <a href="<?php echo esc_url(home_url('/product/ghk-cu/')); ?>"
+               class="nav-hero__vial-cta">
+                View GHK-Cu product <span aria-hidden="true">→</span>
+            </a>
         </div>
 
         <!-- Right: Product Information Panel — GHK-Cu to match the rendered vial -->
