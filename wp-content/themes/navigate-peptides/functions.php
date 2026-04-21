@@ -220,7 +220,14 @@ add_action('send_headers', function () {
     $script_src  = "'self' 'unsafe-inline' 'wasm-unsafe-eval' "
                  . "https://ajax.googleapis.com https://fonts.googleapis.com "
                  . "https://*.wp.com https://*.wordpress.com";
-    $connect_src = "'self' blob: https://*.wp.com https://*.wordpress.com";
+    // connect-src INCLUDES ajax.googleapis.com — model-viewer's main script
+    // XHRs for its runtime workers, WASM decoders, and HDR environment
+    // textures. Without this, the canvas stays transparent because those
+    // internal fetches get blocked silently (only the source-map fetch
+    // error shows in console). Fonts + GA covered further down.
+    $connect_src = "'self' blob: "
+                 . "https://ajax.googleapis.com "
+                 . "https://*.wp.com https://*.wordpress.com";
     $img_src     = "'self' data: blob: https:";
     $style_src   = "'self' 'unsafe-inline' "
                  . "https://fonts.googleapis.com "
