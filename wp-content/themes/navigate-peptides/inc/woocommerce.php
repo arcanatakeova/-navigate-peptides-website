@@ -554,3 +554,39 @@ add_filter('woocommerce_breadcrumb_defaults', function ($defaults) {
     $defaults['wrap_after']  = '</div></nav>';
     return $defaults;
 });
+
+/* ------------------------------------------------------------------
+ * Replace WooCommerce's default placeholder image — the mountain-icon
+ * placeholder on a white box clashes hard with the dark brand. Prefer
+ * the category-specific SVG when a product category is in scope; fall
+ * back to the generic branded vial placeholder otherwise.
+ * ----------------------------------------------------------------*/
+add_filter('woocommerce_placeholder_img_src', function ($src) {
+    $product_id = 0;
+    if (function_exists('is_product') && is_product()) {
+        $product_id = get_the_ID();
+    } elseif (is_singular('product')) {
+        $product_id = get_the_ID();
+    }
+    $cat_slug = '';
+    if ($product_id) {
+        $terms = get_the_terms($product_id, 'product_cat');
+        if ($terms && !is_wp_error($terms)) {
+            $cat_slug = $terms[0]->slug;
+        }
+    }
+    if ($cat_slug && function_exists('nav_get_category_placeholder')) {
+        return nav_get_category_placeholder($cat_slug);
+    }
+    return get_template_directory_uri() . '/assets/images/product-placeholder.svg';
+});
+
+/* ------------------------------------------------------------------
+ * Related products heading — "Related products" is WC's default. Swap
+ * in an on-brand label so the section reads as curated, not automatic.
+ * ----------------------------------------------------------------*/
+add_filter('gettext', function ($translation, $text, $domain) {
+    if ($domain !== 'woocommerce') return $translation;
+    if ($text === 'Related products') return __('You may also research', 'navigate-peptides');
+    return $translation;
+}, 10, 3);
