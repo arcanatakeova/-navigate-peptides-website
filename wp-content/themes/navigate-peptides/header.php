@@ -13,9 +13,19 @@
     // Google model-viewer loads on:
     //   - Home (hero always ships the rotating vial.glb)
     //   - Quality page (interactive 3-vial trio in template-quality.php)
+    //   - About page (editorial 3D hero in template-about.php)
     //   - Single-product pages where admin has set _nav_3d_model_url
+    //
+    // is_page_template() was returning false on wp.com Atomic even when
+    // template-quality.php was being rendered (likely because the page's
+    // _wp_page_template meta wasn't persisted through the page-creation
+    // flow we used). Using the $template global directly — it's set to
+    // the template file actually being rendered by the time header.php
+    // runs, which is reliable regardless of how the page was created.
+    global $template;
+    $nav_tpl_basename = isset($template) ? basename((string) $template) : '';
     $nav_load_model_viewer = is_front_page()
-        || is_page_template('page-templates/template-quality.php');
+        || in_array($nav_tpl_basename, ['template-quality.php', 'template-about.php'], true);
     if (!$nav_load_model_viewer && function_exists('is_product') && is_product()) {
         $glb = get_post_meta(get_the_ID(), '_nav_3d_model_url', true);
         $nav_load_model_viewer = ! empty($glb);
