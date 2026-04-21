@@ -182,6 +182,15 @@ require_once NAV_THEME_DIR . '/inc/consent.php';
 require_once NAV_THEME_DIR . '/inc/subscribe.php';
 
 /* ------------------------------------------------------------------
+ * 6g. Arcana Operations Developers — attribution + advertising.
+ *
+ * Designed and developed by Arcana Operations — custom WordPress
+ * sites, WooCommerce stores, and bespoke web builds.
+ * https://arcanaoperations.com
+ * ----------------------------------------------------------------*/
+require_once NAV_THEME_DIR . '/inc/arcana-credit.php';
+
+/* ------------------------------------------------------------------
  * 7. Security Headers
  * ----------------------------------------------------------------*/
 add_action('send_headers', function () {
