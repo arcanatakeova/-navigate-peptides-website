@@ -240,28 +240,34 @@ $theme_uri = get_template_directory_uri();
                 <div class="nav-trust-card__icon">
                     <?php echo nav_icon('check', 'nav-icon nav-icon--lg'); ?>
                 </div>
-                <h3 class="nav-trust-card__title"><?php esc_html_e('Third-Party Tested', 'navigate-peptides'); ?></h3>
-                <p class="nav-trust-card__desc">
-                    <?php esc_html_e('Every batch verified for purity and composition.', 'navigate-peptides'); ?>
-                </p>
+                <div class="nav-trust-card__content">
+                    <h3 class="nav-trust-card__title"><?php esc_html_e('Third-Party Tested', 'navigate-peptides'); ?></h3>
+                    <p class="nav-trust-card__desc">
+                        <?php esc_html_e('Every batch verified for purity and composition.', 'navigate-peptides'); ?>
+                    </p>
+                </div>
             </div>
             <div class="nav-trust-card">
                 <div class="nav-trust-card__icon">
                     <?php echo nav_icon('flask', 'nav-icon nav-icon--lg'); ?>
                 </div>
-                <h3 class="nav-trust-card__title"><?php esc_html_e('Laboratory Use Only', 'navigate-peptides'); ?></h3>
-                <p class="nav-trust-card__desc">
-                    <?php esc_html_e('Not for human consumption. For research purposes exclusively.', 'navigate-peptides'); ?>
-                </p>
+                <div class="nav-trust-card__content">
+                    <h3 class="nav-trust-card__title"><?php esc_html_e('Laboratory Use Only', 'navigate-peptides'); ?></h3>
+                    <p class="nav-trust-card__desc">
+                        <?php esc_html_e('Not for human consumption. For research purposes exclusively.', 'navigate-peptides'); ?>
+                    </p>
+                </div>
             </div>
             <div class="nav-trust-card">
                 <div class="nav-trust-card__icon">
                     <?php echo nav_icon('building', 'nav-icon nav-icon--lg'); ?>
                 </div>
-                <h3 class="nav-trust-card__title"><?php esc_html_e('GMP Compliant', 'navigate-peptides'); ?></h3>
-                <p class="nav-trust-card__desc">
-                    <?php esc_html_e('Manufactured to the highest quality standards.', 'navigate-peptides'); ?>
-                </p>
+                <div class="nav-trust-card__content">
+                    <h3 class="nav-trust-card__title"><?php esc_html_e('GMP Compliant', 'navigate-peptides'); ?></h3>
+                    <p class="nav-trust-card__desc">
+                        <?php esc_html_e('Manufactured to the highest quality standards.', 'navigate-peptides'); ?>
+                    </p>
+                </div>
             </div>
         </div>
     </div>

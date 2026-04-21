@@ -1426,6 +1426,18 @@ body.admin-bar .nav-header {
     }
 }
 
+.nav-trust-card__content {
+    /* Groups title + desc inside the 2-col card grid so both stack in the
+       right (1fr) column. Previously title and desc were direct children
+       of the card grid — with only 2 columns declared, the desc wrapped
+       to a new row starting in column 1 (48px wide), forcing each word
+       onto its own line. */
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
 .nav-trust-card__icon {
     display: flex;
     align-items: center;
