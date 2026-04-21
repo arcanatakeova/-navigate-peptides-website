@@ -51,9 +51,19 @@ $theme_uri = get_template_directory_uri();
              panel to the right carries the compound identity).
              Shipped compound is GHK-Cu; swapping vials requires swapping
              the spec block. -->
+        <?php
+        // Cache-bust the GLB by file mtime. Without this, browsers hold the
+        // old model in disk cache after a redeploy (WordPress static assets
+        // ship with long browser-cache TTLs) and users see stale geometry.
+        $vial_ver = function_exists('nav_asset_version')
+            ? nav_asset_version('assets/models/vial.glb')
+            : '';
+        $vial_url = $theme_uri . '/assets/models/vial.glb'
+                  . ($vial_ver ? '?v=' . $vial_ver : '');
+        ?>
         <div class="nav-hero__vial">
             <model-viewer
-                src="<?php echo esc_url($theme_uri . '/assets/models/vial.glb'); ?>"
+                src="<?php echo esc_url($vial_url); ?>"
                 alt="Navigate Peptides GHK-Cu research vial — 3D interactive model"
                 auto-rotate
                 camera-controls
