@@ -854,15 +854,17 @@ body.admin-bar .nav-header {
    (amber cap, green glass, Navigate Peptides label + RUO chip baked in).
    Container uses explicit height so model-viewer's 100% height doesn't
    collapse to auto. Shown on every breakpoint; size scales via the
-   responsive overrides further down. */
+   responsive overrides further down. Extra vertical room beyond the
+   visible vial prevents the base from clipping against the canvas edge
+   at the default camera-orbit distance. */
 .nav-hero__vial {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: var(--nav-gap-md);
-    height: 520px;
+    height: 580px;
     width: 100%;
-    max-width: 520px;
+    max-width: 560px;
     margin: 0 auto;
     cursor: grab;
 }
@@ -1099,8 +1101,8 @@ body.admin-bar .nav-header {
    CTAs above it don't get pushed below the fold. */
 @media (max-width: 480px) {
     .nav-hero__vial {
-        height: 440px;
-        max-width: 380px;
+        height: 500px;
+        max-width: 420px;
     }
 }
 
@@ -1110,12 +1112,12 @@ body.admin-bar .nav-header {
         align-items: center;
         gap: var(--nav-gap-xl);
     }
-    .nav-hero__vial { height: 620px; }
+    .nav-hero__vial { height: 680px; }
     .nav-hero__info-panel { display: block; }
 }
 
 @media (min-width: 1280px) {
-    .nav-hero__vial { height: 680px; }
+    .nav-hero__vial { height: 740px; }
 }
 
 /* ==========================================================================
@@ -2810,7 +2812,7 @@ body.admin-bar .nav-header {
     }
     .nav-hero__vial {
         display: flex;
-        height: 540px;
+        height: 600px;
         max-width: 100%;
     }
     .nav-hero__info-panel {
