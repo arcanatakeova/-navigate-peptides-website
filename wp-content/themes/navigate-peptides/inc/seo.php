@@ -852,7 +852,9 @@ add_action('wp_head', function () {
         $image_url = get_the_post_thumbnail_url(null, 'large');
     }
     if (!$image_url) {
-        $image_url = get_template_directory_uri() . '/assets/images/hero-three-vials.png';
+        // Fall back to the OG social share render (1200x630, optimized)
+        // rather than the legacy 1.9MB hero-three-vials.png.
+        $image_url = get_template_directory_uri() . '/assets/images/og-social-share.png';
     }
 
     // Guard against empty description — Google's Article guidelines require it.

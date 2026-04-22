@@ -111,83 +111,25 @@ $cat_color     = $is_category ? nav_get_category_color($current_cat->slug) : '#4
     <div class="nav-container">
         <?php if (woocommerce_product_loop()) : ?>
 
-            <?php woocommerce_product_loop_start(); ?>
+            <?php
+            woocommerce_product_loop_start();
 
-            <?php while (have_posts()) : the_post(); ?>
-                <?php
-                global $product;
-                $color = nav_get_product_category_color($product);
-                $subtitle = get_post_meta($product->get_id(), '_nav_technical_subtitle', true);
-                ?>
-                <li <?php wc_product_class('nav-product-card', $product); ?> style="--cat-color: <?php echo esc_attr($color); ?>">
-                    <a href="<?php the_permalink(); ?>" class="nav-product-card__link">
-                        <div class="nav-product-card__accent"></div>
-                        <div class="nav-product-card__image">
-                            <?php
-                            $glb_url  = nav_safe_glb_url(
-                                get_post_meta($product->get_id(), '_nav_3d_model_url', true),
-                                $product->get_id()
-                            );
-                            $card_img = nav_get_product_card_image($product);
-                            ?>
-                            <?php if ($glb_url) : ?>
-                                <model-viewer
-                                    class="nav-product-card__viewer"
-                                    src="<?php echo esc_url($glb_url); ?>"
-                                    alt="<?php echo esc_attr(get_the_title()); ?> — 3D vial"
-                                    auto-rotate
-                                    rotation-per-second="20deg"
-                                    interaction-prompt="none"
-                                    disable-zoom
-                                    disable-pan
-                                    disable-tap
-                                    camera-orbit="0deg 75deg 110%"
-                                    environment-image="neutral"
-                                    shadow-intensity="0.6"
-                                    exposure="1.2"
-                                    loading="lazy"
-                                    reveal="auto"
-                                    aria-hidden="true"
-                                >
-                                    <img
-                                        slot="poster"
-                                        src="<?php echo esc_url($card_img['src']); ?>"
-                                        alt=""
-                                        class="nav-product-card__img"
-                                        loading="lazy"
-                                        decoding="async"
-                                        width="<?php echo esc_attr((string) $card_img['width']); ?>"
-                                        height="<?php echo esc_attr((string) $card_img['height']); ?>"
-                                    >
-                                </model-viewer>
-                            <?php else : ?>
-                                <img
-                                    src="<?php echo esc_url($card_img['src']); ?>"
-                                    <?php if (!empty($card_img['srcset'])) : ?>srcset="<?php echo esc_attr($card_img['srcset']); ?>"<?php endif; ?>
-                                    alt="<?php the_title_attribute(); ?>"
-                                    class="nav-product-card__img"
-                                    loading="lazy"
-                                    decoding="async"
-                                    width="<?php echo esc_attr((string) $card_img['width']); ?>"
-                                    height="<?php echo esc_attr((string) $card_img['height']); ?>"
-                                >
-                            <?php endif; ?>
-                        </div>
-                        <div class="nav-product-card__body">
-                            <h3 class="nav-product-card__title"><?php echo esc_html(get_the_title()); ?></h3>
-                            <?php if ($subtitle) : ?>
-                                <p class="nav-product-card__subtitle"><?php echo esc_html($subtitle); ?></p>
-                            <?php endif; ?>
-                            <p class="nav-product-card__excerpt"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 15)); ?></p>
-                            <div class="nav-product-card__footer">
-                                <span class="nav-product-card__price"><?php echo $product->get_price_html(); ?></span>
-                                <span class="nav-product-card__action"><?php esc_html_e('View peptide →', 'navigate-peptides'); ?></span>
-                            </div>
-                            <p class="nav-product-card__disclaimer"><?php echo esc_html(nav_get_disclaimer('product')); ?></p>
-                        </div>
-                    </a>
-                </li>
-            <?php endwhile; ?>
+            // Prime the meta cache once for every product in the loop so
+            // the per-card get_post_meta calls in the shared card template
+            // hit the object cache instead of round-tripping to the DB.
+            global $wp_query;
+            if (!empty($wp_query->posts)) {
+                $nav_archive_ids = wp_list_pluck($wp_query->posts, 'ID');
+                update_meta_cache('post', $nav_archive_ids);
+            }
+
+            while (have_posts()) :
+                the_post();
+                get_template_part('template-parts/product-card', null, [
+                    'show_excerpt' => true,
+                ]);
+            endwhile;
+            ?>
 
             <?php woocommerce_product_loop_end(); ?>
 

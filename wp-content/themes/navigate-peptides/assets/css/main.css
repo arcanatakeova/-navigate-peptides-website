@@ -3470,6 +3470,61 @@ a:focus-visible {
     top: 12px;
 }
 
+/* Header scroll shadow — class is toggled by main.js on scroll */
+.nav-header--scrolled {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    background-color: rgba(20, 31, 27, 0.98);
+}
+
+/* Back-to-top floating button — element is appended by main.js; keeping
+   styles here avoids an injected <style> tag causing a second style
+   recalculation after parse. */
+.nav-back-to-top {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 90;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: rgba(26, 42, 36, 0.85);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(234, 234, 234, 0.1);
+    border-radius: 50%;
+    color: var(--nav-text-secondary);
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(12px);
+    transition: opacity 300ms var(--nav-ease),
+                transform 300ms var(--nav-ease),
+                visibility 300ms var(--nav-ease),
+                color 200ms var(--nav-ease),
+                border-color 200ms var(--nav-ease);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+.nav-back-to-top svg { width: 20px; height: 20px; }
+.nav-back-to-top:hover {
+    color: var(--nav-text-primary);
+    border-color: rgba(234, 234, 234, 0.2);
+}
+.nav-back-to-top--visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+.nav-back-to-top:focus-visible {
+    outline: 2px solid var(--nav-accent);
+    outline-offset: 2px;
+}
+@media (max-width: 767px) {
+    .nav-back-to-top { bottom: 20px; right: 20px; width: 40px; height: 40px; }
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {

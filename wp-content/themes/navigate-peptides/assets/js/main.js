@@ -276,41 +276,18 @@
     });
 
     /* ------------------------------------------------------------------
-     * Header scroll shadow
-     * ----------------------------------------------------------------*/
-    var style = document.createElement('style');
-    style.textContent = '.nav-header--scrolled { box-shadow: 0 4px 24px rgba(0,0,0,0.3); background-color: rgba(20,31,27,0.98); }';
-    document.head.appendChild(style);
-
-    /* ------------------------------------------------------------------
      * Back to Top Button
+     * The element is created lazily so no extra DOM ships on pages that
+     * haven't scrolled. Styles live in main.css (.nav-back-to-top and
+     * .nav-header--scrolled) rather than being injected here; stylesheet
+     * injection at runtime forces a second style-recalc.
      * ----------------------------------------------------------------*/
     var btt = document.createElement('button');
+    btt.type = 'button';
     btt.className = 'nav-back-to-top';
     btt.setAttribute('aria-label', 'Back to top');
-    btt.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:20px;height:20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/></svg>';
+    btt.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" focusable="false"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/></svg>';
     document.body.appendChild(btt);
-
-    var bttStyle = document.createElement('style');
-    bttStyle.textContent = [
-        '.nav-back-to-top {',
-        '  position: fixed; bottom: 32px; right: 32px; z-index: 90;',
-        '  width: 44px; height: 44px;',
-        '  display: flex; align-items: center; justify-content: center;',
-        '  background: rgba(26,42,36,0.85); backdrop-filter: blur(8px);',
-        '  border: 1px solid rgba(234,234,234,0.1); border-radius: 50%;',
-        '  color: #A8B0AD; cursor: pointer;',
-        '  opacity: 0; visibility: hidden;',
-        '  transform: translateY(12px);',
-        '  transition: all 300ms cubic-bezier(0.4,0,0.2,1);',
-        '  box-shadow: 0 4px 16px rgba(0,0,0,0.3);',
-        '}',
-        '.nav-back-to-top:hover { color: #EAEAEA; border-color: rgba(234,234,234,0.2); }',
-        '.nav-back-to-top--visible { opacity: 1; visibility: visible; transform: translateY(0); }',
-        '.nav-back-to-top:focus-visible { outline: 2px solid #9C843E; outline-offset: 2px; }',
-        '@media (max-width: 767px) { .nav-back-to-top { bottom: 20px; right: 20px; width: 40px; height: 40px; } }',
-    ].join('\n');
-    document.head.appendChild(bttStyle);
 
     btt.addEventListener('click', function () {
         window.scrollTo({ top: 0, behavior: 'smooth' });
