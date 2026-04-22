@@ -15,29 +15,66 @@
     var mobileMenu = document.getElementById('nav-mobile-menu');
 
     if (toggle && mobileMenu && header) {
+        var MOBILE_FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), [tabindex]:not([tabindex="-1"])';
+        var lastFocusBeforeMenu = null;
+
+        function openMobileMenu() {
+            lastFocusBeforeMenu = document.activeElement;
+            header.setAttribute('data-mobile-open', 'true');
+            mobileMenu.setAttribute('aria-hidden', 'false');
+            toggle.setAttribute('aria-expanded', 'true');
+            document.body.style.overflow = 'hidden';
+            var firstFocusable = mobileMenu.querySelector(MOBILE_FOCUSABLE);
+            if (firstFocusable) firstFocusable.focus();
+        }
+
+        function closeMobileMenu() {
+            header.setAttribute('data-mobile-open', 'false');
+            mobileMenu.setAttribute('aria-hidden', 'true');
+            toggle.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+            if (lastFocusBeforeMenu && typeof lastFocusBeforeMenu.focus === 'function') {
+                lastFocusBeforeMenu.focus();
+            } else {
+                toggle.focus();
+            }
+        }
+
         toggle.addEventListener('click', function () {
             var isOpen = header.getAttribute('data-mobile-open') === 'true';
-            header.setAttribute('data-mobile-open', isOpen ? 'false' : 'true');
-            mobileMenu.setAttribute('aria-hidden', isOpen ? 'true' : 'false');
-            toggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
-            document.body.style.overflow = isOpen ? '' : 'hidden';
+            if (isOpen) closeMobileMenu(); else openMobileMenu();
         });
 
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && header.getAttribute('data-mobile-open') === 'true') {
-                header.setAttribute('data-mobile-open', 'false');
-                mobileMenu.setAttribute('aria-hidden', 'true');
-                toggle.setAttribute('aria-expanded', 'false');
-                document.body.style.overflow = '';
+            if (header.getAttribute('data-mobile-open') !== 'true') return;
+
+            if (e.key === 'Escape') {
+                closeMobileMenu();
+                return;
+            }
+
+            if (e.key !== 'Tab') return;
+            // Focus trap — mirrors the minicart drawer behavior.
+            var nodes = mobileMenu.querySelectorAll(MOBILE_FOCUSABLE);
+            if (!nodes.length) return;
+            var first  = nodes[0];
+            var last   = nodes[nodes.length - 1];
+            var active = document.activeElement;
+            if (e.shiftKey && active === first) {
+                last.focus();
+                e.preventDefault();
+            } else if (!e.shiftKey && active === last) {
+                first.focus();
+                e.preventDefault();
+            } else if (!mobileMenu.contains(active) && active !== toggle) {
+                first.focus();
+                e.preventDefault();
             }
         });
 
         window.addEventListener('resize', function () {
             if (window.innerWidth >= 1024 && header.getAttribute('data-mobile-open') === 'true') {
-                header.setAttribute('data-mobile-open', 'false');
-                mobileMenu.setAttribute('aria-hidden', 'true');
-                toggle.setAttribute('aria-expanded', 'false');
-                document.body.style.overflow = '';
+                closeMobileMenu();
             }
         });
     }
@@ -349,6 +386,48 @@
             }
         });
     }
+
+    /* ------------------------------------------------------------------
+     * Respect prefers-reduced-motion on <model-viewer> auto-rotate
+     * (WCAG 2.2.2 Pause, Stop, Hide). The attribute can't be removed via
+     * CSS, so we strip it on initial load + whenever the user toggles
+     * the OS preference.
+     * ----------------------------------------------------------------*/
+    (function () {
+        if (!window.matchMedia) return;
+        var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+        function apply(reduce) {
+            var viewers = document.querySelectorAll('model-viewer');
+            Array.prototype.forEach.call(viewers, function (mv) {
+                if (reduce) {
+                    // Stash the original so we can restore if the user
+                    // toggles the preference off within the same session.
+                    if (mv.hasAttribute('auto-rotate') && !mv.dataset.navAutoRotateStashed) {
+                        mv.dataset.navAutoRotateStashed = '1';
+                        mv.removeAttribute('auto-rotate');
+                    }
+                } else if (mv.dataset.navAutoRotateStashed === '1') {
+                    mv.setAttribute('auto-rotate', '');
+                    delete mv.dataset.navAutoRotateStashed;
+                }
+            });
+        }
+
+        apply(mq.matches);
+        if (typeof mq.addEventListener === 'function') {
+            mq.addEventListener('change', function (e) { apply(e.matches); });
+        } else if (typeof mq.addListener === 'function') {
+            mq.addListener(function (e) { apply(e.matches); });
+        }
+
+        // <model-viewer> elements can be added asynchronously (lazy card
+        // posters). Re-apply when the library mutates the DOM.
+        if ('MutationObserver' in window) {
+            var obs = new MutationObserver(function () { apply(mq.matches); });
+            obs.observe(document.body, { childList: true, subtree: true });
+        }
+    })();
 
     /* ------------------------------------------------------------------
      * Newsletter form — POST /wp-json/nav/v1/subscribe

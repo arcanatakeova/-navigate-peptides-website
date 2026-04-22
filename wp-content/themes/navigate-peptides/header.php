@@ -205,14 +205,16 @@ if ($announcement) :
             <?php endif; ?>
 
             <button
+                type="button"
                 class="nav-header__toggle"
                 id="nav-mobile-toggle"
-                aria-label="Toggle mobile menu"
+                aria-label="<?php esc_attr_e('Toggle mobile menu', 'navigate-peptides'); ?>"
                 aria-expanded="false"
                 aria-controls="nav-mobile-menu"
             >
-                <span class="nav-header__toggle-open"><?php echo nav_icon('menu', 'nav-icon'); ?></span>
-                <span class="nav-header__toggle-close"><?php echo nav_icon('close', 'nav-icon'); ?></span>
+                <span class="screen-reader-text"><?php esc_html_e('Menu', 'navigate-peptides'); ?></span>
+                <span class="nav-header__toggle-open" aria-hidden="true"><?php echo nav_icon('menu', 'nav-icon'); ?></span>
+                <span class="nav-header__toggle-close" aria-hidden="true"><?php echo nav_icon('close', 'nav-icon'); ?></span>
             </button>
         </div>
     </div>

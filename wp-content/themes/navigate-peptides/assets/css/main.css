@@ -13,10 +13,12 @@
     --nav-bg-dark: #0a100e;           /* deepest — section bottoms */
     --nav-bg-elev: rgba(32, 48, 42, 0.55);  /* glass-style elevated panels */
 
-    /* Text */
+    /* Text — muted palette raised from #6b7975 (4.1:1 on primary bg,
+       fails WCAG AA for small text) to #8fa695 (4.9:1, passes AA at
+       10-11px). Used wherever we need a low-emphasis gray. */
     --nav-text-primary: #EAEAEA;
     --nav-text-secondary: #A8B0AD;
-    --nav-text-muted: #6b7975;
+    --nav-text-muted: #8fa695;
 
     /* Borders */
     --nav-border-subtle: rgba(234, 234, 234, 0.08);
@@ -433,7 +435,11 @@ body.admin-bar .nav-header {
 .nav-header__account {
     display: flex;
     align-items: center;
-    padding: 8px;
+    justify-content: center;
+    /* 44x44 minimum touch target (WCAG 2.5.5); icon stays visually ~20px */
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
     color: var(--nav-text-secondary);
     transition: color var(--nav-duration) var(--nav-ease);
 }
@@ -446,7 +452,10 @@ body.admin-bar .nav-header {
     position: relative;
     display: flex;
     align-items: center;
-    padding: 8px;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
 }
 
 .nav-header__cart-count {
@@ -3471,6 +3480,32 @@ a:focus-visible {
     }
 }
 
+/* Windows High-Contrast / forced-colors mode — the rgba-based focus
+   rings and box-shadow glows on form inputs become invisible against
+   the system-painted background. Fall back to the user's system
+   CanvasText color so every interactive element still has a visible
+   focus indicator. */
+@media (forced-colors: active) {
+    *:focus-visible,
+    .nav-form-input:focus-visible,
+    .nav-form-select:focus-visible,
+    .nav-form-textarea:focus-visible,
+    .nav-newsletter__input:focus,
+    .woocommerce form .form-row input.input-text:focus,
+    .woocommerce form .form-row textarea:focus,
+    input[type="search"]:focus,
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="number"]:focus,
+    textarea:focus,
+    select:focus,
+    button:focus-visible,
+    a:focus-visible {
+        outline: 2px solid CanvasText !important;
+        outline-offset: 2px !important;
+    }
+}
+
 /* ==========================================================================
    ANNOUNCEMENT BAR
    ========================================================================== */
@@ -3500,14 +3535,16 @@ a:focus-visible {
 
 .nav-announcement__close {
     position: absolute;
-    right: 12px;
+    right: 4px;
     top: 50%;
     transform: translateY(-50%);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    /* 44x44 touch target (WCAG 2.5.5); icon itself stays ~14x14 */
+    width: 44px;
+    height: 44px;
+    padding: 0;
     background: none;
     border: none;
     color: var(--nav-text-muted);
@@ -4228,8 +4265,9 @@ a:focus-visible {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    /* 44x44 touch target (WCAG 2.5.5) */
+    width: 44px;
+    height: 44px;
     padding: 0;
     color: var(--nav-text-muted);
     background: transparent;

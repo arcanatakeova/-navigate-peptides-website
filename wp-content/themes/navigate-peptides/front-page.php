@@ -86,7 +86,7 @@ $theme_uri = get_template_directory_uri();
         <!-- Right: Product Information Panel — GHK-Cu to match the rendered vial -->
         <div class="nav-hero__info-panel">
             <div class="nav-info-panel">
-                <h3 class="nav-info-panel__title"><?php esc_html_e('Product Information', 'navigate-peptides'); ?></h3>
+                <h2 class="nav-info-panel__title"><?php esc_html_e('Product Information', 'navigate-peptides'); ?></h2>
                 <div class="nav-info-panel__grid">
                     <div class="nav-info-panel__row">
                         <span class="nav-info-panel__label"><?php esc_html_e('Compound', 'navigate-peptides'); ?></span>
@@ -237,8 +237,9 @@ $theme_uri = get_template_directory_uri();
 </section>
 
 <!-- Trust Signals -->
-<section class="nav-section nav-section--dark">
+<section class="nav-section nav-section--dark" aria-labelledby="nav-trust-heading">
     <div class="nav-container">
+        <h2 id="nav-trust-heading" class="screen-reader-text"><?php esc_html_e('Quality and trust', 'navigate-peptides'); ?></h2>
         <div class="nav-trust-grid">
             <div class="nav-trust-card">
                 <div class="nav-trust-card__icon">
