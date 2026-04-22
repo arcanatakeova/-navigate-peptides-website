@@ -119,6 +119,13 @@ add_action('wp_enqueue_scripts', function () {
         true
     );
 
+    // Expose REST URL + nonce to the footer newsletter form. The nonce
+    // protects /wp-json/nav/v1/subscribe from CSRF of logged-in admins.
+    wp_localize_script('nav-main', 'navConfig', [
+        'subscribeUrl' => esc_url_raw(rest_url('nav/v1/subscribe')),
+        'restNonce'    => wp_create_nonce('wp_rest'),
+    ]);
+
     // Dequeue default WooCommerce styles — we override everything
     if (class_exists('WooCommerce')) {
         wp_dequeue_style('woocommerce-general');

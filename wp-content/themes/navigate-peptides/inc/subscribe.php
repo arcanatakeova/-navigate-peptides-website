@@ -73,6 +73,12 @@ add_action('rest_api_init', function () {
     register_rest_route('nav/v1', '/subscribe', [
         'methods'             => WP_REST_Server::CREATABLE,
         'callback'            => 'nav_handle_subscribe',
+        // Anyone can POST — but the footer form ships a `wp_rest` nonce
+        // in the X-WP-Nonce header, verified inside the handler. The
+        // permission callback has to return true for public signups;
+        // nonce verification protects against CSRF of logged-in admins
+        // (which would otherwise enroll arbitrary emails with the admin's
+        // IP stored as the subscriber record).
         'permission_callback' => '__return_true',
         'args'                => [
             'email' => [
@@ -96,29 +102,53 @@ add_action('rest_api_init', function () {
 });
 
 function nav_handle_subscribe(WP_REST_Request $request) {
-    // Honeypot check — silently accept spam so bots don't adapt, but
-    // never actually persist the record.
-    $hp = (string) $request->get_param('nav_hp');
-    if ($hp !== '') {
-        return rest_ensure_response([
-            'success' => true,
-            'message' => __('Thanks — you\'re on the list.', 'navigate-peptides'),
-        ]);
-    }
+    // Resolve IP first so honeypot hits + rate-limit decisions are
+    // attributed to the originating address for log analysis.
+    $ip = function_exists('nav_contact_client_ip')
+        ? nav_contact_client_ip()
+        : (string) ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0');
 
-    $ip = function_exists('nav_contact_client_ip') ? nav_contact_client_ip() : (string) ($_SERVER['REMOTE_ADDR'] ?? '');
-
-    // Rate limit: no more than 5 submissions per IP per hour.
     $rate_key = 'nav_subscribe_rl_' . md5($ip);
-    $count = (int) get_transient($rate_key);
+    $count    = (int) get_transient($rate_key);
+    // Always increment first — a tripped honeypot or repeated invalid
+    // attempts should count toward the limit. Previously the honeypot
+    // short-circuit returned before the counter bumped, letting bots
+    // enjoy unlimited 200 OK responses.
+    set_transient($rate_key, $count + 1, HOUR_IN_SECONDS);
     if ($count >= 5) {
+        error_log(sprintf('[nav_subscribe] rate-limited ip=%s', $ip));
         return new WP_Error(
             'rate_limited',
             __('Too many signups from this address. Try again later.', 'navigate-peptides'),
             ['status' => 429]
         );
     }
-    set_transient($rate_key, $count + 1, HOUR_IN_SECONDS);
+
+    // Honeypot trip — log and return a neutral success so bots don't
+    // adapt, but the attempt is now rate-counted + recorded.
+    $hp = (string) $request->get_param('nav_hp');
+    if ($hp !== '') {
+        error_log(sprintf('[nav_subscribe] honeypot tripped ip=%s hp=%s', $ip, substr($hp, 0, 80)));
+        return rest_ensure_response([
+            'success' => true,
+            'message' => __('Thanks — you\'re on the list.', 'navigate-peptides'),
+        ]);
+    }
+
+    // CSRF: require the wp_rest nonce emitted by the footer form. Public
+    // signups are allowed, but the nonce prevents a logged-in admin from
+    // being CSRFed into enrolling arbitrary emails with their IP.
+    $nonce_header = $request->get_header('x_wp_nonce');
+    $nonce_param  = (string) $request->get_param('_wpnonce');
+    $nonce        = $nonce_header ?: $nonce_param;
+    if (!$nonce || !wp_verify_nonce($nonce, 'wp_rest')) {
+        error_log(sprintf('[nav_subscribe] nonce failed ip=%s', $ip));
+        return new WP_Error(
+            'invalid_nonce',
+            __('Security check failed. Refresh the page and try again.', 'navigate-peptides'),
+            ['status' => 403]
+        );
+    }
 
     $email  = sanitize_email((string) $request->get_param('email'));
     $source = sanitize_text_field((string) $request->get_param('source')) ?: 'footer';
@@ -153,10 +183,29 @@ function nav_handle_subscribe(WP_REST_Request $request) {
         return new WP_Error('save_failed', __('Could not save your email. Please try again.', 'navigate-peptides'), ['status' => 500]);
     }
 
-    update_post_meta($post_id, '_nav_source', $source);
-    update_post_meta($post_id, '_nav_ip', $ip);
-    update_post_meta($post_id, '_nav_consent_ts', current_time('mysql', true));
-    update_post_meta($post_id, '_nav_user_agent', substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 200));
+    // Meta writes: consent_ts is compliance-critical — if it fails, the
+    // subscriber row has no audit trail. Roll back and surface a 500.
+    $consent_ok = update_post_meta($post_id, '_nav_consent_ts', current_time('mysql', true));
+    if ($consent_ok === false) {
+        error_log(sprintf('[nav_subscribe] consent_ts write failed post=%d', $post_id));
+        wp_delete_post($post_id, true);
+        return new WP_Error(
+            'consent_save_failed',
+            __('Could not record consent. Please try again.', 'navigate-peptides'),
+            ['status' => 500]
+        );
+    }
+
+    // Soft meta — log but don't fail the request.
+    foreach ([
+        '_nav_source'     => $source,
+        '_nav_ip'         => $ip,
+        '_nav_user_agent' => substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 200),
+    ] as $key => $value) {
+        if (update_post_meta($post_id, $key, $value) === false) {
+            error_log(sprintf('[nav_subscribe] meta write failed post=%d key=%s', $post_id, $key));
+        }
+    }
 
     /**
      * Hook for forwarders (Mailchimp, ActiveCampaign, etc.).

@@ -118,7 +118,21 @@
                 </button>
                 <p class="nav-newsletter__feedback" role="status" aria-live="polite"></p>
                 <p class="nav-newsletter__disclaimer">
-                    <?php esc_html_e('By subscribing you agree to receive occasional research emails. Unsubscribe anytime.', 'navigate-peptides'); ?>
+                    <?php
+                    $privacy_url = function_exists('nav_privacy_url') ? nav_privacy_url() : '';
+                    if ($privacy_url) {
+                        echo wp_kses(
+                            sprintf(
+                                /* translators: %s: privacy policy link */
+                                __('By subscribing you agree to receive occasional research emails and our %s. Unsubscribe anytime.', 'navigate-peptides'),
+                                '<a href="' . esc_url($privacy_url) . '">' . esc_html__('Privacy Policy', 'navigate-peptides') . '</a>'
+                            ),
+                            ['a' => ['href' => []]]
+                        );
+                    } else {
+                        esc_html_e('By subscribing you agree to receive occasional research emails. Unsubscribe anytime.', 'navigate-peptides');
+                    }
+                    ?>
                 </p>
             </form>
         </section>

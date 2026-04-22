@@ -384,9 +384,17 @@
                     nav_hp: data.get('nav_hp') || ''
                 };
 
+                var headers = {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                };
+                if (window.navConfig && window.navConfig.restNonce) {
+                    headers['X-WP-Nonce'] = window.navConfig.restNonce;
+                }
+
                 fetch(endpoint, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    headers: headers,
                     credentials: 'same-origin',
                     body: JSON.stringify(body)
                 })
