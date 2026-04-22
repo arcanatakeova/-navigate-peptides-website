@@ -298,6 +298,14 @@ add_action('woocommerce_product_options_general_product_data', function () {
 });
 
 add_action('woocommerce_process_product_meta', function ($post_id) {
+    // WooCommerce core verifies its `woocommerce_meta_nonce` before
+    // firing this hook, but rely on explicit capability too so a CSRF
+    // against a low-privilege user can't mutate compound data even if
+    // WC's nonce check regresses in a future release.
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+
     $fields = [
         '_nav_technical_subtitle',
         '_nav_cas_number',
