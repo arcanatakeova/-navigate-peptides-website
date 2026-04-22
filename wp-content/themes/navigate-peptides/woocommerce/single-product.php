@@ -58,8 +58,13 @@ while (have_posts()) : the_post();
             <div class="nav-product-single__media">
                 <div class="nav-product-single__image">
                     <?php
-                    // Check for 3D model GLB file
-                    $glb_url = get_post_meta($product->get_id(), '_nav_3d_model_url', true);
+                    // Check for 3D model GLB file. Revalidate scheme at
+                    // render so an admin-saved http:// URL never ships
+                    // and causes a mixed-content block on https.
+                    $glb_url = nav_safe_glb_url(
+                        get_post_meta($product->get_id(), '_nav_3d_model_url', true),
+                        $product->get_id()
+                    );
                     ?>
                     <?php if ($glb_url) : ?>
                         <model-viewer
