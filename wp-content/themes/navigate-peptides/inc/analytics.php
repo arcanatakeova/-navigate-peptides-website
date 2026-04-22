@@ -92,10 +92,25 @@ function nav_ga4_product_item($product, $quantity = 1): array {
  */
 function nav_ga4_emit_event(string $event, array $payload): void {
     if (nav_ga4_id() === '') return;
+    // wp_json_encode returns false on non-UTF-8 / invalid input — emitting
+    // `dataLayer.push(false)` is a silent no-op that drops the event. Bail
+    // with a log instead so we can spot products / titles with bad data.
+    $json = wp_json_encode(
+        ['event' => $event] + $payload,
+        JSON_UNESCAPED_SLASHES | JSON_HEX_TAG
+    );
+    if ($json === false) {
+        error_log(sprintf(
+            '[nav_ga4] json encode failed event=%s err=%s',
+            $event,
+            json_last_error_msg()
+        ));
+        return;
+    }
     ?>
     <script>
       window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push(<?php echo wp_json_encode(['event' => $event] + $payload, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG); ?>);
+      window.dataLayer.push(<?php echo $json; ?>);
     </script>
     <?php
 }

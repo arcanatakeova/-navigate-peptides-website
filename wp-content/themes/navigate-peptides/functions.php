@@ -67,7 +67,19 @@ add_action('after_setup_theme', function () {
  */
 function nav_asset_version(string $relative_path): string {
     $abs = NAV_THEME_DIR . '/' . ltrim($relative_path, '/');
-    $mtime = @filemtime($abs);
+    // Don't silently swallow filemtime failures — a deploy dropping a
+    // file would otherwise always fall through to NAV_THEME_VERSION
+    // and serve stale cached CSS/JS forever. Log the miss so the next
+    // diagnostics pass catches it.
+    if (!file_exists($abs)) {
+        static $logged = [];
+        if (!isset($logged[$relative_path])) {
+            $logged[$relative_path] = true;
+            error_log(sprintf('[nav_asset_version] missing asset: %s', $relative_path));
+        }
+        return NAV_THEME_VERSION;
+    }
+    $mtime = filemtime($abs);
     return $mtime ? (string) $mtime : NAV_THEME_VERSION;
 }
 
@@ -599,6 +611,27 @@ function nav_icon(string $name, string $class = ''): string {
 /**
  * Get the placeholder SVG URL for a product category.
  */
+/**
+ * Revalidate a product's 3D model URL at render time. Admin-save logs
+ * non-https URLs but still persists them — render should NEVER emit an
+ * http:// GLB on an https page (mixed-content block + silent failure).
+ * Returns an empty string if the URL is unsafe.
+ */
+function nav_safe_glb_url(?string $url, int $product_id = 0): string {
+    $url = (string) $url;
+    if ($url === '') return '';
+    $scheme = wp_parse_url($url, PHP_URL_SCHEME);
+    if ($scheme !== 'https') {
+        error_log(sprintf(
+            '[nav_product] refusing non-https GLB product=%d url=%s',
+            $product_id,
+            $url
+        ));
+        return '';
+    }
+    return $url;
+}
+
 function nav_get_category_placeholder(string $slug): string {
     $path = '/assets/images/categories/' . $slug . '.svg';
     if (file_exists(NAV_THEME_DIR . $path)) {

@@ -124,7 +124,10 @@ $cat_color     = $is_category ? nav_get_category_color($current_cat->slug) : '#4
                         <div class="nav-product-card__accent"></div>
                         <div class="nav-product-card__image">
                             <?php
-                            $glb_url  = (string) get_post_meta($product->get_id(), '_nav_3d_model_url', true);
+                            $glb_url  = nav_safe_glb_url(
+                                get_post_meta($product->get_id(), '_nav_3d_model_url', true),
+                                $product->get_id()
+                            );
                             $card_img = nav_get_product_card_image($product);
                             ?>
                             <?php if ($glb_url) : ?>

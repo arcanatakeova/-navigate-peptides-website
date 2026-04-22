@@ -1082,10 +1082,26 @@ add_action('wp_head', function () {
         return;
     }
 
-    if (is_singular('product') && has_post_thumbnail()) {
-        $src = wp_get_attachment_image_src(get_post_thumbnail_id(), 'product-hero');
-        if ($src) {
-            echo '<link rel="preload" as="image" href="' . esc_url($src[0]) . '" fetchpriority="high">' . "\n";
+    if (is_singular('product')) {
+        // Preload the product's 3D model so WebGL can start decoding it
+        // before model-viewer registers — parity with the home hero.
+        // Only emit for https URLs (mixed-content blocks would waste the
+        // preload budget on a request the browser will refuse to use).
+        $glb = get_post_meta(get_the_ID(), '_nav_3d_model_url', true);
+        if (function_exists('nav_safe_glb_url')) {
+            $glb = nav_safe_glb_url($glb, (int) get_the_ID());
+        }
+        if ($glb) {
+            echo '<link rel="preload" as="fetch" type="model/gltf-binary" '
+                . 'href="' . esc_url($glb) . '" crossorigin="anonymous" '
+                . 'fetchpriority="high">' . "\n";
+        }
+
+        if (has_post_thumbnail()) {
+            $src = wp_get_attachment_image_src(get_post_thumbnail_id(), 'product-hero');
+            if ($src) {
+                echo '<link rel="preload" as="image" href="' . esc_url($src[0]) . '" fetchpriority="high">' . "\n";
+            }
         }
     }
 }, 3);
