@@ -297,7 +297,15 @@ add_action('woocommerce_product_options_general_product_data', function () {
     echo '</div>';
 });
 
-add_action('woocommerce_process_product_meta', function ($post_id) {
+/* ------------------------------------------------------------------
+ * Three handlers fire on `woocommerce_process_product_meta`, each with
+ * a distinct concern + priority. Keep them separate so each phase can
+ * be reasoned about independently:
+ *   1. nav_wc_save_product_meta            (priority 10) — writes
+ *   2. nav_wc_warn_unsafe_product_urls     (priority 20) — read + log
+ *   3. nav_wc_scan_prohibited_product_terms(priority 20) — read + log
+ * ----------------------------------------------------------------*/
+function nav_wc_save_product_meta($post_id) {
     // WooCommerce core verifies its `woocommerce_meta_nonce` before
     // firing this hook, but rely on explicit capability too so a CSRF
     // against a low-privilege user can't mutate compound data even if
@@ -333,7 +341,8 @@ add_action('woocommerce_process_product_meta', function ($post_id) {
             );
         }
     }
-});
+}
+add_action('woocommerce_process_product_meta', 'nav_wc_save_product_meta');
 
 /* ------------------------------------------------------------------
  * Add RUO disclaimer after Add to Cart button
@@ -405,12 +414,14 @@ add_filter('woocommerce_add_to_cart_fragments', function (array $fragments) {
 });
 
 /* ------------------------------------------------------------------
+ * Handler 2 of 3 on woocommerce_process_product_meta (priority 20).
+ *
  * COA PDF + 3D model URL admin warning — processor audit relies on the
  * linked COA being a real document under a domain Ian controls. Block
  * obvious mixed-content / attacker-controlled-host URLs and nudge admins
  * toward the WP media library.
  * ----------------------------------------------------------------*/
-add_action('woocommerce_process_product_meta', function ($post_id) {
+function nav_wc_warn_unsafe_product_urls($post_id) {
     $urls_to_check = [
         '_nav_coa_pdf'       => __('COA PDF URL', 'navigate-peptides'),
         '_nav_3d_model_url'  => __('3D Model URL', 'navigate-peptides'),
@@ -433,7 +444,8 @@ add_action('woocommerce_process_product_meta', function ($post_id) {
             error_log(sprintf('[nav_wc] product %d %s points to external host %s', $post_id, $field, $host));
         }
     }
-}, 20);
+}
+add_action('woocommerce_process_product_meta', 'nav_wc_warn_unsafe_product_urls', 20);
 
 /* ------------------------------------------------------------------
  * Belt-and-suspenders RUO acknowledgment — if a checkout plugin replaces
@@ -474,10 +486,12 @@ add_action('woocommerce_payment_complete_order_status', function ($status, $orde
 }, 10, 2);
 
 /* ------------------------------------------------------------------
+ * Handler 3 of 3 on woocommerce_process_product_meta (priority 20).
+ *
  * Prohibited Term Validation (Admin Product Save)
  * Warns admins when product content contains compliance-risk language.
  * ----------------------------------------------------------------*/
-add_action('woocommerce_process_product_meta', function ($post_id) {
+function nav_wc_scan_prohibited_product_terms($post_id) {
     $prohibited_terms = [
         'dose', 'dosing', 'dosage', 'protocol', 'cycle', 'stack',
         'inject', 'injection', 'subcutaneous', 'intramuscular',
@@ -524,7 +538,8 @@ add_action('woocommerce_process_product_meta', function ($post_id) {
             15 * MINUTE_IN_SECONDS
         );
     }
-}, 20);
+}
+add_action('woocommerce_process_product_meta', 'nav_wc_scan_prohibited_product_terms', 20);
 
 add_action('admin_notices', function () {
     $screen = get_current_screen();

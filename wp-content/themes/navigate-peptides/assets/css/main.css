@@ -237,21 +237,6 @@ body.admin-bar .nav-header {
     flex-shrink: 0;
 }
 
-.nav-header__logo-mark {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border: 1px solid var(--nav-border-medium);
-    border-radius: var(--nav-radius-sm);
-    font-family: var(--nav-font-mono);
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--nav-text-primary);
-    letter-spacing: 0.05em;
-}
-
 .nav-header__logo-text {
     font-family: var(--nav-font-display);
     font-size: 18px;
@@ -475,10 +460,6 @@ body.admin-bar .nav-header {
     padding: 0 4px;
 }
 
-.nav-header__cta {
-    display: none;
-}
-
 .nav-header__toggle {
     display: flex;
     align-items: center;
@@ -562,7 +543,6 @@ body.admin-bar .nav-header {
 /* Desktop breakpoint */
 @media (min-width: 1024px) {
     .nav-header__nav { display: block; }
-    .nav-header__cta { display: inline-flex; }
     .nav-header__toggle { display: none; }
     .nav-mobile-menu { display: none !important; }
 }
@@ -1667,25 +1647,6 @@ body.admin-bar .nav-header {
 /* ==========================================================================
    ABOUT GRID
    ========================================================================== */
-/* ---------- About / Quality Visual Banner ---------- */
-.nav-about-visual {
-    margin-bottom: var(--nav-gap-2xl);
-    border-radius: var(--nav-radius-lg);
-    overflow: hidden;
-    border: 1px solid var(--nav-border-subtle);
-    /* Match the 16:9 render so the full branded vials render instead of
-       being cropped to the cap band by object-fit: cover. */
-    aspect-ratio: 16 / 9;
-    background: #0a1311;
-}
-
-.nav-about-visual img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    opacity: 1;
-}
 
 /* ---------- Quality page: interactive 3D vial trio ---------- */
 .nav-vial-trio {
@@ -1801,12 +1762,6 @@ body.admin-bar .nav-header {
         aspect-ratio: 3 / 4.2;
         min-height: 0;
         max-height: 75vh;
-    }
-    /* Touch devices don't have :hover — keep the affordance visible */
-    .nav-vial-trio__hint {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-        bottom: var(--nav-gap-sm);
     }
 }
 
@@ -2001,10 +1956,6 @@ body.admin-bar .nav-header {
         min-height: 460px;
         max-height: 78vh;
         aspect-ratio: 3 / 4.25;
-    }
-    .nav-about-hero__hint {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
     }
     .nav-about-hero__metrics {
         grid-template-columns: 1fr;
@@ -2770,15 +2721,6 @@ body.admin-bar .nav-header {
     gap: 16px 22px;
     padding: 18px 0 24px;
     margin-bottom: 6px;
-}
-
-.nav-footer__payments-label {
-    font-family: var(--nav-font-body);
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.28em;
-    color: var(--nav-text-muted);
 }
 
 /* Payment chips — no chip background. Card SVGs ship with their own
@@ -5032,8 +4974,7 @@ a:focus-visible {
 .nav-product-card__image img,
 .nav-product-card__image .attachment-product-card,
 .nav-product-card__image .wp-post-image,
-.nav-product-card__img,
-.nav-product-card__placeholder-img {
+.nav-product-card__img {
     max-width: 92%;
     max-height: 100%;
     width: auto;
@@ -5043,8 +4984,7 @@ a:focus-visible {
     filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.45));
 }
 /* Category SVG placeholder doesn't need the heavy drop-shadow */
-.nav-product-card__img[src$=".svg"],
-.nav-product-card__placeholder-img {
+.nav-product-card__img[src$=".svg"] {
     filter: none;
     max-width: 68%;
     max-height: 76%;
