@@ -643,8 +643,11 @@ function nav_get_category_placeholder(string $slug): string {
 /**
  * Resolve the WooCommerce product card image — prefers, in order:
  *   1. The product's WC featured image (admin can override per product)
- *   2. A compound-specific render baked into the theme, derived from the
- *      product's _nav_3d_model_url (vial-{slug}.glb → vial-{slug}-card.{webp,png})
+ *   2. A compound-specific render baked into the theme, derived from
+ *      the product's _nav_3d_model_url (vial-{slug}.glb → vial-{slug}-card.webp).
+ *      WebP is shipped as the only format — browser support is now
+ *      universal across the audience we care about (Safari 14+, all
+ *      Chromium, all modern Firefox).
  *   3. The category SVG placeholder
  *
  * Returns a URL string. The source and its srcset-friendly variant are
@@ -671,14 +674,11 @@ function nav_get_product_card_image(WC_Product $product): array {
         if ($basename && str_starts_with($basename, 'vial-')) {
             $slug = substr($basename, 5);
             $webp_rel = "/assets/images/vial-{$slug}-card.webp";
-            $png_rel  = "/assets/images/vial-{$slug}-card.png";
-            foreach ([$webp_rel, $png_rel] as $rel) {
-                if (file_exists(NAV_THEME_DIR . $rel)) {
-                    $ver = function_exists('nav_asset_version')
-                        ? nav_asset_version(ltrim($rel, '/')) : '';
-                    $src = NAV_THEME_URI . $rel . ($ver ? '?v=' . $ver : '');
-                    return ['src' => $src, 'srcset' => null, 'width' => 1024, 'height' => 1280];
-                }
+            if (file_exists(NAV_THEME_DIR . $webp_rel)) {
+                $ver = function_exists('nav_asset_version')
+                    ? nav_asset_version(ltrim($webp_rel, '/')) : '';
+                $src = NAV_THEME_URI . $webp_rel . ($ver ? '?v=' . $ver : '');
+                return ['src' => $src, 'srcset' => null, 'width' => 1024, 'height' => 1280];
             }
         }
     }

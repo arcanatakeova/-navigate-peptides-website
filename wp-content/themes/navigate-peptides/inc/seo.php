@@ -104,7 +104,15 @@ function nav_seo_scrub(string $text): string {
         '/\bpotenc(y|ies)\b/i'                     => 'molecular activit$1',
         '/\befficacy\b/i'                          => 'mechanism profile',
     ];
-    return (string) preg_replace(array_keys($map), array_values($map), $text);
+    $result = preg_replace(array_keys($map), array_values($map), $text);
+    if ($result === null) {
+        // preg_replace returns null on regex error — log and bail with
+        // the original input so callers don't quietly receive an empty
+        // string (the prior `(string) preg_replace(...)` cast hid this).
+        error_log('[nav_seo_scrub] preg_replace failed for input: ' . substr($text, 0, 120));
+        return $text;
+    }
+    return $result;
 }
 
 /**
@@ -115,8 +123,11 @@ function nav_seo_scrub(string $text): string {
 function nav_seo_scrub_name($text): string {
     $text = (string) $text;
     if ($text === '') return $text;
-    $scrubbed = nav_seo_scrub($text);
-    return $scrubbed ?: $text;
+    // nav_seo_scrub now handles regex failure internally and returns
+    // the original input on error, so the prior `?: $text` rescue tail
+    // (unreachable through the success path due to a `(string)` cast)
+    // is no longer needed.
+    return nav_seo_scrub($text);
 }
 
 /**
