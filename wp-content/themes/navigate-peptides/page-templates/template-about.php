@@ -23,7 +23,7 @@ get_header();
              metric strip — an about-us canvas, not a product lineup. -->
         <?php
         $theme_uri   = get_template_directory_uri();
-        $about_rel   = 'assets/models/vial-ghkcu.glb';
+        $about_rel   = 'assets/models/vial-ghk-cu.glb';
         $about_ver   = function_exists('nav_asset_version')
             ? nav_asset_version($about_rel) : '';
         $about_glb   = $theme_uri . '/' . $about_rel . ($about_ver ? '?v=' . $about_ver : '');

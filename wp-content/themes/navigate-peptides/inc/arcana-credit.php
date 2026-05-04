@@ -47,28 +47,10 @@ function nav_render_arcana_credit(): string {
 }
 
 /**
- * HTML comment banner — shown to anyone viewing page source.
+ * Front-end credit (HTML comment + meta generator) was removed per
+ * client request — no agency tags on the customer-facing surfaces.
+ * Admin-only attribution stays below.
  */
-add_action('wp_head', function () {
-    echo "\n<!--\n"
-       . "  Navigate Peptides — designed + developed by " . NAV_ARCANA_NAME . ".\n"
-       . "  Custom WordPress sites · WooCommerce · Web platforms.\n"
-       . "  " . NAV_ARCANA_URL . "\n"
-       . "-->\n";
-}, 1);
-
-/**
- * Meta generator tag — pitches the agency to bots and crawlers that
- * sample the generator field. Rendered at wp_head priority 2 so it
- * sits near the top of <head>.
- */
-add_action('wp_head', function () {
-    printf(
-        "<meta name=\"generator\" content=\"%s — %s\">\n",
-        esc_attr(NAV_ARCANA_NAME),
-        esc_attr(NAV_ARCANA_URL)
-    );
-}, 2);
 
 /**
  * wp-admin footer — replaces "Thank you for creating with WordPress".
