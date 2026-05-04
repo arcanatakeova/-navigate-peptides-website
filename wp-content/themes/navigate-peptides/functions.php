@@ -210,6 +210,15 @@ require_once NAV_THEME_DIR . '/inc/subscribe.php';
 require_once NAV_THEME_DIR . '/inc/arcana-credit.php';
 
 /* ------------------------------------------------------------------
+ * 6h. Age + Research-Use-Only entry gate
+ *
+ * Full-screen modal at first visit confirming the visitor is 21+
+ * and acknowledges the in-vitro research-only scope. Required for
+ * processor compliance + RUO posture.
+ * ----------------------------------------------------------------*/
+require_once NAV_THEME_DIR . '/inc/age-gate.php';
+
+/* ------------------------------------------------------------------
  * 7. Security Headers
  * ----------------------------------------------------------------*/
 add_action('send_headers', function () {
