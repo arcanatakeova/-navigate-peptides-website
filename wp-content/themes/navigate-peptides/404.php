@@ -51,10 +51,10 @@ get_header();
             // translations/edits in the admin propagate here. The slug/color
             // mapping is the only hardcoded part.
             $quick_cats = [
-                ['slug' => 'metabolic-research',     'color' => '#2F4666', 'fallback' => __('Metabolic Research', 'navigate-peptides')],
-                ['slug' => 'tissue-repair-research', 'color' => '#9C843E', 'fallback' => __('Tissue Repair Research', 'navigate-peptides')],
-                ['slug' => 'cognitive-research',     'color' => '#5E507F', 'fallback' => __('Cognitive Research', 'navigate-peptides')],
-                ['slug' => 'inflammation-research',  'color' => '#4A141C', 'fallback' => __('Inflammation Research', 'navigate-peptides')],
+                ['slug' => 'metabolic-research',           'color' => '#3F6A8A', 'fallback' => __('Metabolic Research', 'navigate-peptides')],
+                ['slug' => 'cellular-research',            'color' => '#4A6F5A', 'fallback' => __('Cellular Research', 'navigate-peptides')],
+                ['slug' => 'tissue-repair-research',       'color' => '#A88E45', 'fallback' => __('Tissue Repair Research', 'navigate-peptides')],
+                ['slug' => 'hormonal-signaling-research',  'color' => '#6B5A7A', 'fallback' => __('Hormonal Signaling Research', 'navigate-peptides')],
             ];
             foreach ($quick_cats as $cat) :
                 $term = get_term_by('slug', $cat['slug'], 'product_cat');

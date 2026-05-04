@@ -1,20 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
   <rect width="400" height="400" fill="#1a2a24"/>
   <!-- Layered skin / dermal structure -->
-  <path d="M80 160C130 140 180 160 200 150C220 140 260 160 320 150" stroke="#4A6B5F" stroke-width="2" stroke-linecap="round"/>
-  <path d="M80 210C130 190 180 210 200 200C220 190 260 210 320 200" stroke="#4A6B5F" stroke-width="1.5" opacity="0.7" stroke-linecap="round"/>
-  <path d="M80 260C130 240 180 260 200 250C220 240 260 260 320 250" stroke="#4A6B5F" stroke-width="1.5" opacity="0.5" stroke-linecap="round"/>
-  <path d="M80 310C130 290 180 310 200 300C220 290 260 310 320 300" stroke="#4A6B5F" stroke-width="1" opacity="0.3" stroke-linecap="round"/>
+  <path d="M80 160C130 140 180 160 200 150C220 140 260 160 320 150" stroke="#5A2E36" stroke-width="2" stroke-linecap="round"/>
+  <path d="M80 210C130 190 180 210 200 200C220 190 260 210 320 200" stroke="#5A2E36" stroke-width="1.5" opacity="0.7" stroke-linecap="round"/>
+  <path d="M80 260C130 240 180 260 200 250C220 240 260 260 320 250" stroke="#5A2E36" stroke-width="1.5" opacity="0.5" stroke-linecap="round"/>
+  <path d="M80 310C130 290 180 310 200 300C220 290 260 310 320 300" stroke="#5A2E36" stroke-width="1" opacity="0.3" stroke-linecap="round"/>
   <!-- Collagen fibers between layers -->
-  <path d="M150 160V210" stroke="#4A6B5F" stroke-width="0.8" opacity="0.3" stroke-dasharray="4 4"/>
-  <path d="M200 150V200" stroke="#4A6B5F" stroke-width="0.8" opacity="0.3" stroke-dasharray="4 4"/>
-  <path d="M250 155V205" stroke="#4A6B5F" stroke-width="0.8" opacity="0.3" stroke-dasharray="4 4"/>
+  <path d="M150 160V210" stroke="#5A2E36" stroke-width="0.8" opacity="0.3" stroke-dasharray="4 4"/>
+  <path d="M200 150V200" stroke="#5A2E36" stroke-width="0.8" opacity="0.3" stroke-dasharray="4 4"/>
+  <path d="M250 155V205" stroke="#5A2E36" stroke-width="0.8" opacity="0.3" stroke-dasharray="4 4"/>
   <!-- Matrix dots -->
-  <circle cx="130" cy="185" r="3" fill="#4A6B5F" opacity="0.3"/>
-  <circle cx="220" cy="175" r="3" fill="#4A6B5F" opacity="0.3"/>
-  <circle cx="270" cy="230" r="3" fill="#4A6B5F" opacity="0.3"/>
-  <circle cx="160" cy="235" r="3" fill="#4A6B5F" opacity="0.3"/>
+  <circle cx="130" cy="185" r="3" fill="#5A2E36" opacity="0.3"/>
+  <circle cx="220" cy="175" r="3" fill="#5A2E36" opacity="0.3"/>
+  <circle cx="270" cy="230" r="3" fill="#5A2E36" opacity="0.3"/>
+  <circle cx="160" cy="235" r="3" fill="#5A2E36" opacity="0.3"/>
   <!-- Molecular indicator top -->
-  <circle cx="200" cy="100" r="12" stroke="#4A6B5F" stroke-width="1.2"/>
-  <circle cx="200" cy="100" r="4" fill="#4A6B5F" opacity="0.3"/>
+  <circle cx="200" cy="100" r="12" stroke="#5A2E36" stroke-width="1.2"/>
+  <circle cx="200" cy="100" r="4" fill="#5A2E36" opacity="0.3"/>
 </svg>

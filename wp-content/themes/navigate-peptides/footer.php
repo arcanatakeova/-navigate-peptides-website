@@ -25,8 +25,8 @@
                 <ul class="nav-footer__links">
                     <li><a href="<?php echo esc_url(home_url('/compounds/')); ?>"><?php esc_html_e('All Categories', 'navigate-peptides'); ?></a></li>
                     <?php
-                    $cats = ['metabolic-research', 'tissue-repair-research', 'cognitive-research', 'inflammation-research', 'cellular-research', 'dermal-research', 'longevity-research', 'research-blends'];
-                    $cat_names = [__('Metabolic Research', 'navigate-peptides'), __('Tissue Repair Research', 'navigate-peptides'), __('Cognitive Research', 'navigate-peptides'), __('Inflammation Research', 'navigate-peptides'), __('Cellular Research', 'navigate-peptides'), __('Dermal Research', 'navigate-peptides'), __('Longevity Research', 'navigate-peptides'), __('Research Blends', 'navigate-peptides')];
+                    $cats = ['metabolic-research', 'cellular-research', 'tissue-repair-research', 'hormonal-signaling-research', 'cognitive-research', 'dermal-research'];
+                    $cat_names = [__('Metabolic Research', 'navigate-peptides'), __('Cellular Research', 'navigate-peptides'), __('Tissue Repair Research', 'navigate-peptides'), __('Hormonal Signaling Research', 'navigate-peptides'), __('Cognitive Research', 'navigate-peptides'), __('Dermal Research', 'navigate-peptides')];
                     foreach ($cats as $i => $slug) :
                     ?>
                         <li><a href="<?php echo esc_url(nav_get_product_cat_url($slug)); ?>"><?php echo esc_html($cat_names[$i]); ?></a></li>

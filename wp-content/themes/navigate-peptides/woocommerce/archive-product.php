@@ -54,14 +54,12 @@ $cat_color     = $is_category ? nav_get_category_color($current_cat->slug) : '#4
         <div class="nav-category-grid">
             <?php
             $categories = [
-                ['name' => 'Metabolic Research',     'slug' => 'metabolic-research',     'color' => '#2F4666', 'desc' => 'Compounds studied for metabolic pathway modulation and mitochondrial signaling research.'],
-                ['name' => 'Tissue Repair Research', 'slug' => 'tissue-repair-research', 'color' => '#9C843E', 'desc' => 'Compounds investigated for extracellular matrix, collagen, and growth-factor pathway research.'],
-                ['name' => 'Cognitive Research',     'slug' => 'cognitive-research',     'color' => '#5E507F', 'desc' => 'Compounds studied for neurotrophic pathways and synaptic signaling mechanisms.'],
-                ['name' => 'Inflammation Research',  'slug' => 'inflammation-research',  'color' => '#4A141C', 'desc' => 'Compounds studied for cytokine modulation and immune-signaling mechanisms.'],
-                ['name' => 'Cellular Research',      'slug' => 'cellular-research',      'color' => '#8E5660', 'desc' => 'Compounds investigated for cellular signaling pathways and proliferation mechanisms.'],
-                ['name' => 'Dermal Research',        'slug' => 'dermal-research',        'color' => '#4A6B5F', 'desc' => 'Compounds studied for epidermal pathway analysis and structural protein research.'],
-                ['name' => 'Longevity Research',     'slug' => 'longevity-research',     'color' => '#2E5C6A', 'desc' => 'Peptides investigated for cellular aging, senescence, and lifespan extension pathways.'],
-                ['name' => 'Research Blends',        'slug' => 'research-blends',        'color' => '#474C50', 'desc' => 'Multi-peptide formulations designed for synergistic pathway research applications.'],
+                ['name' => 'Metabolic Research',           'slug' => 'metabolic-research',           'color' => '#3F6A8A', 'desc' => 'Compounds studied for metabolic pathway modulation and mitochondrial signaling research.'],
+                ['name' => 'Cellular Research',            'slug' => 'cellular-research',            'color' => '#4A6F5A', 'desc' => 'Compounds investigated for cellular signaling pathways and proliferation mechanisms.'],
+                ['name' => 'Tissue Repair Research',       'slug' => 'tissue-repair-research',       'color' => '#A88E45', 'desc' => 'Compounds investigated for extracellular matrix, collagen, and growth-factor pathway research.'],
+                ['name' => 'Hormonal Signaling Research',  'slug' => 'hormonal-signaling-research',  'color' => '#6B5A7A', 'desc' => 'Compounds studied for endocrine pathway modulation and receptor-signaling research.'],
+                ['name' => 'Cognitive Research',           'slug' => 'cognitive-research',           'color' => '#8A5D6A', 'desc' => 'Compounds studied for neurotrophic pathways and synaptic signaling mechanisms.'],
+                ['name' => 'Dermal Research',              'slug' => 'dermal-research',              'color' => '#5A2E36', 'desc' => 'Compounds studied for epidermal pathway analysis and structural protein research.'],
             ];
             foreach ($categories as $cat) :
                 $link = get_term_link($cat['slug'], 'product_cat');
