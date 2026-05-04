@@ -4590,9 +4590,9 @@ a:focus-visible {
 }
 
 .nav-product-single__price {
-    display: flex;
+    display: inline-flex;
     align-items: baseline;
-    gap: 10px;
+    gap: 8px;
     font-family: var(--nav-font-display);
     font-size: 44px;
     line-height: 1;
@@ -4603,12 +4603,14 @@ a:focus-visible {
 .nav-product-single__price::after {
     content: "USD";
     font-family: var(--nav-font-mono);
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--nav-text-muted);
-    align-self: center;
-    margin-bottom: 4px;
+    /* Baseline align with the price digits — was rendering as a
+       superscript-looking blob above the dollar amount. */
+    align-self: baseline;
+    transform: translateY(-0.18em);
 }
 .nav-product-single__price .woocommerce-Price-amount,
 .nav-product-single__price bdi {
@@ -4878,13 +4880,20 @@ a:focus-visible {
     .nav-product-single__purchase form.cart,
     .woocommerce div.product .nav-product-single__purchase form.cart {
         flex-direction: row;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        gap: 10px;
     }
     .nav-product-single__purchase .quantity {
         flex: 0 0 auto;
     }
+    .nav-product-single__purchase .quantity .qty {
+        width: 56px;
+    }
     .nav-product-single__purchase .single_add_to_cart_button {
         flex: 1 1 auto;
+        min-width: 0;
+        padding: 14px 18px;
+        letter-spacing: 0.16em;
     }
     .nav-product-single .related .products,
     .nav-product-single .upsells .products {

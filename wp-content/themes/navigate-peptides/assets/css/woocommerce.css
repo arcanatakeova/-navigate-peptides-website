@@ -1467,6 +1467,104 @@
     }
 }
 
+/* Cart line-item thumbnail (3D vial poster swap) — sized so each
+   line reads as a tidy product card row instead of a tiny default
+   WC thumbnail. */
+.woocommerce-cart-form .nav-cart-thumb,
+.woocommerce-cart-form .product-thumbnail img {
+    width: 84px;
+    height: 84px;
+    border-radius: var(--nav-radius-md);
+    background: rgba(10, 16, 14, 0.55);
+    object-fit: contain;
+    padding: 6px;
+    border: 1px solid var(--nav-border-subtle);
+}
+@media (max-width: 767px) {
+    .woocommerce-cart-form .nav-cart-thumb,
+    .woocommerce-cart-form .product-thumbnail img {
+        width: 96px;
+        height: 96px;
+    }
+}
+
+/* Sticky bottom checkout bar — when the cart_totals card pushes
+   the proceed button below the fold on mobile, mirror the action
+   in a sticky bar so customers always have a reachable CTA.
+   Visible only on mobile, only on the cart page. */
+.woocommerce-cart .nav-cart-sticky-checkout {
+    display: none;
+}
+@media (max-width: 767px) {
+    .woocommerce-cart .nav-cart-sticky-checkout {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 80;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+        background: rgba(10, 16, 14, 0.96);
+        -webkit-backdrop-filter: blur(14px);
+        backdrop-filter: blur(14px);
+        border-top: 1px solid var(--nav-border-medium);
+        box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.45);
+    }
+    .nav-cart-sticky-checkout__total {
+        flex: 0 0 auto;
+        font-family: var(--nav-font-display);
+        font-size: 22px;
+        line-height: 1;
+        color: var(--nav-text-primary);
+    }
+    .nav-cart-sticky-checkout__total small {
+        display: block;
+        font-family: var(--nav-font-mono);
+        font-size: 9px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--nav-text-muted);
+        margin-bottom: 2px;
+    }
+    .nav-cart-sticky-checkout a {
+        flex: 1 1 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 14px 20px;
+        font-family: var(--nav-font-mono);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--nav-bg-dark, #0a100e);
+        background: linear-gradient(135deg, #c9b878 0%, var(--nav-accent) 100%);
+        border-radius: 999px;
+        text-decoration: none;
+        box-shadow: 0 4px 14px rgba(156, 132, 62, 0.32);
+    }
+    /* Pad the page bottom so the sticky bar doesn't cover the last
+       row of cart_totals as the user scrolls to the bottom. */
+    .woocommerce-cart .nav-woo-wrap {
+        padding-bottom: 96px;
+    }
+}
+
+/* Mini-cart drawer thumbnail (drawer renders alongside the slide-in
+   cart). Compact 60x60 chip. */
+.nav-minicart-thumb {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--nav-radius-sm);
+    background: rgba(10, 16, 14, 0.55);
+    object-fit: contain;
+    padding: 4px;
+    border: 1px solid var(--nav-border-subtle);
+}
+
 /* Cart responsive */
 @media (max-width: 767px) {
     .woocommerce-cart-form table,

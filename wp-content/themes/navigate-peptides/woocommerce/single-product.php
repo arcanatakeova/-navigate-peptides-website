@@ -74,9 +74,10 @@ while (have_posts()) : the_post();
                             camera-controls
                             interaction-prompt="none"
                             rotation-per-second="32deg"
-                            camera-orbit="0deg 75deg 115%"
-                            min-camera-orbit="auto auto 90%"
-                            max-camera-orbit="auto auto 200%"
+                            camera-orbit="0deg 78deg 140%"
+                            min-camera-orbit="auto auto 110%"
+                            max-camera-orbit="auto auto 220%"
+                            field-of-view="25deg"
                             environment-image="neutral"
                             shadow-intensity="0.6"
                             exposure="1.15"
