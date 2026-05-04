@@ -291,11 +291,10 @@ $theme_uri = get_template_directory_uri();
     </div>
 </section>
 
-<!-- Sitewide Disclaimer -->
-<section class="nav-section nav-section--disclaimer">
-    <div class="nav-container">
-        <?php nav_sitewide_disclaimer(); ?>
-    </div>
-</section>
+<?php /* Sitewide RUO disclaimer is rendered in the footer on every
+       page (footer.php → nav-footer__disclaimer + nav-footer__ruo).
+       The standalone section here was a triplicate of the same text
+       within ~80px of the footer — dropped to avoid the wall-of-
+       disclaimers feel below the CTA section. */ ?>
 
 <?php get_footer(); ?>

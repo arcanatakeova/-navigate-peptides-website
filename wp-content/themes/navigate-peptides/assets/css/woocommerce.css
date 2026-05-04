@@ -243,13 +243,10 @@
     color: var(--nav-text-primary);
 }
 
-/* ----------  PRODUCT ARCHIVE — PAGE HERO  ---------- */
-.nav-page-hero {
-    position: relative;
-    padding: clamp(48px, 7vw, 88px) 0 clamp(32px, 5vw, 56px);
-    border-bottom: 1px solid var(--nav-border-subtle);
-}
-
+/* ---------- PRODUCT ARCHIVE — PAGE HERO ----------
+   The .nav-page-hero base rule lives in main.css (canonical
+   spacing: var(--nav-gap-2xl) symmetric, var(--nav-bg-primary) bg).
+   Only the WC-archive-specific accent override remains here. */
 .nav-page-hero__accent {
     width: 48px;
     height: 2px;
@@ -1583,8 +1580,10 @@
 }
 
 .nav-checkout-order-review {
-    position: sticky;
-    top: 110px;
+    /* Sticky only on desktop where the checkout is 2-column. On
+       mobile the layout stacks (form first, summary below); a sticky
+       summary would otherwise float over the billing fields and
+       block input. */
     padding: 28px;
     border: 1px solid rgba(234, 234, 234, 0.08);
     border-radius: 6px;
@@ -1592,6 +1591,12 @@
         linear-gradient(180deg, rgba(22, 34, 29, 0.7) 0%, rgba(14, 22, 19, 0.85) 100%);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+}
+@media (min-width: 1024px) {
+    .nav-checkout-order-review {
+        position: sticky;
+        top: 110px;
+    }
 }
 
 .nav-checkout-order-review h3 {
@@ -1629,6 +1634,7 @@
 .nav-checkout-steps ol {
     display: flex;
     gap: 0;
+    flex-wrap: wrap;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -1636,7 +1642,7 @@
 }
 
 .nav-checkout-steps__item {
-    flex: 1;
+    flex: 1 1 auto;
     display: flex;
     align-items: baseline;
     gap: 10px;
@@ -1648,6 +1654,18 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     margin-bottom: -1px;
+    white-space: nowrap;
+}
+@media (max-width: 639px) {
+    /* Tighten letter-spacing + drop nowrap so 3 steps fit at 375 vp
+       without overflowing or wrapping mid-label. */
+    .nav-checkout-steps__item {
+        flex: 1 1 100%;
+        padding: 12px 14px;
+        letter-spacing: 0.12em;
+        font-size: 11px;
+        white-space: normal;
+    }
 }
 
 .nav-checkout-steps__item.is-done {
@@ -1768,8 +1786,9 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    /* 44x44 minimum touch target (WCAG 2.5.5) */
+    width: 44px;
+    height: 44px;
     color: var(--nav-text-secondary);
     background: transparent;
     border: 1px solid rgba(234, 234, 234, 0.1);

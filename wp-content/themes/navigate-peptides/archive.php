@@ -34,7 +34,16 @@ $all_categories  = get_terms([
         <?php endif; ?>
 
         <span class="nav-kicker"><?php echo esc_html(post_type_archive_title('', false) ?: __('Research Archive', 'navigate-peptides')); ?></span>
-        <h1 class="nav-page-hero__title"><?php the_archive_title(); ?></h1>
+        <h1 class="nav-page-hero__title"><?php
+            // Strip the "Archives:" / "Category:" / "Tag:" prefix WP
+            // adds via the_archive_title() — it leaks WP plumbing into
+            // a public hero. Use the bare term/post-type label instead.
+            if (!empty($current_term)) {
+                echo esc_html($current_term->name);
+            } else {
+                echo esc_html(post_type_archive_title('', false) ?: get_the_archive_title());
+            }
+        ?></h1>
         <?php the_archive_description('<p class="nav-page-hero__subtitle">', '</p>'); ?>
     </div>
 </section>
