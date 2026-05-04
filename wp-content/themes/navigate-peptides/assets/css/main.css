@@ -4298,27 +4298,30 @@ a:focus-visible {
 }
 
 .nav-product-single__media {
-    position: sticky;
-    /* Announcement bar (~48px) + header (~80px) + breathing room */
-    top: 140px;
-    z-index: 1;
+    /* Sticky removed — was creating visual overlap perception with
+       the right-column title at certain scroll positions. Static
+       positioning keeps the column flow predictable. */
+    position: relative;
     min-width: 0;
 }
 
 .nav-product-single__image {
     position: relative;
     width: 100%;
-    /* Frame the vial without dominating the viewport. 4/5 portrait
-       matches the cylinder proportions; capped max-height stops the
-       container from running away on tall displays. */
+    /* Compact container — vial dominates the frame, dead space is
+       trimmed so the title in the right column reads at the same
+       eye level on desktop and stays above the fold on mobile. */
     aspect-ratio: 4 / 5;
-    min-height: 480px;
-    max-height: 620px;
+    min-height: 440px;
+    max-height: 540px;
     border-radius: var(--nav-radius-xl);
-    border: 1px solid var(--nav-border-subtle);
+    border: 1px solid rgba(143, 166, 149, 0.18);
+    /* Lighter backdrop with a soft sage glow — the vial's transparent
+       green glass + lyophilized powder no longer blend into a near-
+       black box. */
     background:
-        radial-gradient(ellipse at 50% 38%, rgba(143, 166, 149, 0.10) 0%, rgba(10, 19, 17, 0) 68%),
-        #0a1311;
+        radial-gradient(ellipse at 50% 35%, rgba(143, 166, 149, 0.18) 0%, rgba(20, 31, 27, 0) 60%),
+        linear-gradient(180deg, #1a2a24 0%, #0f1714 100%);
     overflow: hidden;
     display: grid;
     place-items: center;
@@ -4809,14 +4812,10 @@ a:focus-visible {
     margin: 0;
 }
 
-/* Responsive — tablet keeps 2-col (the stray rule at line ~2788 sets
-   1fr 1fr between 768 and 1023). Release sticky at tablet so the sticky
-   rail doesn't lock while details are still scrolling. */
 @media (max-width: 1023px) {
-    .nav-product-single__media { position: static; }
     .nav-product-single__image {
-        min-height: 420px;
-        max-height: 560px;
+        min-height: 400px;
+        max-height: 500px;
         aspect-ratio: 4 / 5;
     }
     .nav-product-single__price { font-size: 38px; }
@@ -4832,14 +4831,12 @@ a:focus-visible {
         gap: var(--nav-gap-lg);
         margin: var(--nav-gap-md) 0 var(--nav-gap-xl);
     }
-    /* Mobile viewer: cap to ~half the viewport so title + price + ATC
-       are reachable without a long scroll. The vial-rendering camera
-       framing is already tight (0deg yaw, 130% orbit) so a smaller
-       container still shows the whole vial cleanly. */
+    /* Mobile viewer — capped so the title + price land above the
+       fold on a 375x812 viewport. Camera-orbit 115% fills the box. */
     .nav-product-single__image {
-        min-height: 360px;
-        max-height: 52vh;
-        aspect-ratio: 1 / 1.1;
+        min-height: 320px;
+        max-height: 44vh;
+        aspect-ratio: 4 / 5;
     }
 }
 
@@ -4852,9 +4849,9 @@ a:focus-visible {
         gap: var(--nav-gap-md);
     }
     .nav-product-single__image {
-        min-height: 320px;
-        max-height: 48vh;
-        aspect-ratio: 1 / 1.1;
+        min-height: 280px;
+        max-height: 40vh;
+        aspect-ratio: 4 / 5;
     }
     .nav-product-single__title {
         font-size: clamp(28px, 7.6vw, 36px);
