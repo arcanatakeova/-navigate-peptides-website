@@ -219,6 +219,15 @@ require_once NAV_THEME_DIR . '/inc/arcana-credit.php';
 require_once NAV_THEME_DIR . '/inc/age-gate.php';
 
 /* ------------------------------------------------------------------
+ * 6i. Business identity — single source of truth
+ *
+ * Legal entity (Elytherion LLC), DBA (Navigate Peptides), CMRA mailing
+ * address, phone, and support email constants + helpers. Consumed by
+ * footer.php, inc/seo.php, template-contact.php, and any legal page.
+ * ----------------------------------------------------------------*/
+require_once NAV_THEME_DIR . '/inc/business.php';
+
+/* ------------------------------------------------------------------
  * 7. Security Headers
  * ----------------------------------------------------------------*/
 add_action('send_headers', function () {
