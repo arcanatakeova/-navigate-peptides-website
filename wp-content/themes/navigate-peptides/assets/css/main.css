@@ -4364,12 +4364,12 @@ a:focus-visible {
 .nav-product-single__image {
     position: relative;
     width: 100%;
-    /* Taller container so the vial cap + base sit inside the frame
-       at our default camera-orbit. 3/4 portrait fits a vertical
-       cylinder better than the previous 4/5. */
-    aspect-ratio: 3 / 4;
-    min-height: 580px;
-    max-height: 78vh;
+    /* Frame the vial without dominating the viewport. 4/5 portrait
+       matches the cylinder proportions; capped max-height stops the
+       container from running away on tall displays. */
+    aspect-ratio: 4 / 5;
+    min-height: 480px;
+    max-height: 620px;
     border-radius: var(--nav-radius-xl);
     border: 1px solid var(--nav-border-subtle);
     background:
@@ -4871,7 +4871,8 @@ a:focus-visible {
 @media (max-width: 1023px) {
     .nav-product-single__media { position: static; }
     .nav-product-single__image {
-        min-height: 460px;
+        min-height: 420px;
+        max-height: 560px;
         aspect-ratio: 4 / 5;
     }
     .nav-product-single__price { font-size: 38px; }
@@ -4884,28 +4885,50 @@ a:focus-visible {
 @media (max-width: 767px) {
     .nav-product-single__grid {
         grid-template-columns: 1fr;
-        gap: var(--nav-gap-xl);
+        gap: var(--nav-gap-lg);
+        margin: var(--nav-gap-md) 0 var(--nav-gap-xl);
+    }
+    /* Mobile viewer: cap to ~half the viewport so title + price + ATC
+       are reachable without a long scroll. The vial-rendering camera
+       framing is already tight (0deg yaw, 130% orbit) so a smaller
+       container still shows the whole vial cleanly. */
+    .nav-product-single__image {
+        min-height: 360px;
+        max-height: 52vh;
+        aspect-ratio: 1 / 1.1;
     }
 }
 
 @media (max-width: 639px) {
     .nav-product-single { padding-bottom: var(--nav-gap-xl); }
     .nav-product-single__grid {
-        margin-top: var(--nav-gap-md);
-        gap: var(--nav-gap-lg);
+        gap: var(--nav-gap-md);
+    }
+    .nav-product-single__details {
+        gap: var(--nav-gap-md);
     }
     .nav-product-single__image {
-        min-height: 380px;
-        aspect-ratio: 4 / 5;
+        min-height: 320px;
+        max-height: 48vh;
+        aspect-ratio: 1 / 1.1;
     }
     .nav-product-single__title {
-        font-size: clamp(30px, 8vw, 40px);
+        font-size: clamp(28px, 7.6vw, 36px);
+        line-height: 1.08;
+    }
+    .nav-product-single__subtitle {
+        font-size: 11px;
     }
     .nav-product-single__price {
-        font-size: 34px;
+        font-size: 32px;
+    }
+    .nav-product-single__purchase {
+        padding: var(--nav-gap-md);
+        gap: 14px;
     }
     .nav-product-single__trust-strip {
         grid-template-columns: 1fr 1fr;
+        padding: 12px 14px;
     }
     .nav-product-single__trust-strip .nav-trust-strip__coa {
         grid-column: 1 / -1;
@@ -4926,6 +4949,188 @@ a:focus-visible {
     .nav-product-single .upsells .products {
         grid-template-columns: 1fr;
     }
+}
+
+/* ----------------------------------------------------------
+   WooCommerce variable-product variations form
+   The default Woo markup uses <table class="variations"> with one
+   row per attribute (here just "Amount") plus a .single_variation
+   block that holds the price + availability and the
+   .woocommerce-variation-add-to-cart wrapper around qty + ATC.
+   Brand all of it to match the rest of the purchase card.
+   ---------------------------------------------------------- */
+.nav-product-single__purchase form.variations_form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+.nav-product-single__purchase table.variations,
+.woocommerce div.product .nav-product-single__purchase table.variations {
+    width: 100%;
+    margin: 0;
+    border: 0;
+    border-collapse: collapse;
+    background: transparent;
+}
+.nav-product-single__purchase table.variations tbody {
+    display: grid;
+    gap: 10px;
+}
+.nav-product-single__purchase table.variations tr {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    border: 0;
+}
+.nav-product-single__purchase table.variations td {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    line-height: 1.4;
+}
+.nav-product-single__purchase table.variations td.label {
+    font-family: var(--nav-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--nav-text-secondary);
+}
+.nav-product-single__purchase table.variations td.label label {
+    margin: 0;
+    color: inherit;
+    font-size: inherit;
+    font-weight: 600;
+}
+.nav-product-single__purchase table.variations td.value {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.nav-product-single__purchase table.variations select,
+.woocommerce div.product .nav-product-single__purchase table.variations select {
+    flex: 1 1 auto;
+    min-width: 140px;
+    padding: 13px 40px 13px 16px;
+    background-color: rgba(10, 16, 14, 0.6);
+    border: 1px solid var(--nav-border-medium);
+    border-radius: var(--nav-radius-md);
+    color: var(--nav-text-primary);
+    font-family: var(--nav-font-mono);
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    -webkit-appearance: none;
+    appearance: none;
+    /* Inline gold chevron — matches accent color, no extra HTTP req */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%239C843E' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M4 6l4 4 4-4'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+.nav-product-single__purchase table.variations select:focus,
+.nav-product-single__purchase table.variations select:hover {
+    outline: 0;
+    border-color: rgba(143, 166, 149, 0.7);
+    background-color: rgba(10, 16, 14, 0.85);
+}
+
+.nav-product-single__purchase .reset_variations {
+    display: inline-block;
+    font-family: var(--nav-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--nav-text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    visibility: hidden; /* WC toggles this via JS once a variation is picked */
+}
+.nav-product-single__purchase .reset_variations:hover { color: var(--nav-text-secondary); }
+
+/* Single-variation panel — price, availability, description, ATC.
+   Hidden until the user picks a variation; WC unhides via JS. */
+.nav-product-single__purchase .single_variation_wrap {
+    margin: 0;
+}
+.nav-product-single__purchase .woocommerce-variation {
+    margin: 0 0 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.nav-product-single__purchase .woocommerce-variation:empty { display: none; }
+.nav-product-single__purchase .woocommerce-variation-description {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--nav-text-secondary);
+    margin: 0;
+}
+.nav-product-single__purchase .woocommerce-variation-description p { margin: 0; }
+.nav-product-single__purchase .woocommerce-variation-price {
+    font-family: var(--nav-font-display);
+    font-size: 36px;
+    line-height: 1;
+    color: var(--nav-text-primary);
+    letter-spacing: -0.02em;
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+.nav-product-single__purchase .woocommerce-variation-price::after {
+    content: "USD";
+    font-family: var(--nav-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--nav-text-muted);
+    align-self: center;
+    margin-bottom: 4px;
+}
+.nav-product-single__purchase .woocommerce-variation-price .price,
+.nav-product-single__purchase .woocommerce-variation-price .woocommerce-Price-amount,
+.nav-product-single__purchase .woocommerce-variation-price bdi {
+    font-family: inherit;
+    color: inherit;
+    font-size: inherit;
+}
+.nav-product-single__purchase .woocommerce-variation-availability {
+    font-family: var(--nav-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--nav-text-muted);
+    margin: 0;
+}
+.nav-product-single__purchase .woocommerce-variation-availability .stock { color: inherit; }
+.nav-product-single__purchase .woocommerce-variation-availability .in-stock,
+.nav-product-single__purchase .woocommerce-variation-availability p:has(.in-stock) {
+    color: #a7c7b1;
+}
+
+.nav-product-single__purchase .woocommerce-variation-add-to-cart {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin: 0;
+}
+/* Reset the disabled state's pointer-events so clicks fall through
+   to the variations select on first paint */
+.nav-product-single__purchase .woocommerce-variation-add-to-cart-disabled
+    .single_add_to_cart_button {
+    pointer-events: none;
+}
+
+/* When a variations form is rendered, the parent product's static
+   price block is redundant — the variation panel takes over. Hide it. */
+.nav-product-single__purchase form.variations_form ~ .nav-product-single__price,
+.nav-product-single__purchase:has(form.variations_form) > .nav-product-single__price {
+    display: none;
 }
 
 /* ==========================================================================
