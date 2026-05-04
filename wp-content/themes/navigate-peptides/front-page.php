@@ -55,10 +55,13 @@ $theme_uri = get_template_directory_uri();
         // Cache-bust the GLB by file mtime. Without this, browsers hold the
         // old model in disk cache after a redeploy (WordPress static assets
         // ship with long browser-cache TTLs) and users see stale geometry.
+        // Hero matches the GHK-Cu info panel beside it, so load the
+        // GHK-Cu spec-label GLB instead of the unwrapped master.
+        $vial_rel = 'assets/models/vial-ghk-cu.glb';
         $vial_ver = function_exists('nav_asset_version')
-            ? nav_asset_version('assets/models/vial.glb')
+            ? nav_asset_version($vial_rel)
             : '';
-        $vial_url = $theme_uri . '/assets/models/vial.glb'
+        $vial_url = $theme_uri . '/' . $vial_rel
                   . ($vial_ver ? '?v=' . $vial_ver : '');
         ?>
         <div class="nav-hero__vial">

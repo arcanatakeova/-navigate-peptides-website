@@ -4347,19 +4347,29 @@ a:focus-visible {
     gap: var(--nav-gap-2xl);
     align-items: start;
     margin: var(--nav-gap-xl) 0 var(--nav-gap-2xl);
+    /* Prevent any model-viewer canvas overflow from painting across
+       neighboring columns. Each child establishes its own stacking
+       context, so the right-column title/heading is never occluded. */
+    isolation: isolate;
 }
 
 .nav-product-single__media {
     position: sticky;
     /* Announcement bar (~48px) + header (~80px) + breathing room */
     top: 140px;
+    z-index: 1;
+    min-width: 0;
 }
 
 .nav-product-single__image {
     position: relative;
     width: 100%;
-    aspect-ratio: 4 / 5;
-    min-height: 520px;
+    /* Taller container so the vial cap + base sit inside the frame
+       at our default camera-orbit. 3/4 portrait fits a vertical
+       cylinder better than the previous 4/5. */
+    aspect-ratio: 3 / 4;
+    min-height: 580px;
+    max-height: 78vh;
     border-radius: var(--nav-radius-xl);
     border: 1px solid var(--nav-border-subtle);
     background:
