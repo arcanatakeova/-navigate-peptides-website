@@ -480,4 +480,111 @@
         });
     })();
 
+    /* ------------------------------------------------------------------
+     * Age + Research-Use-Only entry gate
+     * Server emits the gate when the cookie is missing. JS enables the
+     * submit button once both checkboxes are checked, persists the
+     * acknowledgment to a cookie + localStorage on submit, fades the
+     * gate out, and unlocks body scroll. Escape is intentionally NOT
+     * wired up — the gate must be acknowledged or declined explicitly.
+     * ----------------------------------------------------------------*/
+    (function () {
+        var gate = document.getElementById('nav-age-gate');
+        if (!gate) return;
+
+        var form     = document.getElementById('nav-age-gate-form');
+        var enter    = document.getElementById('nav-age-gate-enter');
+        var decline  = document.getElementById('nav-age-gate-decline');
+        var ageBox   = document.getElementById('nav-age-gate-age');
+        var ruoBox   = document.getElementById('nav-age-gate-ruo');
+
+        var cookieName = gate.getAttribute('data-cookie') || 'nav_age_gate_v1';
+        var ttlDays    = parseInt(gate.getAttribute('data-ttl-days') || '30', 10);
+        var declineUrl = gate.getAttribute('data-decline-url') || 'https://www.google.com/';
+
+        function syncEnter() {
+            if (!enter || !ageBox || !ruoBox) return;
+            enter.disabled = !(ageBox.checked && ruoBox.checked);
+        }
+
+        function setCookie(value, days) {
+            var expires = new Date(Date.now() + days * 86400000).toUTCString();
+            var secure  = location.protocol === 'https:' ? '; Secure' : '';
+            document.cookie = cookieName + '=' + encodeURIComponent(value)
+                + '; Expires=' + expires
+                + '; Path=/; SameSite=Lax' + secure;
+        }
+
+        function close() {
+            try { setCookie('1', ttlDays); } catch (_) {}
+            try {
+                localStorage.setItem(
+                    'nav_age_gate_acknowledged_until',
+                    String(Date.now() + ttlDays * 86400000)
+                );
+            } catch (_) { /* private mode / quota — cookie is the source of truth */ }
+
+            gate.classList.add('is-closing');
+            document.body.classList.remove('has-age-gate');
+            setTimeout(function () {
+                if (gate && gate.parentNode) gate.parentNode.removeChild(gate);
+            }, 260);
+        }
+
+        // Initial state
+        syncEnter();
+        [ageBox, ruoBox].forEach(function (cb) {
+            if (!cb) return;
+            cb.addEventListener('change', syncEnter);
+        });
+
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                if (!(ageBox && ageBox.checked && ruoBox && ruoBox.checked)) return;
+                close();
+            });
+        }
+
+        if (decline) {
+            decline.addEventListener('click', function () {
+                window.location.href = declineUrl;
+            });
+        }
+
+        /* Focus management — start on the first checkbox, trap Tab
+           inside the panel until acknowledgment. */
+        var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), [tabindex]:not([tabindex="-1"])';
+        if (ageBox) {
+            // Defer one tick so layout settles before focus moves.
+            setTimeout(function () { ageBox.focus(); }, 80);
+        }
+
+        gate.addEventListener('keydown', function (e) {
+            // Block Escape — the visitor must explicitly acknowledge or
+            // decline. Letting Esc dismiss would defeat compliance.
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
+            if (e.key !== 'Tab') return;
+            var nodes = gate.querySelectorAll(FOCUSABLE);
+            if (!nodes.length) return;
+            var first = nodes[0];
+            var last  = nodes[nodes.length - 1];
+            var active = document.activeElement;
+            if (e.shiftKey && active === first) {
+                last.focus();
+                e.preventDefault();
+            } else if (!e.shiftKey && active === last) {
+                first.focus();
+                e.preventDefault();
+            } else if (!gate.contains(active)) {
+                first.focus();
+                e.preventDefault();
+            }
+        });
+    })();
+
 })();
