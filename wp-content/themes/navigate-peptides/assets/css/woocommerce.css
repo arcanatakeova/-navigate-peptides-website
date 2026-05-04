@@ -1988,39 +1988,62 @@
     text-transform: none;
 }
 
-.nav-minicart__body .woocommerce-mini-cart__buttons {
-    display: flex;
+/* Drawer action buttons. Selectors hit Woo's `.buttons` wrapper as well as
+   the namespaced `.woocommerce-mini-cart__buttons` because Woo block CSS
+   (loaded later on mobile via wp.com Atomic) overrides our base selector
+   otherwise. The `a.button` qualifier wins specificity over the block
+   stylesheet's `.wp-block-woocommerce-mini-cart .button` reset. */
+.nav-minicart__body .woocommerce-mini-cart__buttons,
+.nav-minicart__body p.buttons {
+    display: flex !important;
     flex-direction: column;
     gap: 10px;
-    margin-top: 16px;
+    margin: 16px 0 0 !important;
+    padding: 0;
 }
 
-.nav-minicart__body .woocommerce-mini-cart__buttons .button {
-    display: block;
+.nav-minicart__body .woocommerce-mini-cart__buttons a.button,
+.nav-minicart__body p.buttons a.button,
+.nav-minicart__body a.wc-forward {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-    padding: 14px;
+    min-height: 48px;
+    padding: 14px 18px;
     text-align: center;
     font-family: var(--nav-font-body);
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.22em;
-    color: var(--nav-text-primary);
+    line-height: 1.2;
+    color: var(--nav-text-primary) !important;
     background-color: transparent;
     border: 1px solid rgba(234, 234, 234, 0.18);
     border-radius: 2px;
-    text-decoration: none;
+    text-decoration: none !important;
+    box-shadow: none;
     transition: background-color 200ms var(--nav-ease), border-color 200ms var(--nav-ease);
 }
 
-.nav-minicart__body .woocommerce-mini-cart__buttons .checkout {
-    background-color: #2F4A42;
-    border-color: #3E5B53;
+.nav-minicart__body .woocommerce-mini-cart__buttons a.button:hover,
+.nav-minicart__body p.buttons a.button:hover {
+    background-color: rgba(234, 234, 234, 0.06);
+    border-color: rgba(234, 234, 234, 0.32);
 }
 
-.nav-minicart__body .woocommerce-mini-cart__buttons .checkout:hover {
-    background-color: #37564D;
-    border-color: #4E6E64;
+.nav-minicart__body .woocommerce-mini-cart__buttons a.checkout,
+.nav-minicart__body p.buttons a.checkout {
+    background-color: #2F4A42 !important;
+    border-color: #3E5B53 !important;
+    color: #FFFFFF !important;
+}
+
+.nav-minicart__body .woocommerce-mini-cart__buttons a.checkout:hover,
+.nav-minicart__body p.buttons a.checkout:hover {
+    background-color: #37564D !important;
+    border-color: #4E6E64 !important;
 }
 
 .nav-minicart__body .woocommerce-mini-cart__empty-message {
