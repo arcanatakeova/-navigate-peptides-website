@@ -195,15 +195,6 @@
             </nav>
             <p class="nav-footer__ruo"><?php esc_html_e('Research Use Only', 'navigate-peptides'); ?></p>
         </div>
-
-        <!-- Arcana Operations Developers — designed + developed by -->
-        <div class="nav-footer__arcana">
-            <?php
-            if (function_exists('nav_render_arcana_credit')) {
-                echo nav_render_arcana_credit(); // wp_kses-clean: hardcoded link, no user input
-            }
-            ?>
-        </div>
     </div>
 </footer>
 

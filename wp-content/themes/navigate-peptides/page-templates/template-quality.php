@@ -28,10 +28,15 @@ get_header();
         // product slug where we have one; falls back to the compounds
         // archive filter. wc_get_page_permalink('shop') isn't useful here
         // — we want per-compound product URLs.
+        // Three vials drawn from different spec categories to showcase
+        // the catalog's breadth — Metabolic, Tissue Repair, Dermal.
+        // Each carries its real spec-label GLB; slug matches the
+        // assets/models/vial-{slug}.glb naming convention used by the
+        // product cards.
         $vials = [
-            ['slug' => 'ghkcu',  'label' => 'GHK-Cu',  'desc' => 'Copper Tripeptide-1 · 340.4 g/mol',      'url' => '/product/ghk-cu/'],
-            ['slug' => 'bpc157', 'label' => 'BPC-157', 'desc' => 'Body Protection Compound · 1419.5 g/mol', 'url' => '/product/bpc-157/'],
-            ['slug' => 'tb500',  'label' => 'TB-500',  'desc' => 'Thymosin β-4 Fragment · 889.0 g/mol',    'url' => '/product/tb-500/'],
+            ['slug' => 'tirzepatide-10mg', 'label' => 'Tirzepatide', 'desc' => 'Metabolic Research · 10 mg',      'url' => '/product/tirzepatide/'],
+            ['slug' => 'bpc-157',          'label' => 'BPC-157',     'desc' => 'Tissue Repair Research · 10 mg', 'url' => '/product/bpc-157/'],
+            ['slug' => 'ghk-cu',           'label' => 'GHK-Cu',      'desc' => 'Dermal Research · 20 mg',         'url' => '/product/ghk-cu/'],
         ];
         ?>
         <div class="nav-vial-trio" aria-label="Interactive 3D peptide vial showcase">
