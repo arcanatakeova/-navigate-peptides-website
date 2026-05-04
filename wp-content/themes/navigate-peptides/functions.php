@@ -515,18 +515,18 @@ add_action('save_post_page',  function () { wp_cache_delete('nav_contact_url', '
 add_action('trashed_post',    function () { wp_cache_delete('nav_contact_url', 'navigate-peptides'); });
 
 /**
- * Get category color by slug.
+ * Get category color by slug — locked to Stephie's spec sheet.
+ * One color per category, applied to the cap-ring + mg text on the
+ * label and the category pill in the UI. Muted tones only.
  */
 function nav_get_category_color(string $slug): string {
     $colors = [
-        'metabolic-research'     => '#2F4666',
-        'tissue-repair-research' => '#9C843E',
-        'cognitive-research'     => '#5E507F',
-        'inflammation-research'  => '#4A141C',
-        'cellular-research'      => '#8E5660',
-        'dermal-research'        => '#4A6B5F',
-        'longevity-research'     => '#2E5C6A',
-        'research-blends'        => '#474C50',
+        'metabolic-research'           => '#3F6A8A',  // Blue
+        'cellular-research'            => '#4A6F5A',  // Green
+        'tissue-repair-research'       => '#A88E45',  // Gold
+        'hormonal-signaling-research'  => '#6B5A7A',  // Lilac
+        'cognitive-research'           => '#8A5D6A',  // Pink
+        'dermal-research'              => '#5A2E36',  // Wine
     ];
     return $colors[$slug] ?? '#474C50';
 }

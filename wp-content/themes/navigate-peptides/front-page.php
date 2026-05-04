@@ -124,7 +124,7 @@ $theme_uri = get_template_directory_uri();
                 if (function_exists('wc_get_products')) {
                     $hero_products = wc_get_products([
                         'limit'    => 1,
-                        'category' => ['cellular-research'],  // GHK-Cu's documented category
+                        'category' => ['dermal-research'],  // GHK-Cu's category per spec sheet
                         'status'   => 'publish',
                         'orderby'  => 'date',
                         'order'    => 'DESC',
@@ -188,37 +188,29 @@ $theme_uri = get_template_directory_uri();
             // dynamic __($var) wrapper is a no-op for the extractor and
             // these strings would otherwise never land in the .pot file.
             $categories = [
-                // Cognitive — stylized brain in profile
-                ['name' => __('Cognitive Research', 'navigate-peptides'),      'slug' => 'cognitive-research',     'color' => '#5E507F',
-                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M23 10c-4-4-12-2-12 6 0 2 1 3 2 4-2 2-2 6 1 8-1 2 0 5 3 6 0 3 3 5 6 4 2 2 6 2 8-1V10"/><path d="M23 14c1 0 3 1 4 3M23 22c-2 0-3 0-4 2M19 32c1-1 3-1 4-1M15 26c1-1 2-1 3 0"/></svg>'],
-
-                // Tissue Repair — overlapping suture / knit lines (cross + hairlines)
-                ['name' => __('Tissue Repair Research', 'navigate-peptides'),  'slug' => 'tissue-repair-research', 'color' => '#9C843E',
-                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20h12v-8h4v8h12v4H26v16h-4V24H10z"/><path d="M6 14l4 4M42 14l-4 4M6 34l4-4M42 34l-4-4"/></svg>'],
-
-                // Inflammation — teardrop with inner pulse
-                ['name' => __('Inflammation Research', 'navigate-peptides'),   'slug' => 'inflammation-research',  'color' => '#4A141C',
-                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6c0 0-10 12-10 20a10 10 0 0020 0c0-8-10-20-10-20z"/><path d="M19 26c0 3 2 5 5 5"/></svg>'],
-
-                // Cellular — cell with radiating field (organelles)
-                ['name' => __('Cellular Research', 'navigate-peptides'),       'slug' => 'cellular-research',      'color' => '#8E5660',
-                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="14"/><circle cx="24" cy="24" r="4"/><circle cx="18" cy="18" r="1.5"/><circle cx="31" cy="18" r="1.5"/><circle cx="30" cy="31" r="1.5"/><circle cx="17" cy="29" r="1.5"/><path d="M24 4v3M24 41v3M4 24h3M41 24h3M10 10l2 2M36 36l2 2M10 38l2-2M36 12l2-2"/></svg>'],
-
-                // Dermal — layered skin / profile with hair strands
-                ['name' => __('Dermal Research', 'navigate-peptides'),         'slug' => 'dermal-research',        'color' => '#4A6B5F',
-                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M30 10c-6-2-12 1-14 7-2 6 0 12 5 16 2 2 2 5 0 7"/><path d="M32 14c4 3 6 9 3 15-1 2-1 4 1 6"/><path d="M22 20c2 0 3 1 3 3M18 28c2 0 3 1 3 3"/></svg>'],
-
                 // Metabolic — flask with droplets (mitochondrial flow)
-                ['name' => __('Metabolic Research', 'navigate-peptides'),      'slug' => 'metabolic-research',     'color' => '#2F4666',
+                ['name' => __('Metabolic Research', 'navigate-peptides'),           'slug' => 'metabolic-research',           'color' => '#3F6A8A',
                  'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6h12M20 6v14L10 38a3 3 0 002.5 5h23A3 3 0 0038 38L28 20V6"/><path d="M14 30h20"/><circle cx="22" cy="35" r="1.5" fill="currentColor"/><circle cx="28" cy="33" r="1" fill="currentColor"/></svg>'],
 
-                // Longevity — hourglass / bidirectional arrow (time + lifespan)
-                ['name' => __('Longevity Research', 'navigate-peptides'),      'slug' => 'longevity-research',     'color' => '#2E5C6A',
-                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6h24M12 42h24M14 6c0 6 3 10 10 16 7-6 10-10 10-16M14 42c0-6 3-10 10-16 7 6 10 10 10 16"/><circle cx="24" cy="24" r="1.5" fill="currentColor"/></svg>'],
+                // Cellular — cell with radiating field (organelles)
+                ['name' => __('Cellular Research', 'navigate-peptides'),            'slug' => 'cellular-research',            'color' => '#4A6F5A',
+                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="14"/><circle cx="24" cy="24" r="4"/><circle cx="18" cy="18" r="1.5"/><circle cx="31" cy="18" r="1.5"/><circle cx="30" cy="31" r="1.5"/><circle cx="17" cy="29" r="1.5"/><path d="M24 4v3M24 41v3M4 24h3M41 24h3M10 10l2 2M36 36l2 2M10 38l2-2M36 12l2-2"/></svg>'],
 
-                // Research Blends — diamond / prism (multi-compound blend)
-                ['name' => __('Research Blends', 'navigate-peptides'),         'slug' => 'research-blends',        'color' => '#474C50',
-                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M24 4L8 18 24 44 40 18 24 4z"/><path d="M8 18h32M16 18L24 4M32 18L24 4M16 18L24 44M32 18L24 44"/></svg>'],
+                // Tissue Repair — overlapping suture / knit lines (cross + hairlines)
+                ['name' => __('Tissue Repair Research', 'navigate-peptides'),       'slug' => 'tissue-repair-research',       'color' => '#A88E45',
+                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20h12v-8h4v8h12v4H26v16h-4V24H10z"/><path d="M6 14l4 4M42 14l-4 4M6 34l4-4M42 34l-4-4"/></svg>'],
+
+                // Hormonal Signaling — pulse line through receptor circle
+                ['name' => __('Hormonal Signaling Research', 'navigate-peptides'),  'slug' => 'hormonal-signaling-research',  'color' => '#6B5A7A',
+                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="9"/><path d="M4 24h6l3-7 4 14 3-7h4l3 7 4-14 3 7h6"/><circle cx="24" cy="24" r="2" fill="currentColor"/></svg>'],
+
+                // Cognitive — stylized brain in profile
+                ['name' => __('Cognitive Research', 'navigate-peptides'),           'slug' => 'cognitive-research',           'color' => '#8A5D6A',
+                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M23 10c-4-4-12-2-12 6 0 2 1 3 2 4-2 2-2 6 1 8-1 2 0 5 3 6 0 3 3 5 6 4 2 2 6 2 8-1V10"/><path d="M23 14c1 0 3 1 4 3M23 22c-2 0-3 0-4 2M19 32c1-1 3-1 4-1M15 26c1-1 2-1 3 0"/></svg>'],
+
+                // Dermal — layered skin / profile with hair strands
+                ['name' => __('Dermal Research', 'navigate-peptides'),              'slug' => 'dermal-research',              'color' => '#5A2E36',
+                 'icon' => '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M30 10c-6-2-12 1-14 7-2 6 0 12 5 16 2 2 2 5 0 7"/><path d="M32 14c4 3 6 9 3 15-1 2-1 4 1 6"/><path d="M22 20c2 0 3 1 3 3M18 28c2 0 3 1 3 3"/></svg>'],
             ];
 
             foreach ($categories as $cat) :

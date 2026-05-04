@@ -69,14 +69,12 @@ function nav_backfill_default_terms(): void {
     // Product categories — only when WooCommerce is active.
     if (taxonomy_exists('product_cat')) {
         $product_defaults = [
-            'Metabolic Research'     => 'metabolic-research',
-            'Tissue Repair Research' => 'tissue-repair-research',
-            'Cognitive Research'     => 'cognitive-research',
-            'Inflammation Research'  => 'inflammation-research',
-            'Cellular Research'      => 'cellular-research',
-            'Dermal Research'        => 'dermal-research',
-            'Longevity Research'     => 'longevity-research',
-            'Research Blends'        => 'research-blends',
+            'Metabolic Research'           => 'metabolic-research',
+            'Cellular Research'            => 'cellular-research',
+            'Tissue Repair Research'       => 'tissue-repair-research',
+            'Hormonal Signaling Research'  => 'hormonal-signaling-research',
+            'Cognitive Research'           => 'cognitive-research',
+            'Dermal Research'              => 'dermal-research',
         ];
         foreach ($product_defaults as $name => $slug) {
             if (!term_exists($slug, 'product_cat')) {

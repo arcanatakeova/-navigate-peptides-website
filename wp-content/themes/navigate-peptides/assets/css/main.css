@@ -25,13 +25,15 @@
     --nav-border-medium: rgba(234, 234, 234, 0.15);
 
     /* Category Colors */
-    --nav-cat-metabolic: #2F4666;
-    --nav-cat-tissue: #9C843E;
-    --nav-cat-cognitive: #5E507F;
-    --nav-cat-inflammation: #4A141C;
-    --nav-cat-cellular: #8E5660;
-    --nav-cat-dermal: #4A6B5F;
-    --nav-cat-blends: #474C50;
+    /* Category palette — locked to Stephie's spec sheet. Used on the
+       label cap-ring, mg text accent, and category badge. Muted tones
+       only (per "no gradients or bright tones" rule). */
+    --nav-cat-metabolic: #3F6A8A;       /* Blue */
+    --nav-cat-cellular: #4A6F5A;        /* Green */
+    --nav-cat-tissue: #A88E45;          /* Gold */
+    --nav-cat-hormonal: #6B5A7A;        /* Lilac */
+    --nav-cat-cognitive: #8A5D6A;       /* Pink */
+    --nav-cat-dermal: #5A2E36;          /* Wine */
 
     /* Accent */
     --nav-accent: #9C843E;

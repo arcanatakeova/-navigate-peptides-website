@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
   <rect width="400" height="400" fill="#1a2a24"/>
   <!-- Flask / metabolic pathway -->
-  <path d="M170 80V180L110 300C106 308 112 320 122 320H278C288 320 294 308 290 300L230 180V80" stroke="#2F4666" stroke-width="2" stroke-linecap="round"/>
-  <path d="M160 80H240" stroke="#2F4666" stroke-width="2" stroke-linecap="round"/>
+  <path d="M170 80V180L110 300C106 308 112 320 122 320H278C288 320 294 308 290 300L230 180V80" stroke="#3F6A8A" stroke-width="2" stroke-linecap="round"/>
+  <path d="M160 80H240" stroke="#3F6A8A" stroke-width="2" stroke-linecap="round"/>
   <!-- Liquid level -->
-  <path d="M130 270H270" stroke="#2F4666" stroke-width="1.5" opacity="0.4"/>
+  <path d="M130 270H270" stroke="#3F6A8A" stroke-width="1.5" opacity="0.4"/>
   <!-- Molecules inside -->
-  <circle cx="180" cy="290" r="8" stroke="#2F4666" stroke-width="1.5"/>
-  <circle cx="210" cy="280" r="5" stroke="#2F4666" stroke-width="1.5"/>
-  <circle cx="240" cy="295" r="6" stroke="#2F4666" stroke-width="1.5"/>
+  <circle cx="180" cy="290" r="8" stroke="#3F6A8A" stroke-width="1.5"/>
+  <circle cx="210" cy="280" r="5" stroke="#3F6A8A" stroke-width="1.5"/>
+  <circle cx="240" cy="295" r="6" stroke="#3F6A8A" stroke-width="1.5"/>
   <!-- Molecular bonds top -->
-  <circle cx="200" cy="140" r="4" fill="#2F4666" opacity="0.3"/>
-  <path d="M190 130L200 140L210 130" stroke="#2F4666" stroke-width="1" opacity="0.4"/>
+  <circle cx="200" cy="140" r="4" fill="#3F6A8A" opacity="0.3"/>
+  <path d="M190 130L200 140L210 130" stroke="#3F6A8A" stroke-width="1" opacity="0.4"/>
 </svg>
