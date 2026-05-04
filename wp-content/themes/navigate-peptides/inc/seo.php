@@ -164,6 +164,26 @@ add_filter('jetpack_photon_skip_image',  '__return_true');  // don't rewrite our
 add_filter('jetpack_shareable_image_url', '__return_empty_string');
 
 /**
+ * Strip Jetpack Sharing + Likes UI on the front-end. Both inject hard-
+ * coded light-theme inline CSS (#sharedaddy, #likes-other-gravatars
+ * with white backgrounds + #2ea2cc blue stars) that clashes hard with
+ * the dark research-bench palette. Also strips the Jetpack Carousel
+ * lightbox comment form which renders as a default browser modal.
+ */
+add_filter('sharing_show', '__return_false');
+add_filter('jetpack_likes_master_iframe', '__return_empty_string');
+add_filter('jetpack_sharing_counts',     '__return_false');
+add_action('wp_enqueue_scripts', function () {
+    wp_dequeue_style('jetpack_likes');
+    wp_dequeue_style('jetpack-sharing-buttons');
+    wp_dequeue_style('jetpack_sharing_css');
+    wp_dequeue_style('sharedaddy');
+    wp_dequeue_script('jetpack_likes');
+    wp_dequeue_script('sharing-js');
+}, 100);
+add_filter('jp_carousel_load', '__return_false');
+
+/**
  * Append the paged suffix (/page/N/) to a canonical URL when the current
  * request is page 2+ of a paginated archive or search. Without this, page
  * 2 of a category would canonical to page 1 — Google deduplicates and the

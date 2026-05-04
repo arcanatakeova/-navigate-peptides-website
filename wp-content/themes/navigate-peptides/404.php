@@ -42,7 +42,7 @@ get_header();
             </a>
         </div>
 
-        <div class="nav-section__header" style="margin-top:64px;">
+        <div class="nav-section__header nav-section__header--spaced">
             <h2 class="nav-section__title-caps"><?php esc_html_e('Research Categories', 'navigate-peptides'); ?></h2>
         </div>
         <div class="nav-category-grid">
@@ -55,6 +55,8 @@ get_header();
                 ['slug' => 'cellular-research',            'color' => '#4A6F5A', 'fallback' => __('Cellular Research', 'navigate-peptides')],
                 ['slug' => 'tissue-repair-research',       'color' => '#A88E45', 'fallback' => __('Tissue Repair Research', 'navigate-peptides')],
                 ['slug' => 'hormonal-signaling-research',  'color' => '#6B5A7A', 'fallback' => __('Hormonal Signaling Research', 'navigate-peptides')],
+                ['slug' => 'cognitive-research',           'color' => '#8A5D6A', 'fallback' => __('Cognitive Research', 'navigate-peptides')],
+                ['slug' => 'dermal-research',              'color' => '#5A2E36', 'fallback' => __('Dermal Research', 'navigate-peptides')],
             ];
             foreach ($quick_cats as $cat) :
                 $term = get_term_by('slug', $cat['slug'], 'product_cat');
@@ -72,7 +74,7 @@ get_header();
             <?php endforeach; ?>
         </div>
 
-        <div class="nav-section--center" style="margin-top:64px;">
+        <div class="nav-section--center nav-section--spaced">
             <div class="nav-cta-actions nav-cta-actions--center">
                 <a href="<?php echo esc_url(home_url('/')); ?>" class="nav-btn nav-btn--primary"><?php esc_html_e('Return Home', 'navigate-peptides'); ?></a>
                 <a href="<?php echo esc_url(nav_get_contact_url()); ?>" class="nav-btn nav-btn--outline"><?php esc_html_e('Contact Support', 'navigate-peptides'); ?></a>

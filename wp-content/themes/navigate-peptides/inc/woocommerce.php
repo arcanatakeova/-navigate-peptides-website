@@ -605,11 +605,46 @@ add_filter('woocommerce_placeholder_img_src', function ($src) {
 });
 
 /* ------------------------------------------------------------------
- * Related products heading — "Related products" is WC's default. Swap
- * in an on-brand label so the section reads as curated, not automatic.
+ * WooCommerce string overrides — section labels + page titles.
+ * "Related products" reads as automatic; "My account" / "Cart" /
+ * "Checkout" mix sentence + Title case across surfaces — normalize.
  * ----------------------------------------------------------------*/
 add_filter('gettext', function ($translation, $text, $domain) {
     if ($domain !== 'woocommerce') return $translation;
-    if ($text === 'Related products') return __('You may also research', 'navigate-peptides');
-    return $translation;
+    static $map = null;
+    if ($map === null) {
+        $map = [
+            'Related products' => 'You may also research',
+            'My account'       => 'My Account',
+            'My Account'       => 'My Account',
+            'Cart'             => 'Cart',
+            'Checkout'         => 'Checkout',
+        ];
+    }
+    return $map[$text] ?? $translation;
 }, 10, 3);
+
+/* ------------------------------------------------------------------
+ * Quantity input — surface the numeric keypad on iOS so customers
+ * don't get the full QWERTY keyboard for digit entry. WC's stock
+ * markup omits inputmode + autocomplete; this filter adds them
+ * everywhere a quantity input is rendered (cart + single-product).
+ * ----------------------------------------------------------------*/
+add_filter('woocommerce_quantity_input_args', function ($args) {
+    $args['inputmode']    = 'numeric';
+    $args['pattern']      = '[0-9]*';
+    $args['autocomplete'] = 'off';
+    return $args;
+}, 10, 1);
+
+/* ------------------------------------------------------------------
+ * Order-attribution hidden inputs — WC injects `<wc-order-attribution-inputs>`
+ * inside the register form. The custom-element default rendering shows
+ * its empty markup as visible whitespace until JS hydrates. Hide via
+ * CSS too (already in main.css), but also make sure the parent block's
+ * privacy text doesn't render as plain body copy.
+ * ----------------------------------------------------------------*/
+add_filter('woocommerce_register_privacy_policy_text', function ($text) {
+    // Compact copy + brand-safe phrasing for the dark theme.
+    return __('We use your information to manage your research orders and to keep this account in good standing. See our %1$sPrivacy Policy%2$s.', 'navigate-peptides');
+});

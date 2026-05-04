@@ -2966,9 +2966,10 @@ body.admin-bar .nav-header {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 40px;
-    height: 40px;
-    padding: 0 12px;
+    /* 44x44 minimum touch target (WCAG 2.5.5) */
+    min-width: 44px;
+    height: 44px;
+    padding: 0 14px;
     font-size: 14px;
     border: 1px solid var(--nav-border-medium);
     border-radius: var(--nav-radius-sm);
@@ -4110,8 +4111,10 @@ a:focus-visible {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 38px;
+    /* 44x44 minimum touch target (WCAG 2.5.5) — matches the
+       account/cart icons next to it. */
+    width: 44px;
+    height: 44px;
     background: transparent;
     border: 1px solid transparent;
     border-radius: 3px;
@@ -5587,3 +5590,246 @@ body.has-age-gate {
         background: Highlight;
     }
 }
+
+/* ==========================================================================
+   POLISH PASS — utilities, missing selectors, audit fixups
+   Bundled here at the end of the cascade so each fix overrides the
+   earlier rule that needed adjustment without re-editing every block.
+   ========================================================================== */
+
+/* Three-column card grid — referenced from 404.php and (future)
+   templates. Stacks 2-col at tablet, 1-col under 540px so individual
+   cards stay readable. */
+.nav-card-grid--3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--nav-gap-lg);
+}
+@media (max-width: 1023px) {
+    .nav-card-grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 539px) {
+    .nav-card-grid--3 { grid-template-columns: 1fr; }
+}
+
+/* Spacing helpers — replace the inline `style="margin-top:64px"` that
+   bypassed the design tokens in 404.php. Pulls from --nav-gap-2xl. */
+.nav-section__header--spaced { margin-top: var(--nav-gap-2xl); }
+.nav-section--spaced         { margin-top: var(--nav-gap-2xl); }
+
+/* iOS safe-area: the 100vh measurements clip content under the
+   address bar when the bar reappears. dvh is the dynamic-viewport
+   unit that tracks the actual visible area. Fall back to vh on
+   browsers without dvh support. */
+@supports (height: 100dvh) {
+    body.nav-body { min-height: 100dvh; }
+    .nav-mobile-menu { max-height: calc(100dvh - 72px); }
+    .nav-age-gate__panel { max-height: calc(100dvh - 32px); }
+}
+
+/* Trust strip — main.css declares it as a 3-col grid; woocommerce.css
+   later overrides to flex with a 28px gap. Pin grid here so it wins
+   the cascade and the mobile breakpoints further down (1fr 1fr +
+   COA span) actually apply. */
+.nav-product-single__trust-strip,
+.woocommerce .nav-product-single__trust-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    align-items: center;
+    gap: var(--nav-gap-md);
+}
+
+/* Cart Apply / Update buttons + quantity inputs — bump from
+   ~28-38px tall to 44 minimum touch target. */
+.woocommerce-cart-form .nav-btn--sm,
+.woocommerce-cart .nav-btn--sm {
+    min-height: 44px;
+    padding: 12px 22px;
+}
+.woocommerce-cart-form .quantity input.qty {
+    min-height: 44px;
+    padding: 10px 8px;
+}
+
+/* Cart "remove item" × glyph — give it a real 44x44 hit area so
+   thumbs don't miss it. */
+.woocommerce-cart-form .product-remove a,
+.woocommerce-cart-form .product-remove a.remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--nav-radius-sm);
+    text-align: center;
+}
+.woocommerce-cart-form .product-remove a:hover {
+    background: rgba(143, 166, 149, 0.08);
+}
+
+/* My Account sidebar nav rows — a touch shy of 44px touch target. */
+.woocommerce-account .woocommerce-MyAccount-navigation ul li a {
+    padding: 14px 16px;
+}
+
+/* Required-field marker in WC forms — was rendering as a default
+   browser red on a dark theme; brand it to the gold accent so it
+   reads as design. */
+.required,
+.woocommerce form .required {
+    color: var(--nav-accent);
+    text-decoration: none;
+    border: 0;
+}
+
+/* Privacy text below register form — was inheriting base <p>
+   styling, making it look like body copy. Demote to a muted
+   disclaimer note. */
+.woocommerce-privacy-policy-text,
+.woocommerce-privacy-policy-text p {
+    font-family: var(--nav-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    line-height: 1.55;
+    color: var(--nav-text-muted);
+}
+
+/* WC's order-attribution custom element should never paint —
+   it's a tracking dropdown plugins inject; default markup leaks
+   visible text inside the register card. */
+wc-order-attribution-inputs { display: none !important; }
+
+/* Lost-password form — wrap it in the same elevated card as the
+   login/register columns so it doesn't float on the page bg. */
+.woocommerce-account .woocommerce-ResetPassword,
+.woocommerce-account form.lost_reset_password {
+    max-width: 520px;
+    margin: var(--nav-gap-xl) auto;
+    padding: var(--nav-gap-lg);
+    background: linear-gradient(180deg, rgba(26, 42, 36, 0.55) 0%, rgba(10, 16, 14, 0.8) 100%);
+    border: 1px solid var(--nav-border-medium);
+    border-radius: var(--nav-radius-lg);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* WC notice bar — info / success / error messages on cart/checkout/
+   my-account need to read on a dark theme instead of the default
+   green/red banners. */
+.woocommerce-notices-wrapper .woocommerce-message,
+.woocommerce-notices-wrapper .woocommerce-info,
+.woocommerce-notices-wrapper .woocommerce-error,
+ul.woocommerce-error {
+    margin: 0 0 var(--nav-gap-md);
+    padding: 14px 18px;
+    background: rgba(143, 166, 149, 0.08);
+    border: 1px solid rgba(143, 166, 149, 0.28);
+    border-left: 3px solid var(--nav-accent);
+    border-radius: var(--nav-radius-md);
+    color: var(--nav-text-primary);
+    font-family: var(--nav-font-body);
+    font-size: 14px;
+    line-height: 1.55;
+    list-style: none;
+}
+.woocommerce-notices-wrapper .woocommerce-error,
+ul.woocommerce-error {
+    border-left-color: #e08a95;
+    background: rgba(74, 20, 28, 0.18);
+}
+.woocommerce-notices-wrapper a {
+    color: var(--nav-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+.woocommerce-notices-wrapper a:hover { color: #c9b878; }
+.woocommerce-notices-wrapper .button {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 12px;
+    padding: 6px 14px;
+    font-family: var(--nav-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--nav-text-primary);
+    background: transparent;
+    border: 1px solid var(--nav-border-medium);
+    border-radius: 999px;
+}
+
+/* Coupon form on the cart — was raw WC. Brand the input + button
+   so it reads as a single tidy row matching the rest of the cart. */
+.woocommerce-cart .coupon,
+.woocommerce-cart-form__contents .coupon {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 0 0 var(--nav-gap-md);
+}
+.woocommerce-cart .coupon input.input-text {
+    flex: 1 1 220px;
+    min-height: 44px;
+    padding: 10px 14px;
+    background: rgba(10, 16, 14, 0.6);
+    border: 1px solid var(--nav-border-medium);
+    border-radius: var(--nav-radius-md);
+    color: var(--nav-text-primary);
+    font-family: var(--nav-font-mono);
+    font-size: 14px;
+}
+.woocommerce-cart .coupon button {
+    min-height: 44px;
+    padding: 0 22px;
+    font-family: var(--nav-font-mono);
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #0a100e;
+    background: linear-gradient(135deg, #c9b878 0%, var(--nav-accent) 100%);
+    border: 0;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+/* Cart "is-loading" placeholder — give it a tinted spinner block
+   so the first paint isn't a stark white WC skeleton. */
+.wp-block-woocommerce-cart.is-loading,
+.wp-block-woocommerce-checkout.is-loading {
+    min-height: 320px;
+    background: rgba(10, 16, 14, 0.4);
+    border: 1px solid var(--nav-border-subtle);
+    border-radius: var(--nav-radius-lg);
+}
+
+/* WP-block fallbacks rendered inside our content (button, separator,
+   heading) — give them brand defaults so any block-emitted HTML on
+   /cart/, /checkout/, etc. doesn't paint Gutenberg defaults. */
+.nav-main .wp-block-button__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 28px;
+    font-family: var(--nav-font-mono);
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #0a100e;
+    background: linear-gradient(135deg, #c9b878 0%, var(--nav-accent) 100%);
+    border: 0;
+    border-radius: 999px;
+}
+.nav-main .wp-block-separator {
+    border: 0;
+    border-top: 1px solid var(--nav-border-subtle);
+    opacity: 1;
+    margin: var(--nav-gap-lg) 0;
+}
+.nav-main .wp-block-heading {
+    font-family: var(--nav-font-display);
+    color: var(--nav-text-primary);
+}
+
+/* Back-to-top FAB shouldn't sit on top of the consent banner when
+   it's open — push it up out of the way. */
+body[data-consent-open="true"] .nav-back-to-top { bottom: 96px; }
