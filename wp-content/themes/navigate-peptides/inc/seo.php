@@ -1084,7 +1084,7 @@ add_action('wp_head', function () {
         // — that asset isn't used on the homepage anymore (we ship the
         // rotating 3D vial directly), so preloading it was wasteful AND it
         // left the SVG cached in browsers that had seen the old markup.
-        $glb_rel = '/assets/models/vial.glb';
+        $glb_rel = '/assets/models/vial-ghk-cu.glb';
         $glb_ver = function_exists('nav_asset_version')
             ? nav_asset_version(ltrim($glb_rel, '/'))
             : '';
