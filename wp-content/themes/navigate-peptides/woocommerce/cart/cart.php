@@ -171,4 +171,21 @@ do_action('woocommerce_before_cart');
     ?>
 </div>
 
+<?php
+// Mobile-only sticky checkout bar — the cart_totals card pushes the
+// proceed-to-checkout button below the fold on phones, so duplicate
+// the action in a sticky bar pinned to the bottom of the viewport so
+// customers always have a reachable CTA.
+if (function_exists('WC') && WC()->cart && !WC()->cart->is_empty()) :
+    $nav_cart_total = wc_price(WC()->cart->get_total('edit'));
+?>
+<div class="nav-cart-sticky-checkout" role="region" aria-label="<?php esc_attr_e('Cart total and checkout', 'navigate-peptides'); ?>">
+    <span class="nav-cart-sticky-checkout__total">
+        <small><?php esc_html_e('Total', 'navigate-peptides'); ?></small>
+        <?php echo $nav_cart_total; // phpcs:ignore WordPress.Security.EscapeOutput -- wc_price returns trusted HTML ?>
+    </span>
+    <a href="<?php echo esc_url(wc_get_checkout_url()); ?>"><?php esc_html_e('Checkout →', 'navigate-peptides'); ?></a>
+</div>
+<?php endif; ?>
+
 <?php do_action('woocommerce_after_cart'); ?>

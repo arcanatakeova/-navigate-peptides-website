@@ -345,13 +345,15 @@ function nav_wc_save_product_meta($post_id) {
 add_action('woocommerce_process_product_meta', 'nav_wc_save_product_meta');
 
 /* ------------------------------------------------------------------
- * Add RUO disclaimer after Add to Cart button
+ * RUO disclaimer was previously injected via woocommerce_after_add_to_cart_form,
+ * which placed it inside the purchase card under the ATC button — but the
+ * single-product template ALSO renders the same disclaimer in
+ * .nav-product-single__disclaimer right below the card. Two visible
+ * "for research purposes ONLY" lines in 60vh of viewport read as
+ * cluttered. The template block carries both the product disclaimer
+ * AND the sitewide disclaimer (processor-required pairing) so that
+ * single block satisfies the rules; the duplicate hook is dropped.
  * ----------------------------------------------------------------*/
-add_action('woocommerce_after_add_to_cart_form', function () {
-    echo '<div class="nav-product-disclaimer">';
-    echo '<p>' . esc_html(nav_get_disclaimer('product')) . '</p>';
-    echo '</div>';
-});
 
 /* ------------------------------------------------------------------
  * Checkout: RUO acknowledgment checkbox
@@ -636,6 +638,63 @@ add_filter('woocommerce_quantity_input_args', function ($args) {
     $args['autocomplete'] = 'off';
     return $args;
 }, 10, 1);
+
+/* ------------------------------------------------------------------
+ * Cart line-item thumbnail — every product ships its own GLB and a
+ * baked spec-label poster (vial-{slug}-card.webp). Without this
+ * filter the cart shows the WC placeholder.webp box, which reads as
+ * "site under construction" to a customer or processor underwriter.
+ *
+ * nav_get_product_card_image() resolves the right poster from the
+ * cart line's WC_Product instance — for variations it picks the
+ * variation-specific GLB, falling back to the parent's poster, then
+ * the category SVG.
+ * ----------------------------------------------------------------*/
+add_filter('woocommerce_cart_item_thumbnail', function ($thumbnail, $cart_item, $cart_item_key) {
+    $product = isset($cart_item['data']) && $cart_item['data'] instanceof WC_Product
+        ? $cart_item['data']
+        : null;
+    if (!$product || !function_exists('nav_get_product_card_image')) {
+        return $thumbnail;
+    }
+
+    // Skip our override if the product has a real WC featured image
+    // — the helper already preserves it as the first preference, so
+    // calling it returns that thumbnail.
+    $img = nav_get_product_card_image($product);
+    if (empty($img['src'])) {
+        return $thumbnail;
+    }
+    return sprintf(
+        '<img src="%s" alt="%s" class="nav-cart-thumb" loading="lazy" decoding="async" width="%d" height="%d">',
+        esc_url($img['src']),
+        esc_attr($product->get_name()),
+        (int) $img['width'],
+        (int) $img['height']
+    );
+}, 10, 3);
+
+/* ------------------------------------------------------------------
+ * Mini-cart drawer line-item image — same swap, different filter.
+ * Returns just the <img> attachment ID-sized HTML string.
+ * ----------------------------------------------------------------*/
+add_filter('woocommerce_widget_cart_item_thumbnail', function ($thumbnail, $cart_item, $cart_item_key) {
+    $product = isset($cart_item['data']) && $cart_item['data'] instanceof WC_Product
+        ? $cart_item['data']
+        : null;
+    if (!$product || !function_exists('nav_get_product_card_image')) {
+        return $thumbnail;
+    }
+    $img = nav_get_product_card_image($product);
+    if (empty($img['src'])) {
+        return $thumbnail;
+    }
+    return sprintf(
+        '<img src="%s" alt="%s" class="nav-minicart-thumb" loading="lazy" decoding="async" width="60" height="60">',
+        esc_url($img['src']),
+        esc_attr($product->get_name())
+    );
+}, 10, 3);
 
 /* ------------------------------------------------------------------
  * Order-attribution hidden inputs — WC injects `<wc-order-attribution-inputs>`
