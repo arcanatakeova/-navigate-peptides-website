@@ -1148,18 +1148,20 @@ body.admin-bar .nav-header {
 }
 
 /* ==========================================================================
-   CATEGORY ICON CARDS (8-card grid — Stephie mockup style)
-   2x4 on mobile, 4x2 on desktop. Breakpoints that would yield odd rows
-   (3 cols × 8 items = 2 rows of 3 + 1 orphan row of 2) are skipped.
+   CATEGORY ICON CARDS (6-card grid — Stephie spec sheet)
+   2x3 on mobile/tablet, 3x2 on desktop so the grid stays symmetrical
+   (no orphan row).
    ========================================================================== */
 .nav-category-grid--icons {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
+    max-width: 1180px;
+    margin-inline: auto;
 }
 
 @media (min-width: 900px) {
-    .nav-category-grid--icons { grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .nav-category-grid--icons { grid-template-columns: repeat(3, 1fr); gap: 20px; }
 }
 
 /* Category icon card — matches mockup v1: line-art icon, serif name,
@@ -1296,15 +1298,17 @@ body.admin-bar .nav-header {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--nav-gap-lg);
+    max-width: 1180px;
+    margin-inline: auto;
 }
 
-/* 8 categories: skip the 3-col breakpoint that would produce 2 rows of 3
-   plus a 2-item orphan. Grid stays even-row at every size: 1, 2, or 4. */
+/* 6 categories: 1 col → 2 col → 3 col so every row stays full
+   (no orphan). 4-col would produce 4+2 on the shop archive. */
 @media (min-width: 640px) {
     .nav-category-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (min-width: 1024px) {
-    .nav-category-grid { grid-template-columns: repeat(4, 1fr); }
+    .nav-category-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* Large category card (shop/landing) — mockup v2 style: atmospheric image
