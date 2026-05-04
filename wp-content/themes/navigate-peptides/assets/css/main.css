@@ -2656,65 +2656,6 @@ body.admin-bar .nav-header {
     color: var(--nav-text-muted);
 }
 
-/* ----------------------------------------------------------
-   Arcana Operations Developers — footer credit
-   Designed + developed by Arcana Operations.
-   Custom WordPress sites · arcanaoperations.com
-   ---------------------------------------------------------- */
-.nav-footer__arcana {
-    margin-top: 24px;
-    padding-top: 18px;
-    border-top: 1px solid var(--nav-border-subtle);
-    text-align: center;
-}
-.nav-arcana-credit {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 16px;
-    font-family: var(--nav-font-mono);
-    font-size: 11px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--nav-text-muted);
-    background: transparent;
-    border: 1px solid var(--nav-border-subtle);
-    border-radius: 999px;
-    text-decoration: none;
-    transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.2s;
-}
-.nav-arcana-credit:hover {
-    color: var(--nav-text-primary);
-    border-color: rgba(156, 132, 62, 0.6);
-    background: rgba(156, 132, 62, 0.08);
-    transform: translateY(-1px);
-}
-.nav-arcana-credit__label {
-    color: var(--nav-text-muted);
-}
-.nav-arcana-credit__brand {
-    color: var(--nav-accent);
-    font-weight: 600;
-    letter-spacing: 0.14em;
-}
-.nav-arcana-credit:hover .nav-arcana-credit__brand { color: #c9b878; }
-.nav-arcana-credit__tag {
-    color: var(--nav-text-muted);
-    border-left: 1px solid var(--nav-border-subtle);
-    padding-left: 10px;
-    margin-left: 2px;
-    letter-spacing: 0.12em;
-}
-.nav-arcana-credit__arrow {
-    color: var(--nav-accent);
-    transition: transform 0.2s;
-}
-.nav-arcana-credit:hover .nav-arcana-credit__arrow { transform: translateX(3px); }
-@media (max-width: 540px) {
-    .nav-arcana-credit__tag { display: none; }
-    .nav-arcana-credit { flex-wrap: wrap; justify-content: center; }
-}
-
 .nav-footer__payments {
     display: flex;
     flex-wrap: wrap;
