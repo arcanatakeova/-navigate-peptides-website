@@ -244,9 +244,16 @@ while (have_posts()) : the_post();
                     </div>
                 <?php endif; ?>
 
-                <!-- Price + Add to Cart -->
+                <!-- Price + Add to Cart.
+                     Variable products render their own price + qty +
+                     ATC inside the variations form once a variation
+                     is selected, so suppress the parent's static
+                     "$X – $Y" range (CSS :has() also hides it in
+                     modern browsers — this is the PHP belt). -->
                 <div class="nav-product-single__purchase">
-                    <span class="nav-product-single__price"><?php echo $product->get_price_html(); ?></span>
+                    <?php if (!$product->is_type('variable')) : ?>
+                        <span class="nav-product-single__price"><?php echo $product->get_price_html(); ?></span>
+                    <?php endif; ?>
                     <?php woocommerce_template_single_add_to_cart(); ?>
                 </div>
 
