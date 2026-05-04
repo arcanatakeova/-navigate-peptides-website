@@ -4575,17 +4575,24 @@ a:focus-visible {
     transform: translateY(-1px);
 }
 
-/* Purchase block — elevated card housing price + add-to-cart form */
+/* Purchase block — flat layout. The card chrome (gradient panel +
+   border + shadow) read as a competing surface against the right-
+   column flow; flat presentation lets the price + ATC sit as
+   primary CTAs against the page background. Hairline rule above +
+   below substitutes for the previous border to bracket the buy
+   action visually without boxing it in. */
 .nav-product-single__purchase {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 18px;
-    padding: var(--nav-gap-lg);
-    background: linear-gradient(180deg, rgba(26, 42, 36, 0.55) 0%, rgba(10, 16, 14, 0.8) 100%);
-    border: 1px solid var(--nav-border-medium);
-    border-radius: var(--nav-radius-lg);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+    gap: 16px;
+    padding: var(--nav-gap-md) 0;
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--nav-border-subtle);
+    border-bottom: 1px solid var(--nav-border-subtle);
+    border-radius: 0;
+    box-shadow: none;
     text-align: left;
 }
 
@@ -4866,7 +4873,7 @@ a:focus-visible {
         font-size: 32px;
     }
     .nav-product-single__purchase {
-        padding: var(--nav-gap-md);
+        padding: var(--nav-gap-sm) 0;
         gap: 14px;
     }
     .nav-product-single__trust-strip {
