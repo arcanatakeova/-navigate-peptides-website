@@ -31,6 +31,14 @@ if (!defined('NAV_AGE_GATE_TTL_DAYS')) {
 
 /**
  * Decide whether to render the gate for this request.
+ *
+ * NOTE: cookie + user-agent bypasses run client-side, not here. wp.com
+ * fronts the site with Varnish; PHP-conditional output keyed on cookie
+ * or UA gets cached on the first miss and the wrong variant gets
+ * served forever. So the gate is always emitted into the HTML; JS
+ * inside the document checks the cookie and hides the gate (or
+ * removes it entirely) before paint when present, and the bot list is
+ * matched in the same inline bootstrap.
  */
 function nav_age_gate_should_render(): bool {
     if (is_admin()) return false;
@@ -44,23 +52,45 @@ function nav_age_gate_should_render(): bool {
         return false;
     }
 
-    // Already acknowledged in this browser.
-    if (!empty($_COOKIE[NAV_AGE_GATE_COOKIE])) {
-        return false;
-    }
-
-    // Known bots / link previewers — let them index the actual content
-    // instead of seeing the gate. Pattern matches major crawlers + the
-    // OpenGraph / iMessage / Slack / Twitter unfurlers.
-    $ua = (string) ($_SERVER['HTTP_USER_AGENT'] ?? '');
-    $bot_patterns = '/(googlebot|bingbot|slurp|duckduckbot|baiduspider|yandex|sogou|exabot|facebot|facebookexternalhit|twitterbot|linkedinbot|whatsapp|slackbot|discordbot|telegrambot|applebot|pingdom|uptimerobot|gtmetrix|lighthouse|chrome-lighthouse|headlesschrome|ahrefsbot|semrushbot|mj12bot)/i';
-    if ($ua && preg_match($bot_patterns, $ua)) {
-        return false;
-    }
-
     // Filter for testing — `add_filter('nav_age_gate_render', '__return_false');`
     return (bool) apply_filters('nav_age_gate_render', true);
 }
+
+/**
+ * Inline pre-paint bootstrap. Runs in <head> before <body> is parsed.
+ * Checks the visitor's cookie + UA against the bypass list and, if
+ * matched, sets a `nav-age-gate-bypass` class on <html>. CSS then
+ * hides the gate and unlocks body scroll before anything paints —
+ * the cookied / crawler user never sees a flash.
+ *
+ * This avoids the wp.com Varnish problem with PHP-conditional output:
+ * the cached HTML is identical for everyone and the per-visitor
+ * decision happens in the browser instead of behind the cache.
+ */
+add_action('wp_head', function () {
+    if (!nav_age_gate_should_render()) return;
+
+    $cookie_name = NAV_AGE_GATE_COOKIE;
+    $bot_pattern = 'googlebot|bingbot|slurp|duckduckbot|baiduspider|yandex|sogou|exabot|facebot|facebookexternalhit|twitterbot|linkedinbot|whatsapp|slackbot|discordbot|telegrambot|applebot|pingdom|uptimerobot|gtmetrix|lighthouse|chrome-lighthouse|headlesschrome|ahrefsbot|semrushbot|mj12bot';
+    ?>
+<style id="nav-age-gate-bootstrap-css">
+.nav-age-gate-bypass .nav-age-gate { display: none !important; }
+.nav-age-gate-bypass body.has-age-gate { overflow: auto !important; }
+</style>
+<script id="nav-age-gate-bootstrap-js">
+(function () {
+    try {
+        var ua = navigator.userAgent || '';
+        var bots = /<?php echo $bot_pattern; ?>/i;
+        var hasCookie = document.cookie.indexOf('<?php echo esc_js($cookie_name); ?>=') !== -1;
+        if (hasCookie || bots.test(ua)) {
+            document.documentElement.classList.add('nav-age-gate-bypass');
+        }
+    } catch (_) { /* if anything throws, fall through to showing the gate */ }
+})();
+</script>
+    <?php
+}, 1);
 
 /**
  * Inject the gate at the top of <body> so it covers the page before
