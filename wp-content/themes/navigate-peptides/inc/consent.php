@@ -44,6 +44,14 @@ function nav_terms_url(): string {
     return nav_get_legal_url('terms-of-service', 'terms');
 }
 
+function nav_refund_url(): string {
+    return nav_get_legal_url('refund-policy', 'refund');
+}
+
+function nav_shipping_url(): string {
+    return nav_get_legal_url('shipping-policy', 'shipping');
+}
+
 /**
  * Render the consent banner. Hidden by default; a small inline script at
  * the top of the page checks the nav_consent cookie and shows the banner

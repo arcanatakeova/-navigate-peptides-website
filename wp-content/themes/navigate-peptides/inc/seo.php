@@ -603,7 +603,10 @@ add_action('wp_head', function () {
         $logo_url = get_template_directory_uri() . '/assets/images/logo.svg';
     }
 
-    // Organization
+    // Organization — legal name + address + phone added so processor
+    // underwriters reading the schema (and search-engine knowledge
+    // panels) see a complete merchant record. Constants come from
+    // inc/business.php; helpers degrade gracefully if absent.
     $organization = [
         '@context'    => 'https://schema.org',
         '@type'       => 'Organization',
@@ -620,6 +623,25 @@ add_action('wp_head', function () {
         'slogan'      => NAV_SEO_TAGLINE,
         'sameAs'      => apply_filters('nav_seo_same_as', []),
     ];
+    if (defined('NAV_BIZ_LEGAL_NAME')) {
+        $organization['legalName'] = NAV_BIZ_LEGAL_NAME;
+    }
+    if (function_exists('nav_business_schema_address')) {
+        $organization['address'] = nav_business_schema_address();
+    }
+    if (defined('NAV_BIZ_PHONE_E164')) {
+        $organization['telephone'] = NAV_BIZ_PHONE_E164;
+        $organization['contactPoint'] = [
+            '@type'       => 'ContactPoint',
+            'telephone'   => NAV_BIZ_PHONE_E164,
+            'contactType' => 'customer support',
+            'areaServed'  => 'US',
+            'availableLanguage' => ['English'],
+        ];
+    }
+    if (function_exists('nav_has_business_email') && nav_has_business_email()) {
+        $organization['email'] = NAV_BIZ_EMAIL;
+    }
 
     echo nav_seo_json_ld($organization);
 

@@ -178,18 +178,64 @@
             <p><?php echo esc_html(nav_get_disclaimer('sitewide')); ?></p>
         </div>
 
+        <!-- Business identity — legal name, address, phone visible on
+             every page so processor underwriters + customers see a
+             complete merchant record. Sourced from inc/business.php. -->
+        <?php if (defined('NAV_BIZ_LEGAL_NAME')) : ?>
+        <div class="nav-footer__identity" aria-label="<?php esc_attr_e('Merchant identity', 'navigate-peptides'); ?>">
+            <p class="nav-footer__identity-line">
+                <strong><?php echo esc_html(NAV_BIZ_LEGAL_NAME); ?></strong>
+                <?php if (defined('NAV_BIZ_DBA') && NAV_BIZ_DBA !== NAV_BIZ_LEGAL_NAME) : ?>
+                    <span class="nav-footer__identity-dba"><?php
+                        printf(
+                            /* translators: %s: customer-facing brand name */
+                            esc_html__('doing business as %s', 'navigate-peptides'),
+                            esc_html(NAV_BIZ_DBA)
+                        );
+                    ?></span>
+                <?php endif; ?>
+            </p>
+            <p class="nav-footer__identity-line">
+                <?php echo nav_business_address('<span class="nav-footer__identity-sep" aria-hidden="true">·</span>'); // phpcs:ignore WordPress.Security.EscapeOutput -- helper escapes ?>
+            </p>
+            <p class="nav-footer__identity-line">
+                <a href="tel:<?php echo esc_attr(NAV_BIZ_PHONE_E164); ?>" class="nav-footer__identity-phone"><?php
+                    echo esc_html(NAV_BIZ_PHONE_DISPLAY);
+                ?></a>
+                <?php if (function_exists('nav_has_business_email') && nav_has_business_email()) : ?>
+                    <span class="nav-footer__identity-sep" aria-hidden="true">·</span>
+                    <a href="mailto:<?php echo esc_attr(NAV_BIZ_EMAIL); ?>" class="nav-footer__identity-email"><?php echo esc_html(NAV_BIZ_EMAIL); ?></a>
+                <?php endif; ?>
+            </p>
+        </div>
+        <?php endif; ?>
+
         <!-- Bottom Bar -->
         <div class="nav-footer__bottom">
-            <p>&copy; <?php echo esc_html(wp_date('Y')); ?> <?php echo esc_html(get_bloginfo('name')); ?>. <?php esc_html_e('All rights reserved.', 'navigate-peptides'); ?></p>
+            <p>&copy; <?php echo esc_html(wp_date('Y')); ?>
+                <?php
+                // Copyright reflects the legal entity (Elytherion LLC)
+                // not the brand — what processor underwriters expect.
+                echo esc_html(defined('NAV_BIZ_LEGAL_NAME') ? NAV_BIZ_LEGAL_NAME : get_bloginfo('name'));
+                ?>. <?php esc_html_e('All rights reserved.', 'navigate-peptides'); ?>
+            </p>
             <nav class="nav-footer__legal" aria-label="<?php esc_attr_e('Legal', 'navigate-peptides'); ?>">
                 <?php
-                $privacy = function_exists('nav_privacy_url') ? nav_privacy_url() : '';
-                $terms   = function_exists('nav_terms_url')   ? nav_terms_url()   : '';
+                $privacy  = function_exists('nav_privacy_url')  ? nav_privacy_url()  : '';
+                $terms    = function_exists('nav_terms_url')    ? nav_terms_url()    : '';
+                $refund   = function_exists('nav_refund_url')   ? nav_refund_url()   : home_url('/refund-policy/');
+                $shipping = function_exists('nav_shipping_url') ? nav_shipping_url() : home_url('/shipping-policy/');
                 if ($privacy) : ?>
                     <a href="<?php echo esc_url($privacy); ?>"><?php esc_html_e('Privacy', 'navigate-peptides'); ?></a>
                 <?php endif;
                 if ($terms) : ?>
                     <a href="<?php echo esc_url($terms); ?>"><?php esc_html_e('Terms', 'navigate-peptides'); ?></a>
+                <?php endif;
+                if ($refund) : ?>
+                    <a href="<?php echo esc_url($refund); ?>"><?php esc_html_e('Refund Policy', 'navigate-peptides'); ?></a>
+                <?php endif;
+                if ($shipping) : ?>
+                    <a href="<?php echo esc_url($shipping); ?>"><?php esc_html_e('Shipping Policy', 'navigate-peptides'); ?></a>
                 <?php endif; ?>
                 <a href="<?php echo esc_url(nav_get_contact_url()); ?>"><?php esc_html_e('Contact', 'navigate-peptides'); ?></a>
             </nav>
