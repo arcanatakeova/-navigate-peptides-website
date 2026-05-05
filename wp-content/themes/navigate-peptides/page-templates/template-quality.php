@@ -36,7 +36,7 @@ get_header();
         $vials = [
             ['slug' => 'tirzepatide-10mg', 'label' => 'Tirzepatide', 'desc' => 'Metabolic Research · 10 mg',      'url' => '/product/tirzepatide/'],
             ['slug' => 'bpc-157',          'label' => 'BPC-157',     'desc' => 'Tissue Repair Research · 10 mg', 'url' => '/product/bpc-157/'],
-            ['slug' => 'ghk-cu',           'label' => 'GHK-Cu',      'desc' => 'Dermal Research · 20 mg',         'url' => '/product/ghk-cu/'],
+            ['slug' => 'ghk-cu',           'label' => 'GHK-cu',      'desc' => 'Dermal Research · 20 mg',         'url' => '/product/ghk-cu/'],
         ];
         ?>
         <div class="nav-vial-trio" aria-label="Interactive 3D peptide vial showcase">
