@@ -35,6 +35,17 @@ if (!defined('NAV_BIZ_ADDR_COUNTRY')) define('NAV_BIZ_ADDR_COUNTRY', 'US');
 // purpose addresses (returns@, support@) only when those mailboxes exist.
 if (!defined('NAV_BIZ_EMAIL')) define('NAV_BIZ_EMAIL', 'shipping@navigatepeptides.com');
 
+// Search-engine console verification tokens. Paste the value from
+// each console's "HTML tag" verification option. Empty string = skip
+// the meta tag entirely.
+//   Google Search Console -> Settings -> Ownership verification -> HTML tag
+//     copy only the content="..." value
+//   Bing Webmaster Tools  -> Settings -> Ownership -> Add a meta tag
+//   Yandex Webmaster      -> Site settings -> Indexing -> Verification
+if (!defined('NAV_GSC_VERIFICATION'))    define('NAV_GSC_VERIFICATION',    '');
+if (!defined('NAV_BING_VERIFICATION'))   define('NAV_BING_VERIFICATION',   '');
+if (!defined('NAV_YANDEX_VERIFICATION')) define('NAV_YANDEX_VERIFICATION', '');
+
 /**
  * Render the postal address as a 2-line block:
  *   8941 Atlanta Ave #361
