@@ -494,6 +494,20 @@ add_action('wp_head', function () {
     // Performance — dns-prefetch / preconnect for analytical data + fonts
     // (fonts.googleapis already preconnected in header.php)
     echo '<link rel="dns-prefetch" href="//www.google-analytics.com">' . "\n";
+
+    // Search engine verification meta tags. Set the constants in
+    // inc/business.php (or wp-config.php) once you've claimed the
+    // property in each console. Each console accepts the meta-tag
+    // verification method as an alternative to DNS TXT records.
+    if (defined('NAV_GSC_VERIFICATION') && NAV_GSC_VERIFICATION !== '') {
+        echo '<meta name="google-site-verification" content="' . esc_attr(NAV_GSC_VERIFICATION) . '">' . "\n";
+    }
+    if (defined('NAV_BING_VERIFICATION') && NAV_BING_VERIFICATION !== '') {
+        echo '<meta name="msvalidate.01" content="' . esc_attr(NAV_BING_VERIFICATION) . '">' . "\n";
+    }
+    if (defined('NAV_YANDEX_VERIFICATION') && NAV_YANDEX_VERIFICATION !== '') {
+        echo '<meta name="yandex-verification" content="' . esc_attr(NAV_YANDEX_VERIFICATION) . '">' . "\n";
+    }
 }, 6);
 
 /* ------------------------------------------------------------------
