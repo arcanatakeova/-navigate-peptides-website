@@ -251,8 +251,19 @@ function nav_seo_trim(string $text, int $words = 30): string {
 function nav_seo_description(): string {
     $desc = '';
 
+    // Static front page (front-page.php) — must be evaluated BEFORE
+    // is_home() because both return true when show_on_front='posts'.
+    // The blog-archive copy belongs at /research/ only.
+    if (is_front_page()) {
+        $desc = 'High-purity research peptides for controlled laboratory environments. Third-party verified certificates of analysis on every batch. All products supplied for research and identification purposes only.';
+    }
+    // WooCommerce shop archive (/compounds/ -> page-managed, but
+    // is_shop() catches the auto-generated archive too).
+    elseif (function_exists('is_shop') && is_shop()) {
+        $desc = NAV_SEO_DEFAULT_DESC;
+    }
     // Single product: compound-specific scientific description
-    if (is_singular('product') && function_exists('wc_get_product')) {
+    elseif (is_singular('product') && function_exists('wc_get_product')) {
         $product = wc_get_product(get_the_ID());
         if ($product) {
             $title    = $product->get_name();
