@@ -13,20 +13,12 @@ defined('ABSPATH') || exit;
 /**
  * Get compliance disclaimer by key.
  */
-function nav_get_disclaimer(string $key): string {
-    $disclaimers = [
-        'product'  => 'All products currently listed on this site are for research purposes ONLY.',
-        'sitewide' => 'All products sold on this website are intended for research and identification purposes only. These products are not intended for human dosing, injection, or ingestion.',
-    ];
-    if (!isset($disclaimers[$key])) {
-        // Processor-mandated text must never silently disappear. error_log
-        // (always) rather than trigger_error (which can escalate to a fatal
-        // on hosts configured with strict WP_DEBUG handling).
-        error_log(sprintf('[nav_compliance] unknown disclaimer key: %s', $key));
-        // Fall back to the sitewide disclaimer so the page stays compliant.
-        return $disclaimers['sitewide'];
-    }
-    return $disclaimers[$key];
+function nav_get_disclaimer(string $key = 'sitewide'): string {
+    // Single canonical RUO line. The $key argument is preserved for
+    // call-site compatibility but every key resolves to the same text
+    // so messaging stays consistent across product cards, PDP tabs,
+    // cart, footer, and the compliance scanner block.
+    return 'All products sold on this website are intended for research and identification purposes only. These products are not intended for human dosing, injection, or ingestion.';
 }
 
 /**

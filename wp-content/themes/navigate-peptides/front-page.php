@@ -71,7 +71,7 @@ $theme_uri = get_template_directory_uri();
         <div class="nav-hero__vial">
             <model-viewer
                 src="<?php echo esc_url($vial_url); ?>"
-                alt="Navigate Peptides GHK-Cu research vial — 3D interactive model"
+                alt="Navigate Peptides GHK-cu research vial — 3D interactive model"
                 camera-controls
                 interaction-prompt="none"
                 rotation-per-second="32deg"
@@ -85,7 +85,7 @@ $theme_uri = get_template_directory_uri();
             ></model-viewer>
             <a href="<?php echo esc_url(home_url('/product/ghk-cu/')); ?>"
                class="nav-hero__vial-cta">
-                View GHK-Cu peptide <span aria-hidden="true">→</span>
+                View GHK-cu peptide <span aria-hidden="true">→</span>
             </a>
         </div>
 
@@ -96,7 +96,7 @@ $theme_uri = get_template_directory_uri();
                 <div class="nav-info-panel__grid">
                     <div class="nav-info-panel__row">
                         <span class="nav-info-panel__label"><?php esc_html_e('Compound', 'navigate-peptides'); ?></span>
-                        <span class="nav-info-panel__value">GHK-Cu</span>
+                        <span class="nav-info-panel__value">GHK-cu</span>
                     </div>
                     <div class="nav-info-panel__row">
                         <span class="nav-info-panel__label"><?php esc_html_e('Sequence', 'navigate-peptides'); ?></span>
