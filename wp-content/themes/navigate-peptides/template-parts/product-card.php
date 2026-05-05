@@ -44,8 +44,6 @@ $nav_card_show_excerpt = ! empty($args['show_excerpt']);
                     class="nav-product-card__viewer"
                     src="<?php echo esc_url($nav_card_glb); ?>"
                     alt="<?php echo esc_attr(get_the_title()); ?> — 3D vial"
-                    auto-rotate
-                    rotation-per-second="20deg"
                     interaction-prompt="none"
                     disable-zoom
                     disable-pan

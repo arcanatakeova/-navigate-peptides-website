@@ -51,10 +51,8 @@ get_header();
                         class="nav-vial-trio__viewer"
                         src="<?php echo esc_url($src); ?>"
                         alt="<?php echo esc_attr($v['label']); ?> research vial — interactive 3D"
-                        auto-rotate
                         camera-controls
                         interaction-prompt="none"
-                        rotation-per-second="32deg"
                         camera-orbit="0deg 75deg 110%"
                         min-camera-orbit="auto auto 80%"
                         max-camera-orbit="auto auto 180%"

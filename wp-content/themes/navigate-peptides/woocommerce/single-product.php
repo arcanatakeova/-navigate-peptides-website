@@ -70,10 +70,8 @@ while (have_posts()) : the_post();
                         <model-viewer
                             src="<?php echo esc_url($glb_url); ?>"
                             alt="<?php echo esc_attr(get_the_title()); ?> — 3D interactive model"
-                            auto-rotate
                             camera-controls
                             interaction-prompt="none"
-                            rotation-per-second="32deg"
                             camera-orbit="0deg 78deg 140%"
                             min-camera-orbit="auto auto 110%"
                             max-camera-orbit="auto auto 220%"

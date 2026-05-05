@@ -18,13 +18,17 @@ $theme_uri = get_template_directory_uri();
         <div class="nav-hero__content">
             <span class="nav-kicker"><?php esc_html_e('Precision Peptide Research', 'navigate-peptides'); ?></span>
             <h1 class="nav-hero__title">
-                <span class="nav-hero__title-line"><?php esc_html_e('Engineered.', 'navigate-peptides'); ?></span>
-                <em class="nav-hero__title-italic"><?php esc_html_e('Intelligent.', 'navigate-peptides'); ?></em>
+                <span class="nav-hero__title-line"><?php esc_html_e('High-Purity', 'navigate-peptides'); ?></span>
+                <span class="nav-hero__title-line"><?php esc_html_e('Research Peptides', 'navigate-peptides'); ?></span>
             </h1>
             <p class="nav-hero__subtitle">
-                <?php esc_html_e('Research-grade peptide compounds for controlled laboratory investigation.', 'navigate-peptides'); ?>
+                <?php esc_html_e('High-purity peptide compounds designed for controlled laboratory research environments.', 'navigate-peptides'); ?>
             </p>
             <ul class="nav-hero__badges">
+                <li>
+                    <?php echo nav_icon('check', 'nav-icon nav-icon--sm'); ?>
+                    <span><?php esc_html_e('Laboratory Use Only', 'navigate-peptides'); ?></span>
+                </li>
                 <li>
                     <?php echo nav_icon('check', 'nav-icon nav-icon--sm'); ?>
                     <span><?php esc_html_e('Third-Party Tested', 'navigate-peptides'); ?></span>
@@ -36,7 +40,7 @@ $theme_uri = get_template_directory_uri();
             </ul>
             <div class="nav-hero__actions">
                 <a href="<?php echo esc_url(home_url('/compounds/')); ?>" class="nav-btn nav-btn--primary">
-                    <?php esc_html_e('View Compounds', 'navigate-peptides'); ?>
+                    <?php esc_html_e('Explore Compounds', 'navigate-peptides'); ?>
                 </a>
                 <a href="<?php echo esc_url(home_url('/quality/')); ?>" class="nav-btn nav-btn--outline">
                     <?php esc_html_e('Quality & Verification', 'navigate-peptides'); ?>
@@ -68,7 +72,6 @@ $theme_uri = get_template_directory_uri();
             <model-viewer
                 src="<?php echo esc_url($vial_url); ?>"
                 alt="Navigate Peptides GHK-Cu research vial — 3D interactive model"
-                auto-rotate
                 camera-controls
                 interaction-prompt="none"
                 rotation-per-second="32deg"

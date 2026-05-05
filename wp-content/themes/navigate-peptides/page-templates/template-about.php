@@ -54,10 +54,8 @@ get_header();
                     class="nav-about-hero__viewer"
                     src="<?php echo esc_url($about_glb); ?>"
                     alt="Navigate Peptides research vial — interactive 3D"
-                    auto-rotate
                     camera-controls
                     interaction-prompt="none"
-                    rotation-per-second="32deg"
                     camera-orbit="0deg 75deg 110%"
                     min-camera-orbit="auto auto 80%"
                     max-camera-orbit="auto auto 180%"
