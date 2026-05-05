@@ -178,21 +178,6 @@
             <p><?php echo esc_html(nav_get_disclaimer('sitewide')); ?></p>
         </div>
 
-        <!-- Public-facing merchant identity. We surface only the brand
-             DBA, the PO mailing address, and the support email — legal
-             entity name + phone are kept private per merchant policy. -->
-        <?php if (defined('NAV_BIZ_DBA')) : ?>
-        <div class="nav-footer__identity" aria-label="<?php esc_attr_e('Merchant contact', 'navigate-peptides'); ?>">
-            <p class="nav-footer__identity-line">
-                <?php echo nav_business_address('<span class="nav-footer__identity-sep" aria-hidden="true">·</span>'); // phpcs:ignore WordPress.Security.EscapeOutput -- helper escapes ?>
-            </p>
-            <?php if (function_exists('nav_has_business_email') && nav_has_business_email()) : ?>
-            <p class="nav-footer__identity-line">
-                <a href="mailto:<?php echo esc_attr(NAV_BIZ_EMAIL); ?>" class="nav-footer__identity-email"><?php echo esc_html(NAV_BIZ_EMAIL); ?></a>
-            </p>
-            <?php endif; ?>
-        </div>
-        <?php endif; ?>
 
         <!-- Bottom Bar -->
         <div class="nav-footer__bottom">
