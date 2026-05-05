@@ -18,8 +18,10 @@
 
 defined('ABSPATH') || exit;
 
-// Legal + DBA --------------------------------------------------------
-if (!defined('NAV_BIZ_LEGAL_NAME')) define('NAV_BIZ_LEGAL_NAME', 'Elytherion LLC');
+// Customer-facing brand only. Legal entity name + phone are intentionally
+// not displayed publicly — the storefront surfaces only the brand DBA, the
+// PO mailing address, and the support email. Schema.org omits legalName
+// and telephone for the same reason.
 if (!defined('NAV_BIZ_DBA'))        define('NAV_BIZ_DBA',        'Navigate Peptides');
 
 // Mailing address (CMRA / UPS Store private mailbox per CMRA rules) --
@@ -29,15 +31,9 @@ if (!defined('NAV_BIZ_ADDR_REGION'))  define('NAV_BIZ_ADDR_REGION',  'CA');
 if (!defined('NAV_BIZ_ADDR_POSTAL'))  define('NAV_BIZ_ADDR_POSTAL',  '92646');
 if (!defined('NAV_BIZ_ADDR_COUNTRY')) define('NAV_BIZ_ADDR_COUNTRY', 'US');
 
-// Contact ------------------------------------------------------------
-// E.164 for tel: links and Schema.org telephone field.
-if (!defined('NAV_BIZ_PHONE_E164'))    define('NAV_BIZ_PHONE_E164',    '+16196652694');
-if (!defined('NAV_BIZ_PHONE_DISPLAY')) define('NAV_BIZ_PHONE_DISPLAY', '+1 (619) 665-2694');
-
-// Brand-domain email — empty until DNS/MX is configured. The footer
-// renders an email line only when this is non-empty so we don't ship
-// a broken mailto: until the inbox actually receives.
-if (!defined('NAV_BIZ_EMAIL')) define('NAV_BIZ_EMAIL', '');
+// Brand-domain email. Single inbox for now (shipping + general); add per-
+// purpose addresses (returns@, support@) only when those mailboxes exist.
+if (!defined('NAV_BIZ_EMAIL')) define('NAV_BIZ_EMAIL', 'shipping@navigatepeptides.com');
 
 /**
  * Render the postal address as a 2-line block:

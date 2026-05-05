@@ -15,26 +15,18 @@ get_header();
     </div>
 </section>
 
-<?php /* Direct contact channels — visible above the inquiry form so
-       visitors (and processor underwriters) see the merchant's address,
-       phone, and email at a glance. Sourced from inc/business.php. */ ?>
-<?php if (defined('NAV_BIZ_LEGAL_NAME')) : ?>
+<?php /* Direct contact channels — mailing address + email only. Legal
+       entity name and phone number are intentionally not surfaced
+       publicly per merchant privacy policy. */ ?>
+<?php if (defined('NAV_BIZ_DBA')) : ?>
 <section class="nav-section nav-section--compact">
     <div class="nav-container">
         <div class="nav-contact-channels" aria-label="<?php esc_attr_e('Direct contact channels', 'navigate-peptides'); ?>">
             <div class="nav-contact-channel">
                 <span class="nav-contact-channel__label"><?php esc_html_e('Mailing address', 'navigate-peptides'); ?></span>
                 <span class="nav-contact-channel__value">
-                    <?php echo esc_html(NAV_BIZ_LEGAL_NAME); ?><br>
                     <?php echo nav_business_address(); // phpcs:ignore WordPress.Security.EscapeOutput -- helper escapes ?>
                 </span>
-            </div>
-            <div class="nav-contact-channel">
-                <span class="nav-contact-channel__label"><?php esc_html_e('Phone', 'navigate-peptides'); ?></span>
-                <a class="nav-contact-channel__value" href="tel:<?php echo esc_attr(NAV_BIZ_PHONE_E164); ?>">
-                    <?php echo esc_html(NAV_BIZ_PHONE_DISPLAY); ?>
-                </a>
-                <span class="nav-contact-channel__hint"><?php esc_html_e('Mon–Fri, 09:00–17:00 PST', 'navigate-peptides'); ?></span>
             </div>
             <?php if (function_exists('nav_has_business_email') && nav_has_business_email()) : ?>
             <div class="nav-contact-channel">

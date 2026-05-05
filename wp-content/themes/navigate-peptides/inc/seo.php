@@ -623,24 +623,18 @@ add_action('wp_head', function () {
         'slogan'      => NAV_SEO_TAGLINE,
         'sameAs'      => apply_filters('nav_seo_same_as', []),
     ];
-    if (defined('NAV_BIZ_LEGAL_NAME')) {
-        $organization['legalName'] = NAV_BIZ_LEGAL_NAME;
-    }
     if (function_exists('nav_business_schema_address')) {
         $organization['address'] = nav_business_schema_address();
     }
-    if (defined('NAV_BIZ_PHONE_E164')) {
-        $organization['telephone'] = NAV_BIZ_PHONE_E164;
+    if (function_exists('nav_has_business_email') && nav_has_business_email()) {
+        $organization['email'] = NAV_BIZ_EMAIL;
         $organization['contactPoint'] = [
             '@type'       => 'ContactPoint',
-            'telephone'   => NAV_BIZ_PHONE_E164,
+            'email'       => NAV_BIZ_EMAIL,
             'contactType' => 'customer support',
             'areaServed'  => 'US',
             'availableLanguage' => ['English'],
         ];
-    }
-    if (function_exists('nav_has_business_email') && nav_has_business_email()) {
-        $organization['email'] = NAV_BIZ_EMAIL;
     }
 
     echo nav_seo_json_ld($organization);
