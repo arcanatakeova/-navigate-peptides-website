@@ -805,10 +805,10 @@ body.admin-bar .nav-header {
 
 .nav-hero__subtitle {
     margin-top: 28px;
-    font-size: 17px;
+    font-size: clamp(15px, 1.2vw + 0.4rem, 18px);
     line-height: 1.6;
     color: var(--nav-text-secondary);
-    max-width: 380px;
+    max-width: 440px;
     font-weight: 400;
 }
 
@@ -824,7 +824,7 @@ body.admin-bar .nav-header {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 14px;
+    font-size: clamp(13px, 0.7vw + 0.4rem, 15px);
     color: var(--nav-text-secondary);
     letter-spacing: 0.01em;
 }
@@ -2122,7 +2122,10 @@ body.admin-bar .nav-header {
     width: 100%;
     padding: 14px 16px;
     font-family: var(--nav-font-body);
-    font-size: 14px;
+    /* 16px floor on mobile prevents iOS Safari from auto-zooming
+       on focus; clamp lifts to 15px on tablet+ for the denser
+       desktop form rhythm. */
+    font-size: 16px;
     color: var(--nav-text-primary);
     background-color: rgba(10, 16, 14, 0.55);
     border: 1px solid rgba(234, 234, 234, 0.08);
@@ -2133,6 +2136,14 @@ body.admin-bar .nav-header {
     outline: none;
     -webkit-appearance: none;
     appearance: none;
+}
+
+@media (min-width: 768px) {
+    .nav-form-input,
+    .nav-form-select,
+    .nav-form-textarea {
+        font-size: 15px;
+    }
 }
 
 .nav-form-input:hover,
@@ -2497,10 +2508,13 @@ a.nav-contact-channel__value:hover {
     border-radius: var(--nav-radius-md);
     color: var(--nav-text-primary);
     font-family: var(--nav-font-mono);
-    font-size: 14px;
+    font-size: 16px; /* 16px on mobile blocks iOS auto-zoom */
     padding: 14px 16px;
     width: 100%;
     transition: border-color 0.2s, background 0.2s;
+}
+@media (min-width: 768px) {
+    .nav-newsletter__input { font-size: 14px; }
 }
 .nav-newsletter__input::placeholder {
     color: var(--nav-text-muted);
