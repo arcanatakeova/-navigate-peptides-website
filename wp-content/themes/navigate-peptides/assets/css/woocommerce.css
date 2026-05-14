@@ -167,6 +167,10 @@
 }
 
 .nav-product-card__action {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 0;
+    min-height: 36px;
     font-family: var(--nav-font-body);
     font-size: 10px;
     font-weight: 600;
