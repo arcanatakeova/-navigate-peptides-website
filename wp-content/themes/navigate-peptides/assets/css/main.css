@@ -619,8 +619,9 @@ body.admin-bar .nav-header {
 }
 
 .nav-btn--sm {
-    padding: 8px 16px;
+    padding: 11px 18px;
     font-size: 12px;
+    min-height: 40px;
 }
 
 /* ==========================================================================
@@ -945,6 +946,17 @@ body.admin-bar .nav-header {
     gap: 12px;
     padding: 9px 0;
     border-bottom: 1px solid rgba(234, 234, 234, 0.055);
+    min-width: 0; /* let the value column shrink in narrow containers */
+}
+
+/* Small phones — stack the label above the value so long mono
+   sequences (Gly-His-Lys · Cu²⁺ etc.) never force horizontal scroll
+   on <320px viewports. */
+@media (max-width: 360px) {
+    .nav-info-panel__row {
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
 }
 
 .nav-info-panel__row:last-child {
@@ -964,6 +976,8 @@ body.admin-bar .nav-header {
     color: var(--nav-text-primary);
     text-align: right;
     letter-spacing: 0.005em;
+    min-width: 0;
+    overflow-wrap: break-word;
 }
 
 .nav-info-panel__value--mono {
@@ -972,6 +986,14 @@ body.admin-bar .nav-header {
     letter-spacing: 0;
     word-break: break-word;
     line-height: 1.5;
+    min-width: 0;
+}
+
+/* On narrow phones the row stacks (label above value) so the value
+   reads left-aligned alongside the label rather than right-aligned
+   off into space. */
+@media (max-width: 360px) {
+    .nav-info-panel__value { text-align: left; }
 }
 
 /* Batch + Purity boxes + QR block (mockup: two label rows over boxed values,
@@ -1094,6 +1116,26 @@ body.admin-bar .nav-header {
     .nav-hero__vial {
         height: 500px;
         max-width: 420px;
+    }
+}
+
+/* Tablet (768-1023px) — fill the horizontal space the audit flagged as
+   wasted. Content + vial render side-by-side; the info-panel drops
+   below as a full-width band so the headline can still breathe. */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .nav-hero__inner {
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        gap: var(--nav-gap-lg);
+    }
+    .nav-hero__vial {
+        height: 600px;
+        max-width: 100%;
+    }
+    .nav-hero__info-panel {
+        grid-column: 1 / -1;
+        display: block;
+        margin-top: var(--nav-gap-lg);
     }
 }
 
@@ -2302,6 +2344,20 @@ a.nav-contact-channel__value:hover {
     .nav-footer__grid {
         grid-template-columns: 1fr 1fr;
         gap: 40px 48px;
+    }
+}
+
+/* Tablet — give the four link columns a full row of their own under
+   the brand block so they don't bunch into a cramped 2-up wrap. */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .nav-footer__grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 32px 28px;
+    }
+    .nav-footer__col:first-child {
+        grid-column: 1 / -1;
+        max-width: 540px;
+        margin-bottom: 8px;
     }
 }
 
