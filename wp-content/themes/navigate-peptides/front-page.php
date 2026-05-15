@@ -125,8 +125,8 @@ $theme_uri = get_template_directory_uri();
                      don't leave stale values on the homepage. Falls back to
                      'Latest' / '≥99%' when no product or meta is configured. -->
                 <?php
-                $hero_batch  = 'Latest';
-                $hero_purity = '≥99%';
+                $hero_batch  = '';
+                $hero_purity = '';
                 if (function_exists('wc_get_products')) {
                     $hero_products = wc_get_products([
                         'limit'    => 1,
@@ -137,12 +137,16 @@ $theme_uri = get_template_directory_uri();
                     ]);
                     if (!empty($hero_products[0])) {
                         $hid = $hero_products[0]->get_id();
-                        $b = get_post_meta($hid, '_nav_batch_number', true);
-                        $p = get_post_meta($hid, '_nav_purity', true);
-                        if ($b) $hero_batch  = $b;
-                        if ($p) $hero_purity = $p;
+                        $hero_batch  = (string) get_post_meta($hid, '_nav_batch_number', true);
+                        $hero_purity = (string) get_post_meta($hid, '_nav_purity', true);
                     }
                 }
+                // Only render the batch/purity row when we have REAL
+                // values pulled from a product. Previous fallbacks of
+                // 'Latest' / '≥99%' looked like real metadata to the
+                // visitor and hid the failure case (WC off, category
+                // renamed, no products in dermal-research) entirely.
+                if ($hero_batch !== '' && $hero_purity !== '') :
                 ?>
                 <div class="nav-info-panel__boxes">
                     <div class="nav-info-panel__box">
@@ -154,6 +158,7 @@ $theme_uri = get_template_directory_uri();
                         <span class="nav-info-panel__box-value"><?php echo esc_html($hero_purity); ?></span>
                     </div>
                 </div>
+                <?php endif; ?>
 
                 <!-- COA Link -->
                 <a href="<?php echo esc_url(home_url('/quality/coa/')); ?>" class="nav-info-panel__coa-link">

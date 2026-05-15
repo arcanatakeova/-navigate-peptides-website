@@ -10,8 +10,8 @@ get_header();
 
 <section class="nav-page-hero">
     <div class="nav-container">
-        <h1 class="nav-page-hero__title">About Navigate Peptides</h1>
-        <p class="nav-page-hero__subtitle">A research-focused peptide supplier built on transparency, scientific rigor, and uncompromising quality standards.</p>
+        <h1 class="nav-page-hero__title"><?php esc_html_e('About Navigate Peptides', 'navigate-peptides'); ?></h1>
+        <p class="nav-page-hero__subtitle"><?php esc_html_e('A research-focused peptide supplier built on transparency, scientific rigor, and uncompromising quality standards.', 'navigate-peptides'); ?></p>
     </div>
 </section>
 

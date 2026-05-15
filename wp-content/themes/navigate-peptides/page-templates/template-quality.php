@@ -10,9 +10,9 @@ get_header();
 
 <section class="nav-page-hero">
     <div class="nav-container">
-        <h1 class="nav-page-hero__title">Quality Assurance</h1>
+        <h1 class="nav-page-hero__title"><?php esc_html_e('Quality Assurance', 'navigate-peptides'); ?></h1>
         <p class="nav-page-hero__subtitle">
-            Every compound undergoes rigorous independent testing and verification. We publish certificates of analysis for complete transparency.
+            <?php esc_html_e('Every compound undergoes rigorous independent testing and verification. We publish certificates of analysis for complete transparency.', 'navigate-peptides'); ?>
         </p>
     </div>
 </section>
