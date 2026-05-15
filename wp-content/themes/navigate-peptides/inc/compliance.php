@@ -30,6 +30,55 @@ function nav_redact(string $value): string {
 }
 
 /**
+ * Push an admin-facing warning onto a transient queue. The
+ * `nav_admin_notices` action below drains the queue on every admin
+ * page load and renders accumulated warnings as a standard WP notice.
+ *
+ * This is the "loop closer" the audit asked for: most failure branches
+ * in inc/seo.php, inc/woocommerce.php, etc. already error_log() with
+ * good context, but no human ever reads PHP error logs on wp.com
+ * Atomic — so silent UX/compliance degradation only surfaces during
+ * an underwriter audit. Surfacing the same message to wp-admin makes
+ * the failure visible to the operator the next time they log in.
+ *
+ * @param string $code    Stable key used for dedup (e.g. 'json_ld_encode').
+ * @param string $message Plain-text message rendered to the admin.
+ */
+function nav_admin_warn(string $code, string $message): void {
+    $queue = get_transient('nav_admin_warnings');
+    if (!is_array($queue)) {
+        $queue = [];
+    }
+    // Bounded — last 20 unique codes, no infinite growth on a hot path.
+    $queue[$code] = $message;
+    if (count($queue) > 20) {
+        $queue = array_slice($queue, -20, null, true);
+    }
+    // 7-day TTL so warnings are visible long enough for the operator to
+    // see them, but auto-clear if the underlying issue resolves.
+    set_transient('nav_admin_warnings', $queue, 7 * DAY_IN_SECONDS);
+}
+
+add_action('admin_notices', function () {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    $queue = get_transient('nav_admin_warnings');
+    if (empty($queue) || !is_array($queue)) {
+        return;
+    }
+    foreach ($queue as $code => $message) {
+        printf(
+            '<div class="notice notice-warning is-dismissible"><p><strong>%s</strong> %s <em>(%s)</em></p></div>',
+            esc_html__('Navigate Peptides:', 'navigate-peptides'),
+            esc_html((string) $message),
+            esc_html((string) $code)
+        );
+    }
+    delete_transient('nav_admin_warnings');
+});
+
+/**
  * Get compliance disclaimer by key.
  */
 function nav_get_disclaimer(string $key = 'sitewide'): string {

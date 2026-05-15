@@ -62,7 +62,16 @@ function nav_backfill_default_terms(): void {
     ];
     foreach ($research_defaults as $name => $slug) {
         if (!term_exists($slug, 'research_category')) {
-            wp_insert_term($name, 'research_category', ['slug' => $slug]);
+            $result = wp_insert_term($name, 'research_category', ['slug' => $slug]);
+            if (is_wp_error($result) && function_exists('nav_admin_warn')) {
+                nav_admin_warn(
+                    'term_seed_research_' . $slug,
+                    sprintf(
+                        'Default research term "%s" (slug %s) failed to seed: %s. Header/footer menus expecting this term will skip silently.',
+                        $name, $slug, $result->get_error_code()
+                    )
+                );
+            }
         }
     }
 
@@ -78,7 +87,16 @@ function nav_backfill_default_terms(): void {
         ];
         foreach ($product_defaults as $name => $slug) {
             if (!term_exists($slug, 'product_cat')) {
-                wp_insert_term($name, 'product_cat', ['slug' => $slug]);
+                $result = wp_insert_term($name, 'product_cat', ['slug' => $slug]);
+                if (is_wp_error($result) && function_exists('nav_admin_warn')) {
+                    nav_admin_warn(
+                        'term_seed_product_cat_' . $slug,
+                        sprintf(
+                            'Default product category "%s" (slug %s) failed to seed: %s. Homepage tiles and category archive pages assume this exists.',
+                            $name, $slug, $result->get_error_code()
+                        )
+                    );
+                }
             }
         }
     }

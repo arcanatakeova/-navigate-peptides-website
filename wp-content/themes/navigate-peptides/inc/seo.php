@@ -45,12 +45,24 @@ function nav_seo_json_ld(array $schema): string {
         | JSON_HEX_QUOT;
     $json = wp_json_encode($schema, $flags);
     if ($json === false) {
+        $type = $schema['@type'] ?? 'unknown';
+        $url  = $_SERVER['REQUEST_URI'] ?? '';
         error_log(sprintf(
             '[nav_seo] JSON-LD encode failed: err=%s @type=%s url=%s',
-            json_last_error_msg(),
-            $schema['@type'] ?? 'unknown',
-            $_SERVER['REQUEST_URI'] ?? ''
+            json_last_error_msg(), $type, $url
         ));
+        // Surface to admins — silent JSON-LD drop on the public site is a
+        // compliance-relevant regression (processor scanners check the
+        // schema's RUO disambiguatingDescription).
+        if (function_exists('nav_admin_warn')) {
+            nav_admin_warn(
+                'json_ld_encode_' . $type,
+                sprintf(
+                    'JSON-LD encode failed for @type=%s on %s — schema dropped from page output.',
+                    $type, $url
+                )
+            );
+        }
         return '';
     }
     return '<script type="application/ld+json">' . $json . '</script>' . "\n";
@@ -1129,7 +1141,16 @@ add_action('save_post', function (int $post_id) {
         if ($value === '') {
             delete_post_meta($post_id, '_nav_meta_description');
         } else {
-            update_post_meta($post_id, '_nav_meta_description', $value);
+            $ok = update_post_meta($post_id, '_nav_meta_description', $value);
+            if ($ok === false && function_exists('nav_admin_warn')) {
+                nav_admin_warn(
+                    'seo_meta_description_' . $post_id,
+                    sprintf(
+                        'SEO meta description failed to save for post #%d — page will fall back to the site-wide default.',
+                        $post_id
+                    )
+                );
+            }
         }
     }
 });
