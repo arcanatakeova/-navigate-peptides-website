@@ -257,7 +257,7 @@ $theme_uri = get_template_directory_uri();
                 <div class="nav-trust-card__content">
                     <h3 class="nav-trust-card__title"><?php esc_html_e('Laboratory Use Only', 'navigate-peptides'); ?></h3>
                     <p class="nav-trust-card__desc">
-                        <?php esc_html_e('Not for human consumption. For research purposes exclusively.', 'navigate-peptides'); ?>
+                        <?php echo esc_html(nav_get_disclaimer('sitewide')); ?>
                     </p>
                 </div>
             </div>

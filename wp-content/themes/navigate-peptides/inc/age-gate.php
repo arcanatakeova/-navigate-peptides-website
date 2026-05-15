@@ -151,7 +151,8 @@ add_action('wp_body_open', function () {
                     <input type="checkbox" name="ruo" id="nav-age-gate-ruo" required>
                     <span class="nav-age-gate__check-mark" aria-hidden="true"></span>
                     <span class="nav-age-gate__check-label">
-                        <?php esc_html_e('I understand all products are research-grade compounds for in-vitro laboratory research only — not for human or animal consumption, dosing, or administration.', 'navigate-peptides'); ?>
+                        <?php esc_html_e('I acknowledge the following statement and agree to comply:', 'navigate-peptides'); ?>
+                        <span class="nav-age-gate__canonical"><?php echo esc_html(nav_get_disclaimer('sitewide')); ?></span>
                     </span>
                 </label>
 

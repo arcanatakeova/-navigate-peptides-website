@@ -195,6 +195,25 @@
     letter-spacing: 0.005em;
 }
 
+/* Always-visible RUO badge — renders independent of show_excerpt so
+   related-products / cross-sell loops also show the compliance chip.
+   Sits between the body text and the price/action footer. */
+.nav-product-card__ruo-badge {
+    display: inline-block;
+    margin: 10px 0 6px;
+    padding: 3px 8px;
+    font-family: var(--nav-font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    color: var(--nav-text-secondary);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+    text-transform: uppercase;
+}
+
 /* Archive search — appears above the product grid on shop + category pages */
 .nav-archive-search {
     position: relative;

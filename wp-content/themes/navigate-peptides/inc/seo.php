@@ -855,8 +855,11 @@ add_action('wp_head', function () {
         $schema['additionalProperty'] = $additional;
     }
 
-    // Disambiguating description — compliance reminder embedded in schema
-    $schema['disambiguatingDescription'] = 'For research and identification purposes only. Not for human or veterinary use.';
+    // Disambiguating description — pull from the single source of truth
+    // so the schema-embedded reminder matches the canonical RUO line we
+    // render on every page. Drift here trips processor scanners that
+    // cross-check page text against JSON-LD.
+    $schema['disambiguatingDescription'] = nav_get_disclaimer('sitewide');
 
     echo nav_seo_json_ld($schema);
 }, 10);

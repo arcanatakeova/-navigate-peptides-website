@@ -157,7 +157,7 @@ create_product() {
 
 create_product "AOD-9604" "aod-9604" "$CAT_METABOLIC" "42.99" \
     "Modified hGH Fragment 177-191" \
-    "A modified fragment of human growth hormone spanning amino acids 177-191, investigated for its role in lipolytic pathway signaling." \
+    "A modified peptide fragment corresponding to amino acids 177-191 of the somatotropin sequence, investigated for its role in lipolytic pathway signaling." \
     "221231-10-3" "1815.1 Da" "hGH fragment 177-191 (modified)" \
     "≥98% (HPLC verified)" \
     "Lipolytic signaling pathways independent of GH receptor"
@@ -178,7 +178,7 @@ create_product "Ipamorelin" "ipamorelin" "$CAT_METABOLIC" "29.99" \
 
 create_product "BPC-157" "bpc-157" "$CAT_TISSUE" "39.99" \
     "Synthetic Pentadecapeptide — BPC Fragment 15" \
-    "A pentadecapeptide derived from human gastric juice, studied for its involvement in angiogenic and tissue-remodeling signaling pathways." \
+    "A pentadecapeptide derived from a fragment found in mammalian gastric secretions, studied for its involvement in angiogenic and tissue-remodeling signaling pathways." \
     "137525-51-0" "1419.5 Da" "Gly-Glu-Pro-Pro-Pro-Gly-Lys-Pro-Ala-Asp-Asp-Ala-Gly-Leu-Val" \
     "≥99% (HPLC verified)" \
     "VEGF pathway upregulation mechanisms"
