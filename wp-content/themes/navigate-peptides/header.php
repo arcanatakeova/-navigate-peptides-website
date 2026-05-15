@@ -3,6 +3,11 @@
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Mobile Safari auto-links digit runs (CAS numbers, molecular
+         weights, batch IDs) as tel: links by default. Storefront copy
+         is full of digit-heavy compound identifiers; suppress the
+         auto-link so taps don't open the dialer. -->
+    <meta name="format-detection" content="telephone=no">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Favicon -->
