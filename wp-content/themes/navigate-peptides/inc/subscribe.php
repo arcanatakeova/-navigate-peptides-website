@@ -54,7 +54,7 @@ add_filter('manage_nav_subscriber_posts_columns', function ($cols) {
         'title' => __('Email', 'navigate-peptides'),
         'date'  => __('Subscribed', 'navigate-peptides'),
         'source' => __('Source', 'navigate-peptides'),
-        'ip'    => __('IP', 'navigate-peptides'),
+        'ip'    => __('IP hash', 'navigate-peptides'),
     ];
 });
 
@@ -62,7 +62,12 @@ add_action('manage_nav_subscriber_posts_custom_column', function ($column, $post
     if ($column === 'source') {
         echo esc_html((string) get_post_meta($post_id, '_nav_source', true) ?: '—');
     } elseif ($column === 'ip') {
-        echo esc_html((string) get_post_meta($post_id, '_nav_ip', true) ?: '—');
+        // Falls back to legacy _nav_ip rows pre-hashing so existing subscriber
+        // entries don't render an em-dash forever; new rows are stored at
+        // _nav_ip_hash and contain a 12-char SHA-256 token, not the raw IP.
+        $hash   = (string) get_post_meta($post_id, '_nav_ip_hash', true);
+        $legacy = (string) get_post_meta($post_id, '_nav_ip', true);
+        echo esc_html($hash ?: $legacy ?: '—');
     }
 }, 10, 2);
 
@@ -125,10 +130,13 @@ function nav_handle_subscribe(WP_REST_Request $request) {
     }
 
     // Honeypot trip — log and return a neutral success so bots don't
-    // adapt, but the attempt is now rate-counted + recorded.
+    // adapt, but the attempt is now rate-counted + recorded. Bots
+    // sometimes paste real email/name fragments into hidden fields, so
+    // we never persist the raw hp value — boolean flag + redacted IP
+    // is enough to flag repeat offenders.
     $hp = (string) $request->get_param('nav_hp');
     if ($hp !== '') {
-        error_log(sprintf('[nav_subscribe] honeypot tripped ip=%s hp=%s', $ip, substr($hp, 0, 80)));
+        error_log(sprintf('[nav_subscribe] honeypot tripped ip_hash=%s hp_nonempty=1', nav_redact($ip)));
         return rest_ensure_response([
             'success' => true,
             'message' => __('Thanks — you\'re on the list.', 'navigate-peptides'),
@@ -142,7 +150,7 @@ function nav_handle_subscribe(WP_REST_Request $request) {
     $nonce_param  = (string) $request->get_param('_wpnonce');
     $nonce        = $nonce_header ?: $nonce_param;
     if (!$nonce || !wp_verify_nonce($nonce, 'wp_rest')) {
-        error_log(sprintf('[nav_subscribe] nonce failed ip=%s', $ip));
+        error_log(sprintf('[nav_subscribe] nonce failed ip_hash=%s', nav_redact($ip)));
         return new WP_Error(
             'invalid_nonce',
             __('Security check failed. Refresh the page and try again.', 'navigate-peptides'),
@@ -179,7 +187,9 @@ function nav_handle_subscribe(WP_REST_Request $request) {
     ], true);
 
     if (is_wp_error($post_id) || !$post_id) {
-        error_log('[nav_subscribe] wp_insert_post failed: ' . (is_wp_error($post_id) ? $post_id->get_error_message() : 'unknown'));
+        // Log the error code (no DB paths/column names) — full message
+        // can leak server internals into shared log aggregators.
+        error_log('[nav_subscribe] wp_insert_post failed: code=' . (is_wp_error($post_id) ? $post_id->get_error_code() : 'unknown'));
         return new WP_Error('save_failed', __('Could not save your email. Please try again.', 'navigate-peptides'), ['status' => 500]);
     }
 
@@ -196,11 +206,14 @@ function nav_handle_subscribe(WP_REST_Request $request) {
         );
     }
 
-    // Soft meta — log but don't fail the request.
+    // Soft meta — log but don't fail the request. IP + User-Agent are
+    // GDPR-grade PII; we persist hashed identifiers instead so the audit
+    // row can correlate repeat addresses without storing the raw values
+    // indefinitely. Source is non-PII (form slug) and stays as-is.
     foreach ([
-        '_nav_source'     => $source,
-        '_nav_ip'         => $ip,
-        '_nav_user_agent' => substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 200),
+        '_nav_source'        => $source,
+        '_nav_ip_hash'       => nav_redact($ip),
+        '_nav_user_agent_hash' => nav_redact((string) ($_SERVER['HTTP_USER_AGENT'] ?? '')),
     ] as $key => $value) {
         if (update_post_meta($post_id, $key, $value) === false) {
             error_log(sprintf('[nav_subscribe] meta write failed post=%d key=%s', $post_id, $key));

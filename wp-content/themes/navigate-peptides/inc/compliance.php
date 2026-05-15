@@ -11,6 +11,25 @@
 defined('ABSPATH') || exit;
 
 /**
+ * Redact PII to a short stable token suitable for error_log / audit
+ * trails. SHA-256 truncated to 12 hex chars gives ~48 bits of entropy
+ * — enough to spot a repeated offender across logs while losing the
+ * raw value entirely, so the log line is no longer a PII spill.
+ *
+ * Empty input returns empty string (so call-sites can short-circuit
+ * without nesting). Salted by AUTH_SALT so logs from one site can't
+ * be brute-forced against an email/IP list pulled from another.
+ */
+function nav_redact(string $value): string {
+    $value = trim($value);
+    if ($value === '') {
+        return '';
+    }
+    $salt = defined('AUTH_SALT') ? AUTH_SALT : 'nav-fallback-salt';
+    return substr(hash('sha256', $salt . '|' . $value), 0, 12);
+}
+
+/**
  * Get compliance disclaimer by key.
  */
 function nav_get_disclaimer(string $key = 'sitewide'): string {
