@@ -48,27 +48,35 @@ wp post meta update "$RESEARCH_ID" _wp_page_template "page-templates/template-re
 
 QUALITY_ID=$(wp post create --post_type=page --post_title="Quality" --post_name="quality" --post_status=publish --porcelain)
 wp post meta update "$QUALITY_ID" _wp_page_template "page-templates/template-quality.php"
+wp post meta update "$QUALITY_ID" _nav_meta_description "Quality systems behind Navigate Peptides: third-party HPLC purity verification, batch traceability, and GMP-compliant manufacturing for research-grade peptide compounds."
 
 QUALITY_TESTING_ID=$(wp post create --post_type=page --post_title="Testing & Verification" --post_name="testing" --post_status=publish --post_parent="$QUALITY_ID" --porcelain)
 wp post meta update "$QUALITY_TESTING_ID" _wp_page_template "page-templates/template-quality-testing.php"
+wp post meta update "$QUALITY_TESTING_ID" _nav_meta_description "Every Navigate Peptides batch is HPLC-tested and mass-spec verified through accredited third-party laboratories. Review our testing methodology and verification chain."
 
 QUALITY_COA_ID=$(wp post create --post_type=page --post_title="Lab Results / COA" --post_name="coa" --post_status=publish --post_parent="$QUALITY_ID" --porcelain)
 wp post meta update "$QUALITY_COA_ID" _wp_page_template "page-templates/template-quality-coa.php"
+wp post meta update "$QUALITY_COA_ID" _nav_meta_description "Lookup the Certificate of Analysis for any Navigate Peptides batch. HPLC purity, identity confirmation, and lot-level analytical data are published per compound."
 
 QUALITY_MFG_ID=$(wp post create --post_type=page --post_title="Manufacturing Standards" --post_name="manufacturing" --post_status=publish --post_parent="$QUALITY_ID" --porcelain)
 wp post meta update "$QUALITY_MFG_ID" _wp_page_template "page-templates/template-quality-manufacturing.php"
+wp post meta update "$QUALITY_MFG_ID" _nav_meta_description "Navigate Peptides manufacturing follows GMP-compliant solid-phase synthesis with documented in-process controls, environmental monitoring, and batch release protocols."
 
 QUALITY_HANDLING_ID=$(wp post create --post_type=page --post_title="Handling & Storage" --post_name="handling" --post_status=publish --post_parent="$QUALITY_ID" --porcelain)
 wp post meta update "$QUALITY_HANDLING_ID" _wp_page_template "page-templates/template-quality-handling.php"
+wp post meta update "$QUALITY_HANDLING_ID" _nav_meta_description "Handling and storage guidelines for Navigate Peptides research compounds — recommended temperature ranges, reconstitution practices, and stability considerations for laboratory use."
 
 ABOUT_ID=$(wp post create --post_type=page --post_title="About" --post_name="about" --post_status=publish --porcelain)
 wp post meta update "$ABOUT_ID" _wp_page_template "page-templates/template-about.php"
+wp post meta update "$ABOUT_ID" _nav_meta_description "Navigate Peptides supplies high-purity research peptides for controlled laboratory environments. Learn about our standards, supply chain, and analytical verification."
 
 STANDARDS_ID=$(wp post create --post_type=page --post_title="Standards" --post_name="standards" --post_status=publish --post_parent="$ABOUT_ID" --porcelain)
 wp post meta update "$STANDARDS_ID" _wp_page_template "page-templates/template-about-standards.php"
+wp post meta update "$STANDARDS_ID" _nav_meta_description "The quality standards Navigate Peptides applies to every compound — purity thresholds, identity testing, batch documentation, and shipping protocols for research-use compounds."
 
 CONTACT_ID=$(wp post create --post_type=page --post_title="Contact" --post_name="contact" --post_status=publish --post_parent="$ABOUT_ID" --porcelain)
 wp post meta update "$CONTACT_ID" _wp_page_template "page-templates/template-contact.php"
+wp post meta update "$CONTACT_ID" _nav_meta_description "Contact Navigate Peptides — research inquiries, bulk pricing, COA requests, and supply-chain questions. We respond within one business day."
 
 echo "  Created 11 pages with templates assigned."
 
