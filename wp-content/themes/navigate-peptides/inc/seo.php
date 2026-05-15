@@ -26,7 +26,9 @@ defined('ABSPATH') || exit;
 define('NAV_SEO_SITE_NAME', 'Navigate Peptides');
 define('NAV_SEO_TAGLINE', 'Precision Peptide Research');
 define('NAV_SEO_TWITTER_HANDLE', '@navigatepeptides');
-define('NAV_SEO_DEFAULT_DESC', 'Research-grade peptide compounds with third-party verified certificates of analysis. Supplied for controlled laboratory environments. All products intended for research and identification purposes only.');
+// SERP target: ~155 chars (Google truncates ~160). Earlier copy was
+// 202 chars — long-tail of the snippet was dropped on display.
+define('NAV_SEO_DEFAULT_DESC', 'Research-grade peptide compounds with third-party verified certificates of analysis. Supplied for controlled laboratory research only.');
 
 /**
  * JSON-LD script encoder — forces HEX escaping so user-controllable strings
@@ -110,11 +112,39 @@ function nav_seo_scrub(string $text): string {
         '/\bcure[sd]?\b/i'                         => 'investigational',
         '/\bbenefits?\b/i'                         => 'mechanisms',
         '/\bprotocol\b/i'                          => 'procedure',
-        '/\bcycle(s|d)?\b/i'                       => 'phase$1',
-        '/\bstack(s|ed|ing)?\b/i'                  => 'combination$1',
+        // cycle/cycling/cycled and stack/stacking/stacked needed explicit
+        // entries — the earlier `(s|d)?` and `(s|ed|ing)?` captures
+        // produced ungrammatical phased/combinationing output. Order
+        // matters: longer alternations evaluated first.
+        '/\bcycling\b/i'                           => 'phasing',
+        '/\bcycled\b/i'                            => 'phased',
+        '/\bcycle(s)?\b/i'                         => 'phase$1',
+        '/\bstacking\b/i'                          => 'combining',
+        '/\bstacked\b/i'                           => 'combined',
+        '/\bstack(s)?\b/i'                         => 'combination$1',
         '/\bbioavailab(le|ility)\b/i'              => 'structural propert$1',
         '/\bpotenc(y|ies)\b/i'                     => 'molecular activit$1',
         '/\befficacy\b/i'                          => 'mechanism profile',
+        // Wellness/supplement adjacent phrasing — common processor scanner
+        // flags on competitor storefronts. Expand the perimeter so any
+        // marketing copy that drifts toward these terms gets reframed
+        // before it reaches a rendered string.
+        '/\bboost(?:s|ed|ing|er|ers)?\b/i'         => 'mechanism research',
+        '/\benhanc(?:e|ed|ing|ement|ements|es)\b/i' => 'modulation study',
+        '/\bgains\b/i'                             => 'observed responses',
+        '/\blean[- ]mass\b/i'                      => 'somatotype composition research',
+        '/\bbody[- ]composition\b/i'               => 'somatotype composition research',
+        '/\bvitality\b/i'                          => 'cellular metabolism research',
+        '/\byouth(?:ful)?\b/i'                     => 'longevity pathway',
+        '/\bsupplement(?:s|ation|ed|ing)?\b/i'     => 'research compound',
+        '/\bnutraceutical(?:s)?\b/i'               => 'research compound',
+        '/\bpeptide[- ]therap(?:y|ies)\b/i'        => 'peptide research',
+        '/\brejuvenat(?:e|ed|ing|ion)\b/i'         => 'cellular pathway study',
+        '/\brestor(?:e|ed|ing|ation)\b/i'          => 'mechanism investigation',
+        '/\bregenerat(?:e|ed|ing|ion|ive)\b/i'     => 'pathway investigation',
+        '/\bbiohack(?:s|ing|er|ers)?\b/i'          => 'mechanism research',
+        '/\blibido\b/i'                            => 'endocrine pathway',
+        '/\benerg(?:y|izing|ize)\b/i'              => 'metabolic activity',
     ];
     $result = preg_replace(array_keys($map), array_values($map), $text);
     if ($result === null) {
@@ -267,7 +297,9 @@ function nav_seo_description(): string {
     // is_home() because both return true when show_on_front='posts'.
     // The blog-archive copy belongs at /research/ only.
     if (is_front_page()) {
-        $desc = 'High-purity research peptides for controlled laboratory environments. Third-party verified certificates of analysis on every batch. All products supplied for research and identification purposes only.';
+        // ~150 chars — fits in SERP without truncation while still
+        // surfacing the brand+RUO posture in the first 120 chars.
+        $desc = 'High-purity research peptides with third-party verified COAs on every batch. Supplied for controlled laboratory research only.';
     }
     // WooCommerce shop archive (/compounds/ -> page-managed, but
     // is_shop() catches the auto-generated archive too).
@@ -313,7 +345,7 @@ function nav_seo_description(): string {
                 );
             }
         }
-    } elseif (is_singular('post')) {
+    } elseif (is_singular(['post', 'nav_research'])) {
         $excerpt = get_the_excerpt();
         if ($excerpt) {
             $desc = nav_seo_trim($excerpt, 28);
@@ -366,6 +398,25 @@ function nav_seo_description(): string {
 function nav_seo_og_image(): array {
     $width = 1200;
     $height = 630;
+
+    // Per-page override — admin meta box on every page/post sets
+    // `_nav_og_image_id` to an attachment ID. Wins over featured-image
+    // and fallback so editors can give About/Quality/etc. dedicated
+    // social-share renders instead of the generic theme fallback.
+    if (is_singular()) {
+        $override = (int) get_post_meta(get_the_ID(), '_nav_og_image_id', true);
+        if ($override > 0) {
+            $src = wp_get_attachment_image_src($override, 'large');
+            if ($src) {
+                return [
+                    'url'    => $src[0],
+                    'width'  => $src[1],
+                    'height' => $src[2],
+                    'alt'    => get_post_meta($override, '_wp_attachment_image_alt', true) ?: get_the_title(),
+                ];
+            }
+        }
+    }
 
     if (is_singular() && has_post_thumbnail()) {
         $id  = get_post_thumbnail_id();
@@ -475,7 +526,10 @@ add_filter('document_title_parts', function (array $parts) {
     return $parts;
 });
 
-add_filter('document_title_separator', fn() => '|');
+// Em-dash matches the title-formatter's internal subtitle separation
+// (seo.php:445) — keeps the SERP title rendered in one consistent
+// punctuation style across page types.
+add_filter('document_title_separator', fn() => '—');
 
 /* ------------------------------------------------------------------
  * Meta description, robots, canonical, prev/next, preconnect
@@ -514,9 +568,29 @@ add_action('wp_head', function () {
         }
     }
 
-    // Performance — dns-prefetch / preconnect for analytical data + fonts
-    // (fonts.googleapis already preconnected in header.php)
-    echo '<link rel="dns-prefetch" href="//www.google-analytics.com">' . "\n";
+    // Performance — preconnect / dns-prefetch for third-party hosts the
+    // theme actually contacts on a typical request:
+    //   - googletagmanager.com  (GA4 gtag.js bootstrap — inc/analytics.php)
+    //   - google-analytics.com  (GA4 collect endpoint)
+    //   - ajax.googleapis.com   (model-viewer ESM — header.php, on
+    //                            home, quality, about, all PDPs, archive)
+    // preconnect opens the TCP+TLS handshake speculatively; dns-prefetch
+    // is a cheaper hint for hosts we may or may not hit. Fonts hosts are
+    // already preconnected in header.php so we don't duplicate them.
+    echo '<link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>' . "\n";
+    echo '<link rel="preconnect" href="https://www.google-analytics.com" crossorigin>' . "\n";
+    // model-viewer ESM is loaded from ajax.googleapis.com on pages with
+    // 3D content. Mirrors the conditional in header.php so the handshake
+    // hint only fires when we'll actually open that connection.
+    global $template;
+    $tpl = isset($template) ? basename((string) $template) : '';
+    $needs_mv = is_front_page()
+        || in_array($tpl, ['template-quality.php', 'template-about.php'], true)
+        || (function_exists('is_product') && is_product())
+        || (function_exists('is_shop') && (is_shop() || is_product_category() || is_product_tag()));
+    if ($needs_mv) {
+        echo '<link rel="preconnect" href="https://ajax.googleapis.com" crossorigin>' . "\n";
+    }
 
     // Search engine verification meta tags. Set the constants in
     // inc/business.php (or wp-config.php) once you've claimed the
@@ -554,7 +628,7 @@ add_action('wp_head', function () {
     $type = 'website';
     if (is_singular('product')) {
         $type = 'product';
-    } elseif (is_singular('post')) {
+    } elseif (is_singular(['post', 'nav_research'])) {
         $type = 'article';
     }
     echo '<meta property="og:type" content="' . esc_attr($type) . '">' . "\n";
@@ -570,19 +644,27 @@ add_action('wp_head', function () {
     }
 
     // Article-specific
-    if (is_singular('post')) {
+    if (is_singular(['post', 'nav_research'])) {
         $published = get_the_date('c');
         $modified  = get_the_modified_date('c');
         echo '<meta property="article:published_time" content="' . esc_attr($published) . '">' . "\n";
         echo '<meta property="article:modified_time" content="' . esc_attr($modified) . '">' . "\n";
 
-        $cats = get_the_category();
-        foreach ($cats as $cat) {
-            echo '<meta property="article:section" content="' . esc_attr(nav_seo_scrub_name($cat->name)) . '">' . "\n";
+        // Article sections + tags — pull from built-in taxonomy for
+        // posts, from the theme's research_category for nav_research.
+        $cats = is_singular('nav_research')
+            ? (get_the_terms(get_the_ID(), 'research_category') ?: [])
+            : (get_the_category() ?: []);
+        if (!is_wp_error($cats)) {
+            foreach ($cats as $cat) {
+                echo '<meta property="article:section" content="' . esc_attr(nav_seo_scrub_name($cat->name)) . '">' . "\n";
+            }
         }
 
-        $tags = get_the_tags();
-        if ($tags) {
+        $tags = is_singular('nav_research')
+            ? (get_the_terms(get_the_ID(), 'research_tag') ?: get_the_tags() ?: [])
+            : (get_the_tags() ?: []);
+        if ($tags && !is_wp_error($tags)) {
             foreach ($tags as $tag) {
                 echo '<meta property="article:tag" content="' . esc_attr(nav_seo_scrub_name($tag->name)) . '">' . "\n";
             }
@@ -667,6 +749,16 @@ add_action('wp_head', function () {
         ],
         'description' => NAV_SEO_DEFAULT_DESC,
         'slogan'      => NAV_SEO_TAGLINE,
+        // Topical authority anchors — six research category names so
+        // the knowledge graph associates the brand with these subjects.
+        'knowsAbout'  => [
+            'Metabolic Research',
+            'Cellular Research',
+            'Tissue Repair Research',
+            'Hormonal Signaling Research',
+            'Cognitive Research',
+            'Dermal Research',
+        ],
         'sameAs'      => apply_filters('nav_seo_same_as', []),
     ];
     if (function_exists('nav_business_schema_address')) {
@@ -749,11 +841,21 @@ add_action('wp_head', function () {
         if ($term) $add($term->name);
     } elseif (is_shop() || is_post_type_archive('product')) {
         $add('Compounds');
-    } elseif (is_singular('post')) {
+    } elseif (is_singular(['post', 'nav_research'])) {
         $add('Research', home_url('/research/'));
-        $cats = get_the_category();
-        if ($cats && !empty($cats[0])) {
-            $add($cats[0]->name, (string) get_category_link($cats[0]->term_id));
+        // Posts use the built-in category taxonomy; nav_research articles
+        // use the theme's research_category taxonomy. Pick whichever
+        // applies to this post.
+        $cats = is_singular('nav_research')
+            ? get_the_terms(get_the_ID(), 'research_category')
+            : get_the_category();
+        if ($cats && !is_wp_error($cats) && !empty($cats[0])) {
+            $term_link = is_singular('nav_research')
+                ? get_term_link($cats[0])
+                : get_category_link($cats[0]->term_id);
+            if (!is_wp_error($term_link)) {
+                $add($cats[0]->name, (string) $term_link);
+            }
         }
         $add(get_the_title());
     } elseif (is_category() || is_tag() || is_tax()) {
@@ -787,6 +889,71 @@ add_action('wp_head', function () {
 
     echo nav_seo_json_ld($schema);
 }, 9);
+
+/**
+ * Build the Product.offers value. Variable products emit AggregateOffer
+ * with lowPrice/highPrice/offerCount + an inner offers[] array per
+ * variation; simple products emit a single Offer. Variations carry
+ * their own SKU + price so search engines + shopping feeds can map
+ * each variant to a distinct catalog entry.
+ */
+function nav_seo_product_offers(WC_Product $product, string $url): array {
+    $currency = get_woocommerce_currency();
+    $valid_until = gmdate('Y-m-d', strtotime('+1 year'));
+    $availability = $product->is_in_stock()
+        ? 'https://schema.org/InStock'
+        : 'https://schema.org/OutOfStock';
+    $seller = ['@id' => home_url('/') . '#organization'];
+
+    if ($product->is_type('variable')) {
+        $variations = $product->get_available_variations();
+        $offers = [];
+        $prices = [];
+        foreach ($variations as $variation) {
+            if (!isset($variation['display_price'])) continue;
+            $price = (string) $variation['display_price'];
+            $prices[] = (float) $variation['display_price'];
+            $offer = [
+                '@type'           => 'Offer',
+                'url'             => $url,
+                'priceCurrency'   => $currency,
+                'price'           => $price,
+                'priceValidUntil' => $valid_until,
+                'availability'    => !empty($variation['is_in_stock'])
+                    ? 'https://schema.org/InStock'
+                    : 'https://schema.org/OutOfStock',
+                'itemCondition'   => 'https://schema.org/NewCondition',
+                'seller'          => $seller,
+            ];
+            if (!empty($variation['sku'])) {
+                $offer['sku'] = $variation['sku'];
+            }
+            $offers[] = $offer;
+        }
+        if ($prices) {
+            return [
+                '@type'         => 'AggregateOffer',
+                'priceCurrency' => $currency,
+                'lowPrice'      => (string) min($prices),
+                'highPrice'     => (string) max($prices),
+                'offerCount'    => count($offers),
+                'offers'        => $offers,
+            ];
+        }
+    }
+
+    // Simple / fallback path — single Offer.
+    return [
+        '@type'           => 'Offer',
+        'url'             => $url,
+        'priceCurrency'   => $currency,
+        'price'           => (string) $product->get_price(),
+        'priceValidUntil' => $valid_until,
+        'availability'    => $availability,
+        'itemCondition'   => 'https://schema.org/NewCondition',
+        'seller'          => $seller,
+    ];
+}
 
 /* ------------------------------------------------------------------
  * JSON-LD: Product (single product page)
@@ -852,23 +1019,15 @@ add_action('wp_head', function () {
         'url'         => $url,
         'image'       => $image_urls,
         'description' => $description,
+        // Brand chains to the Organization node via @id so the
+        // knowledge graph sees one entity, not two with matching names.
         'brand'       => [
             '@type' => 'Brand',
+            '@id'   => home_url('/') . '#organization',
             'name'  => NAV_SEO_SITE_NAME,
         ],
         'category'    => 'Research Peptide Compound',
-        'offers'      => [
-            '@type'           => 'Offer',
-            'url'             => $url,
-            'priceCurrency'   => get_woocommerce_currency(),
-            'price'           => (string) $product->get_price(),
-            'priceValidUntil' => gmdate('Y-m-d', strtotime('+1 year')),
-            'availability'    => $product->is_in_stock()
-                ? 'https://schema.org/InStock'
-                : 'https://schema.org/OutOfStock',
-            'itemCondition'   => 'https://schema.org/NewCondition',
-            'seller'          => ['@id' => home_url('/') . '#organization'],
-        ],
+        'offers'      => nav_seo_product_offers($product, $url),
     ];
 
     // Only ship SKU + MPN when admin supplied them. Our synthesized
@@ -929,7 +1088,7 @@ add_filter('woocommerce_structured_data_product', function ($markup) {
  * ----------------------------------------------------------------*/
 add_action('wp_head', function () {
     if (nav_seo_has_competing_plugin()) return;
-    if (!is_singular('post')) return;
+    if (!is_singular(['post', 'nav_research'])) return;
 
     $url       = get_permalink();
     $title     = get_the_title();
@@ -993,15 +1152,25 @@ add_action('wp_head', function () {
         'wordCount'        => $word_count,
         'timeRequired'     => 'PT' . $reading_time . 'M',
         'inLanguage'       => get_locale() ?: 'en-US',
+        // RUO context for processor scanners that crawl schema bodies —
+        // matches what Product schema carries on the storefront side.
+        'disambiguatingDescription' => function_exists('nav_get_disclaimer')
+            ? nav_get_disclaimer('sitewide')
+            : '',
     ];
 
-    $cats = get_the_category();
-    if ($cats && !empty($cats[0])) {
+    // Resolve articleSection + keywords from whichever taxonomy applies.
+    if (is_singular('nav_research')) {
+        $cats = get_the_terms(get_the_ID(), 'research_category');
+        $tags = get_the_terms(get_the_ID(), 'research_tag') ?: get_the_tags();
+    } else {
+        $cats = get_the_category();
+        $tags = get_the_tags();
+    }
+    if ($cats && !is_wp_error($cats) && !empty($cats[0])) {
         $schema['articleSection'] = nav_seo_scrub_name($cats[0]->name);
     }
-
-    $tags = get_the_tags();
-    if ($tags) {
+    if ($tags && !is_wp_error($tags)) {
         $scrubbed_tags = array_map('nav_seo_scrub_name', wp_list_pluck($tags, 'name'));
         $schema['keywords'] = implode(', ', $scrubbed_tags);
     }
@@ -1037,7 +1206,40 @@ add_action('wp_head', function () {
         'name'        => $name,
         'description' => nav_seo_description(),
         'isPartOf'    => ['@id' => home_url('/') . '#website'],
+        // RUO context for processor scanners — present on every
+        // collection node so the storefront's category index pages
+        // carry the same compliance signal as individual PDPs.
+        'disambiguatingDescription' => function_exists('nav_get_disclaimer')
+            ? nav_get_disclaimer('sitewide')
+            : '',
     ];
+
+    // Build a lightweight ItemList of the products on this page so
+    // search engines can crawl the collection's contents inline.
+    // Skips work on /shop/ root + on archives with no posts.
+    if (function_exists('is_product_category') && (is_product_category() || is_shop() || is_post_type_archive('product'))) {
+        global $wp_query;
+        if (!empty($wp_query->posts)) {
+            $list_items = [];
+            $position   = 1;
+            foreach ($wp_query->posts as $post) {
+                $list_items[] = [
+                    '@type'    => 'ListItem',
+                    'position' => $position++,
+                    'url'      => get_permalink($post->ID),
+                    'name'     => nav_seo_scrub_name(get_the_title($post)),
+                ];
+                if ($position > 30) break;  // cap so the schema stays small
+            }
+            if ($list_items) {
+                $schema['mainEntity'] = [
+                    '@type'           => 'ItemList',
+                    'itemListElement' => $list_items,
+                    'numberOfItems'   => count($list_items),
+                ];
+            }
+        }
+    }
 
     echo nav_seo_json_ld($schema);
 }, 12);
@@ -1086,11 +1288,14 @@ add_filter('robots_txt', function ($output, $public) {
     // Advertise whatever sitemap actually ships. WP core provides
     // /wp-sitemap.xml when enabled; common SEO plugins (Yoast, RankMath)
     // install their own at /sitemap_index.xml and disable the core one.
-    // Emit both hints and let crawlers pick — extra sitemap lines are valid.
-    $sitemaps = [];
-    if (function_exists('wp_sitemaps_get_server') && wp_sitemaps_get_server()) {
-        $sitemaps[] = home_url('/wp-sitemap.xml');
-    }
+    // Emit both hints and let crawlers pick — extra sitemap lines are
+    // valid per the robots.txt spec.
+    //
+    // Always advertise /wp-sitemap.xml as the canonical hint even if
+    // wp_sitemaps_get_server() returns falsy at this moment — the
+    // server can re-enable later via a plugin or filter, and a stale
+    // 404 hint is harmless while a missing hint loses crawl signal.
+    $sitemaps = [home_url('/wp-sitemap.xml')];
     // Filterable so plugins (or Ian) can override / add more.
     $sitemaps = apply_filters('nav_seo_robots_sitemaps', $sitemaps);
     foreach ($sitemaps as $url) {
@@ -1145,6 +1350,51 @@ function nav_seo_meta_box_render(WP_Post $post): void {
         </span>
     </p>
     <p>
+        <label for="nav_og_image_id" style="display:block;font-weight:600;margin-bottom:6px;">
+            <?php esc_html_e('Social Share Image (Open Graph)', 'navigate-peptides'); ?>
+        </label>
+        <?php
+        $og_image_id = (int) get_post_meta($post->ID, '_nav_og_image_id', true);
+        $og_preview  = $og_image_id ? wp_get_attachment_image($og_image_id, [120, 63], false, ['style' => 'border:1px solid #ccd0d4;border-radius:3px;']) : '';
+        ?>
+        <input type="hidden" id="nav_og_image_id" name="nav_og_image_id" value="<?php echo esc_attr((string) $og_image_id); ?>">
+        <span id="nav-og-image-preview" style="display:inline-block;vertical-align:middle;margin-right:8px;"><?php echo $og_preview; // phpcs:ignore WordPress.Security.EscapeOutput -- wp_get_attachment_image returns safe HTML ?></span>
+        <button type="button" class="button" id="nav-og-image-select"><?php esc_html_e('Choose image', 'navigate-peptides'); ?></button>
+        <button type="button" class="button-link" id="nav-og-image-clear" <?php if (!$og_image_id) echo 'style="display:none;"'; ?>><?php esc_html_e('Remove', 'navigate-peptides'); ?></button>
+        <span class="description" style="display:block;margin-top:4px;">
+            <?php esc_html_e('1200×630 recommended. Leave blank to use the featured image or theme fallback.', 'navigate-peptides'); ?>
+        </span>
+        <script>
+        (function () {
+            if (typeof wp === 'undefined' || !wp.media) return;
+            var btn = document.getElementById('nav-og-image-select');
+            var clr = document.getElementById('nav-og-image-clear');
+            var hid = document.getElementById('nav_og_image_id');
+            var pre = document.getElementById('nav-og-image-preview');
+            if (!btn || !hid) return;
+            var frame;
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (frame) { frame.open(); return; }
+                frame = wp.media({ title: 'Select Social Share Image', multiple: false, library: { type: 'image' } });
+                frame.on('select', function () {
+                    var att = frame.state().get('selection').first().toJSON();
+                    hid.value = att.id;
+                    pre.innerHTML = '<img src="' + att.sizes.thumbnail.url + '" style="max-width:120px;height:auto;border:1px solid #ccd0d4;border-radius:3px;">';
+                    clr.style.display = '';
+                });
+                frame.open();
+            });
+            clr.addEventListener('click', function (e) {
+                e.preventDefault();
+                hid.value = '';
+                pre.innerHTML = '';
+                clr.style.display = 'none';
+            });
+        })();
+        </script>
+    </p>
+    <p>
         <strong><?php esc_html_e('Compliance reminder:', 'navigate-peptides'); ?></strong>
         <?php esc_html_e('No human-use framing, no health claims, no performance/wellness language.', 'navigate-peptides'); ?>
     </p>
@@ -1176,6 +1426,22 @@ add_action('save_post', function (int $post_id) {
                 );
             }
         }
+    }
+    if (isset($_POST['nav_og_image_id'])) {
+        $og_id = (int) $_POST['nav_og_image_id'];
+        if ($og_id > 0 && get_post_type($og_id) === 'attachment') {
+            update_post_meta($post_id, '_nav_og_image_id', $og_id);
+        } else {
+            delete_post_meta($post_id, '_nav_og_image_id');
+        }
+    }
+});
+
+/* Load the WP media-frame JS on the post editor screens where the
+   SEO meta box ships an "Choose image" button. */
+add_action('admin_enqueue_scripts', function ($hook) {
+    if (in_array($hook, ['post.php', 'post-new.php'], true)) {
+        wp_enqueue_media();
     }
 });
 
