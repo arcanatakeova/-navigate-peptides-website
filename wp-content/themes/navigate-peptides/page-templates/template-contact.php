@@ -10,8 +10,8 @@ get_header();
 
 <section class="nav-page-hero">
     <div class="nav-container">
-        <h1 class="nav-page-hero__title">Request Access</h1>
-        <p class="nav-page-hero__subtitle">Contact our team for research inquiries, wholesale pricing, or to request an account.</p>
+        <h1 class="nav-page-hero__title"><?php esc_html_e('Request Access', 'navigate-peptides'); ?></h1>
+        <p class="nav-page-hero__subtitle"><?php esc_html_e('Contact our team for research inquiries, wholesale pricing, or to request an account.', 'navigate-peptides'); ?></p>
     </div>
 </section>
 

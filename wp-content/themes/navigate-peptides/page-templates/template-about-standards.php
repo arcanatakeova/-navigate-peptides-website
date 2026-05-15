@@ -10,8 +10,8 @@ get_header();
 
 <section class="nav-page-hero">
     <div class="nav-container">
-        <h1 class="nav-page-hero__title">Our Standards</h1>
-        <p class="nav-page-hero__subtitle">The principles that define our approach to research peptide supply.</p>
+        <h1 class="nav-page-hero__title"><?php esc_html_e('Our Standards', 'navigate-peptides'); ?></h1>
+        <p class="nav-page-hero__subtitle"><?php esc_html_e('The principles that define our approach to research peptide supply.', 'navigate-peptides'); ?></p>
     </div>
 </section>
 
@@ -29,7 +29,7 @@ get_header();
             foreach ($standards as $s) :
             ?>
                 <div class="nav-info-card">
-                    <h3 class="nav-info-card__title"><?php echo esc_html($s['title']); ?></h3>
+                    <h2 class="nav-info-card__title"><?php echo esc_html($s['title']); ?></h2>
                     <p class="nav-info-card__desc"><?php echo esc_html($s['desc']); ?></p>
                 </div>
             <?php endforeach; ?>

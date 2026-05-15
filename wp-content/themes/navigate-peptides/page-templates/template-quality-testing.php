@@ -28,7 +28,7 @@ get_header();
             foreach ($tests as $t) :
             ?>
                 <div class="nav-info-card">
-                    <h3 class="nav-info-card__title"><?php echo esc_html($t['title']); ?></h3>
+                    <h2 class="nav-info-card__title"><?php echo esc_html($t['title']); ?></h2>
                     <p class="nav-info-card__desc"><?php echo esc_html($t['desc']); ?></p>
                 </div>
             <?php endforeach; ?>

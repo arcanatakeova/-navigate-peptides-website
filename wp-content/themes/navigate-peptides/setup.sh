@@ -36,45 +36,69 @@ wp rewrite flush
 echo ""
 echo "[2/7] Creating pages and assigning templates..."
 
-HOME_ID=$(wp post create --post_type=page --post_title="Home" --post_status=publish --porcelain)
+# Idempotent page upsert — re-running setup.sh after the initial install
+# previously created Home-2, Compounds-2, … because every `wp post create`
+# ran unconditionally. Look up the existing post by slug first; only
+# create if missing. Echo the resolved ID to stdout in both branches so
+# the calling assignments still capture it.
+upsert_page() {
+    local title="$1"
+    local slug="$2"
+    local parent="${3:-0}"
+    local existing
+    existing=$(wp post list --post_type=page --name="$slug" --post_parent="$parent" --field=ID --format=ids 2>/dev/null | head -1)
+    if [ -n "$existing" ]; then
+        echo "$existing"
+        return 0
+    fi
+    if [ "$parent" -gt 0 ]; then
+        wp post create --post_type=page --post_title="$title" --post_name="$slug" --post_parent="$parent" --post_status=publish --porcelain
+    else
+        wp post create --post_type=page --post_title="$title" --post_name="$slug" --post_status=publish --porcelain
+    fi
+}
+
+# Home — slug is forced to "home" so the lookup matches on re-runs. WP
+# auto-slugged the original "Home" to "home" anyway, so this is stable.
+HOME_ID=$(upsert_page "Home" "home")
 wp option update page_on_front "$HOME_ID"
 wp option update show_on_front "page"
 
-COMPOUNDS_ID=$(wp post create --post_type=page --post_title="Compounds" --post_name="compounds" --post_status=publish --porcelain)
+COMPOUNDS_ID=$(upsert_page "Compounds" "compounds")
 wp post meta update "$COMPOUNDS_ID" _wp_page_template "page-templates/template-compounds.php"
 
-RESEARCH_ID=$(wp post create --post_type=page --post_title="Research" --post_name="research" --post_status=publish --porcelain)
+RESEARCH_ID=$(upsert_page "Research" "research")
 wp post meta update "$RESEARCH_ID" _wp_page_template "page-templates/template-research.php"
 
-QUALITY_ID=$(wp post create --post_type=page --post_title="Quality" --post_name="quality" --post_status=publish --porcelain)
+QUALITY_ID=$(upsert_page "Quality" "quality")
 wp post meta update "$QUALITY_ID" _wp_page_template "page-templates/template-quality.php"
 wp post meta update "$QUALITY_ID" _nav_meta_description "Quality systems behind Navigate Peptides: third-party HPLC purity verification, batch traceability, and GMP-compliant manufacturing for research-grade peptide compounds."
 
-QUALITY_TESTING_ID=$(wp post create --post_type=page --post_title="Testing & Verification" --post_name="testing" --post_status=publish --post_parent="$QUALITY_ID" --porcelain)
+QUALITY_TESTING_ID=$(upsert_page "Testing & Verification" "testing" "$QUALITY_ID")
 wp post meta update "$QUALITY_TESTING_ID" _wp_page_template "page-templates/template-quality-testing.php"
 wp post meta update "$QUALITY_TESTING_ID" _nav_meta_description "Every Navigate Peptides batch is HPLC-tested and mass-spec verified through accredited third-party laboratories. Review our testing methodology and verification chain."
 
-QUALITY_COA_ID=$(wp post create --post_type=page --post_title="Lab Results / COA" --post_name="coa" --post_status=publish --post_parent="$QUALITY_ID" --porcelain)
+QUALITY_COA_ID=$(upsert_page "Lab Results / COA" "coa" "$QUALITY_ID")
 wp post meta update "$QUALITY_COA_ID" _wp_page_template "page-templates/template-quality-coa.php"
 wp post meta update "$QUALITY_COA_ID" _nav_meta_description "Lookup the Certificate of Analysis for any Navigate Peptides batch. HPLC purity, identity confirmation, and lot-level analytical data are published per compound."
 
-QUALITY_MFG_ID=$(wp post create --post_type=page --post_title="Manufacturing Standards" --post_name="manufacturing" --post_status=publish --post_parent="$QUALITY_ID" --porcelain)
+QUALITY_MFG_ID=$(upsert_page "Manufacturing Standards" "manufacturing" "$QUALITY_ID")
 wp post meta update "$QUALITY_MFG_ID" _wp_page_template "page-templates/template-quality-manufacturing.php"
 wp post meta update "$QUALITY_MFG_ID" _nav_meta_description "Navigate Peptides manufacturing follows GMP-compliant solid-phase synthesis with documented in-process controls, environmental monitoring, and batch release protocols."
 
-QUALITY_HANDLING_ID=$(wp post create --post_type=page --post_title="Handling & Storage" --post_name="handling" --post_status=publish --post_parent="$QUALITY_ID" --porcelain)
+QUALITY_HANDLING_ID=$(upsert_page "Handling & Storage" "handling" "$QUALITY_ID")
 wp post meta update "$QUALITY_HANDLING_ID" _wp_page_template "page-templates/template-quality-handling.php"
 wp post meta update "$QUALITY_HANDLING_ID" _nav_meta_description "Handling and storage guidelines for Navigate Peptides research compounds — recommended temperature ranges, reconstitution practices, and stability considerations for laboratory use."
 
-ABOUT_ID=$(wp post create --post_type=page --post_title="About" --post_name="about" --post_status=publish --porcelain)
+ABOUT_ID=$(upsert_page "About" "about")
 wp post meta update "$ABOUT_ID" _wp_page_template "page-templates/template-about.php"
 wp post meta update "$ABOUT_ID" _nav_meta_description "Navigate Peptides supplies high-purity research peptides for controlled laboratory environments. Learn about our standards, supply chain, and analytical verification."
 
-STANDARDS_ID=$(wp post create --post_type=page --post_title="Standards" --post_name="standards" --post_status=publish --post_parent="$ABOUT_ID" --porcelain)
+STANDARDS_ID=$(upsert_page "Standards" "standards" "$ABOUT_ID")
 wp post meta update "$STANDARDS_ID" _wp_page_template "page-templates/template-about-standards.php"
 wp post meta update "$STANDARDS_ID" _nav_meta_description "The quality standards Navigate Peptides applies to every compound — purity thresholds, identity testing, batch documentation, and shipping protocols for research-use compounds."
 
-CONTACT_ID=$(wp post create --post_type=page --post_title="Contact" --post_name="contact" --post_status=publish --post_parent="$ABOUT_ID" --porcelain)
+CONTACT_ID=$(upsert_page "Contact" "contact" "$ABOUT_ID")
 wp post meta update "$CONTACT_ID" _wp_page_template "page-templates/template-contact.php"
 wp post meta update "$CONTACT_ID" _nav_meta_description "Contact Navigate Peptides — research inquiries, bulk pricing, COA requests, and supply-chain questions. We respond within one business day."
 

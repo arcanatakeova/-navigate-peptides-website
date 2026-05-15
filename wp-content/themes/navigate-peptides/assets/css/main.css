@@ -4825,9 +4825,21 @@ a:focus-visible {
     -moz-appearance: textfield;
     appearance: textfield;
 }
+/* Quantity input focus: keep the soft tint inside the input but
+   restore a visible focus boundary on the wrapping .quantity element
+   so keyboard navigation has a clear indicator (WCAG 2.4.7). Without
+   this the prior style stripped outline and replaced it with an 8%-
+   alpha sage that's almost imperceptible against the dark bg. */
+.nav-product-single__purchase .quantity:focus-within {
+    outline: 2px solid var(--nav-accent);
+    outline-offset: 2px;
+}
 .nav-product-single__purchase .quantity .qty:focus {
     outline: 0;
-    background: rgba(143, 166, 149, 0.08);
+    background: rgba(143, 166, 149, 0.14);
+}
+.nav-product-single__purchase .quantity .qty:focus-visible {
+    outline: 0;
 }
 .nav-product-single__purchase .quantity .qty::-webkit-outer-spin-button,
 .nav-product-single__purchase .quantity .qty::-webkit-inner-spin-button {

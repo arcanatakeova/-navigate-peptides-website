@@ -97,13 +97,22 @@ function nav_ga4_emit_event(string $event, array $payload): void {
     // with a log instead so we can spot products / titles with bad data.
     $json = wp_json_encode(
         ['event' => $event] + $payload,
-        JSON_UNESCAPED_SLASHES | JSON_HEX_TAG
+        // Match nav_seo_json_ld()'s flag set — without HEX_AMP /
+        // HEX_APOS / HEX_QUOT, literal &/'/" can land inside the
+        // <script> tag, which a permissive JS parser tolerates but
+        // a stricter HTML parser (think proxies, CDNs, scanners)
+        // can mis-frame.
+        JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
     );
     if ($json === false) {
+        // Include the GA4 event name so a marketer reading dashboards
+        // can find which event dropped — bare error code wasn't
+        // actionable enough.
         error_log(sprintf(
-            '[nav_ga4] json encode failed event=%s err=%s',
+            '[nav_ga4] json encode failed event=%s err=%s payload_keys=%s',
             $event,
-            json_last_error_msg()
+            json_last_error_msg(),
+            implode(',', array_keys($payload))
         ));
         return;
     }

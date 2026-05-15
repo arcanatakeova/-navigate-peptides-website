@@ -1,15 +1,10 @@
-# WordPress Theme: Navigate Peptides
-node_modules/
-.env
-.env.local
-*.log
+# Local dev artifacts
+.claude-flow/
+.claude/
 .DS_Store
-Thumbs.db
-*.sql
-*.sql.gz
-wp-content/uploads/
-wp-content/upgrade/
-wp-content/cache/
-wp-content/plugins/
-wp-content/mu-plugins/
-wp-content/themes/*/assets/fonts/*.woff2
+node_modules/
+
+# Build / temp
+/tmp/
+*.swp
+*.bak

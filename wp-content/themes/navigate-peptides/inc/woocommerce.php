@@ -721,6 +721,20 @@ add_filter('woocommerce_widget_cart_item_thumbnail', function ($thumbnail, $cart
  * privacy text doesn't render as plain body copy.
  * ----------------------------------------------------------------*/
 add_filter('woocommerce_register_privacy_policy_text', function ($text) {
-    // Compact copy + brand-safe phrasing for the dark theme.
-    return __('We use your information to manage your research orders and to keep this account in good standing. See our %1$sPrivacy Policy%2$s.', 'navigate-peptides');
+    // Compact copy + brand-safe phrasing for the dark theme. The
+    // %1$s / %2$s placeholders are substituted server-side with the
+    // <a href="..."> open/close tags pointing at the active privacy
+    // page — leaving them un-sprintf'd would render literal "%1$s"
+    // to the visitor. nav_privacy_url() resolves the slug; if it
+    // returns empty, we degrade to plain text without the link.
+    $privacy = function_exists('nav_privacy_url') ? nav_privacy_url() : '';
+    $template = __('We use your information to manage your research orders and to keep this account in good standing. See our %1$sPrivacy Policy%2$s.', 'navigate-peptides');
+    if ($privacy !== '') {
+        return sprintf(
+            $template,
+            '<a href="' . esc_url($privacy) . '">',
+            '</a>'
+        );
+    }
+    return sprintf($template, '', '');
 });

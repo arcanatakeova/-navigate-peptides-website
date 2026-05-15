@@ -44,7 +44,7 @@ if ($search_query !== '') {
 <section class="nav-section">
     <div class="nav-container nav-section--center">
         <div class="nav-coa-lookup">
-            <h3 class="nav-coa-lookup__title"><?php esc_html_e('COA Lookup', 'navigate-peptides'); ?></h3>
+            <h2 class="nav-coa-lookup__title"><?php esc_html_e('COA Lookup', 'navigate-peptides'); ?></h2>
             <form class="nav-coa-lookup__form" method="get">
                 <label for="nav-coa-search" class="nav-form-label"><?php esc_html_e('Batch Number or Product Name', 'navigate-peptides'); ?></label>
                 <input
@@ -75,6 +75,16 @@ if ($search_query !== '') {
                 </div>
             <?php endif;
 
+            // WC offline branch — tell the visitor the search is
+            // temporarily unavailable instead of silently returning
+            // empty results. The previous behavior looked identical
+            // to "no batches match", which is misleading.
+            if ($search_query !== '' && $query_long_enough && !class_exists('WooCommerce')) : ?>
+                <div class="nav-coa-no-results">
+                    <p><?php esc_html_e('Certificate of Analysis lookup is temporarily unavailable. Please try again shortly or contact us for direct COA access.', 'navigate-peptides'); ?></p>
+                </div>
+            <?php endif;
+
             if ($search_query !== '' && $query_long_enough && class_exists('WooCommerce')) :
                 // Search by batch number (LIKE meta match) OR product name / content.
                 $batch_args = [
@@ -97,7 +107,7 @@ if ($search_query !== '') {
                 if ($results->have_posts()) :
             ?>
                 <div class="nav-coa-results">
-                    <h4 class="nav-coa-results__title">
+                    <h3 class="nav-coa-results__title">
                         <?php
                         printf(
                             /* translators: %s: user-supplied search query */
@@ -105,7 +115,7 @@ if ($search_query !== '') {
                             esc_html($search_query)
                         );
                         ?>
-                    </h4>
+                    </h3>
                     <div class="nav-coa-results__grid">
                         <?php while ($results->have_posts()) : $results->the_post();
                             $product_obj = wc_get_product(get_the_ID());
@@ -117,7 +127,7 @@ if ($search_query !== '') {
                             $coa_url = get_post_meta(get_the_ID(), '_nav_coa_pdf', true);
                         ?>
                         <div class="nav-coa-result-card">
-                            <h5 class="nav-coa-result-card__name"><?php echo esc_html($product_obj->get_name()); ?></h5>
+                            <h4 class="nav-coa-result-card__name"><?php echo esc_html($product_obj->get_name()); ?></h4>
                             <?php if ($batch) : ?>
                                 <p class="nav-coa-result-card__meta"><span><?php esc_html_e('Batch:', 'navigate-peptides'); ?></span> <?php echo esc_html($batch); ?></p>
                             <?php endif; ?>

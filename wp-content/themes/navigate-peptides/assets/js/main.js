@@ -240,6 +240,24 @@
             fired = true;
             mv.removeEventListener('error', handler);
 
+            // Telemetry: surface the failure so a regression in the GLB
+            // CDN, CORS, or CSP shows up in GA4 + the console instead
+            // of every vial silently degrading to its poster. Failure
+            // type (loadfailure / source-error) varies; capture both
+            // for diagnosis.
+            var src = mv.getAttribute('src') || '';
+            try {
+                if (typeof window.gtag === 'function') {
+                    window.gtag('event', 'model_viewer_error', {
+                        model_src: src.slice(-80),
+                        error_type: (ev && ev.detail && ev.detail.type) || 'unknown'
+                    });
+                }
+            } catch (_) { /* gtag may be denied by consent — non-fatal */ }
+            if (window.console && typeof console.warn === 'function') {
+                console.warn('[nav] model-viewer failed; falling back to poster.', { src: src, ev: ev });
+            }
+
             // Prefer <picture> so <source type=image/webp> stays attached.
             var picture = mv.querySelector('picture');
             var poster = picture || mv.querySelector('img');

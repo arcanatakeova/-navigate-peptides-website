@@ -5,12 +5,14 @@ Author: Arcana Operations Developers
 Author URI: https://arcanaoperations.com
 Description: Premium biotech-style WordPress theme for Navigate Peptides. Dark, matte, scientific design with WooCommerce integration. Built for research peptide e-commerce with full FDA/processor compliance. Designed and developed by Arcana Operations — custom WordPress sites, WooCommerce, and bespoke web builds. https://arcanaoperations.com
 Version: 1.0.0
-Requires at least: 6.4
+Requires at least: 6.5
 Tested up to: 6.9
 Requires PHP: 8.1
+Requires Plugins: woocommerce
 License: Proprietary
 License URI: https://navigatepeptides.com
 Text Domain: navigate-peptides
+Domain Path: /languages
 Tags: e-commerce, woocommerce, dark, custom-menu, custom-logo
 
 Navigate Peptides — Research Peptide Compounds

@@ -19,11 +19,14 @@ add_action('after_setup_theme', function () {
     // Title tag support
     add_theme_support('title-tag');
 
-    // Post thumbnails
+    // Post thumbnails. The earlier add_image_size() registrations
+    // (product-card 400×400, product-hero 800×800, category-hero
+    // 1200×400) were never consumed by any template — the storefront
+    // ships pre-baked WebP posters at fixed dimensions instead — so
+    // every new media upload was triggering 3× unused thumbnail
+    // regenerations. Dropped them. Reinstate selectively if a future
+    // feature actually needs a WP-managed crop pipeline.
     add_theme_support('post-thumbnails');
-    add_image_size('product-card', 400, 400, true);
-    add_image_size('product-hero', 800, 800, false);
-    add_image_size('category-hero', 1200, 400, true);
 
     // HTML5 markup — dropped comment-form / comment-list since the
     // theme ships no comments.php (the storefront doesn't expose
@@ -640,7 +643,13 @@ function nav_icon(string $name, string $class = ''): string {
     ];
     $svg = $icons[$name] ?? '';
     $cls = $class ? ' class="' . esc_attr($class) . '"' : '';
-    return str_replace('<svg ', "<svg{$cls} ", $svg);
+    // Inline icons in this set are decorative — every callsite pairs
+    // them with adjacent text (trust cards, badges, footer logo) or
+    // wraps a labeled button (cart, search, mobile-toggle which carry
+    // their own aria-label). Without aria-hidden, AT readers announce
+    // "graphic" alongside the label, doubling the announcement. Add
+    // aria-hidden + focusable="false" so the icon stays purely visual.
+    return str_replace('<svg ', '<svg' . $cls . ' aria-hidden="true" focusable="false" ', $svg);
 }
 
 /* ------------------------------------------------------------------

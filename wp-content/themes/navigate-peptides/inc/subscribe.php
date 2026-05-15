@@ -256,3 +256,41 @@ function nav_handle_subscribe(WP_REST_Request $request) {
         'message' => __('Thanks — you\'re on the list.', 'navigate-peptides'),
     ]);
 }
+
+/* ------------------------------------------------------------------
+ * GDPR retention: scrub hashed PII (IP + UA tokens) from subscriber
+ * rows older than `nav_subscriber_pii_retention_days` (default 365).
+ * The hashed tokens are short non-reversible identifiers, but per
+ * GDPR data-minimization any correlatable signal is PII while it
+ * lives. After a year the subscription consent record (email +
+ * _nav_consent_ts) stays — only the audit-trail hashes drop.
+ * ----------------------------------------------------------------*/
+add_action('after_switch_theme', function () {
+    if (!wp_next_scheduled('nav_subscriber_pii_scrub')) {
+        wp_schedule_event(time() + 60, 'daily', 'nav_subscriber_pii_scrub');
+    }
+});
+add_action('switch_theme', function () {
+    wp_clear_scheduled_hook('nav_subscriber_pii_scrub');
+});
+add_action('nav_subscriber_pii_scrub', function () {
+    $days = (int) apply_filters('nav_subscriber_pii_retention_days', 365);
+    if ($days < 1) return;
+    $cutoff = gmdate('Y-m-d H:i:s', time() - ($days * DAY_IN_SECONDS));
+    $stale = get_posts([
+        'post_type'      => 'nav_subscriber',
+        'post_status'    => ['publish', 'private'],
+        'posts_per_page' => 500,
+        'date_query'     => [['column' => 'post_date_gmt', 'before' => $cutoff]],
+        'meta_query'     => [
+            'relation' => 'OR',
+            ['key' => '_nav_ip_hash',         'compare' => 'EXISTS'],
+            ['key' => '_nav_user_agent_hash', 'compare' => 'EXISTS'],
+        ],
+        'fields' => 'ids',
+    ]);
+    foreach ($stale as $id) {
+        delete_post_meta($id, '_nav_ip_hash');
+        delete_post_meta($id, '_nav_user_agent_hash');
+    }
+});

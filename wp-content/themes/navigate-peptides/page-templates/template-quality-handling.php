@@ -19,7 +19,7 @@ get_header();
     <div class="nav-container">
         <div class="nav-card-grid nav-card-grid--2">
             <div class="nav-info-card">
-                <h3 class="nav-info-card__title"><?php esc_html_e('Storage Requirements', 'navigate-peptides'); ?></h3>
+                <h2 class="nav-info-card__title"><?php esc_html_e('Storage Requirements', 'navigate-peptides'); ?></h2>
                 <ul class="nav-info-card__list">
                     <li><?php esc_html_e('Lyophilized peptides: Store at -20°C for long-term stability', 'navigate-peptides'); ?></li>
                     <li><?php esc_html_e('Reconstituted peptides: Store at 2-8°C, use within 30 days', 'navigate-peptides'); ?></li>
@@ -29,7 +29,7 @@ get_header();
                 </ul>
             </div>
             <div class="nav-info-card">
-                <h3 class="nav-info-card__title"><?php esc_html_e('Laboratory Preparation Procedure', 'navigate-peptides'); ?></h3>
+                <h2 class="nav-info-card__title"><?php esc_html_e('Laboratory Preparation Procedure', 'navigate-peptides'); ?></h2>
                 <ul class="nav-info-card__list">
                     <li><?php esc_html_e('In laboratory preparation, add appropriate solvent slowly along the vial wall', 'navigate-peptides'); ?></li>
                     <li><?php esc_html_e('Allow lyophilized compound to dissolve under controlled conditions (2-5 minutes)', 'navigate-peptides'); ?></li>
