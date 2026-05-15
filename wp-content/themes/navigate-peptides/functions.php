@@ -25,11 +25,21 @@ add_action('after_setup_theme', function () {
     add_image_size('product-hero', 800, 800, false);
     add_image_size('category-hero', 1200, 400, true);
 
-    // HTML5 markup
+    // HTML5 markup — dropped comment-form / comment-list since the
+    // theme ships no comments.php (the storefront doesn't expose
+    // comments on any post type). Declaring support for templates that
+    // don't exist is a no-op and confuses theme-review tooling.
     add_theme_support('html5', [
-        'search-form', 'comment-form', 'comment-list',
-        'gallery', 'caption', 'style', 'script',
+        'search-form', 'gallery', 'caption', 'style', 'script',
     ]);
+
+    // Translation loading — without this, every __() / esc_html__()
+    // call against the navigate-peptides text domain falls through to
+    // the source string even when a translator drops a .mo into
+    // wp-content/languages/themes/navigate-peptides-<locale>.mo. Theme
+    // currently ships no .pot, but wiring the loader unblocks future
+    // i18n work and is required by the WP theme review checklist.
+    load_theme_textdomain('navigate-peptides', NAV_THEME_DIR . '/languages');
 
     // Custom logo
     add_theme_support('custom-logo', [
@@ -138,22 +148,30 @@ add_action('wp_enqueue_scripts', function () {
         'restNonce'    => wp_create_nonce('wp_rest'),
     ]);
 
-    // Dequeue default WooCommerce styles — we override everything
-    if (class_exists('WooCommerce')) {
-        wp_dequeue_style('woocommerce-general');
-        wp_dequeue_style('woocommerce-layout');
-        wp_dequeue_style('woocommerce-smallscreen');
-
-        // Only force-enqueue WC ajax scripts on pages that actually need
-        // the cart-fragments XHR. Research articles / blog posts / static
-        // pages don't render cart UI — loading ~80KB of extra JS and
-        // polling cart-fragments there was pure waste.
-        if ($force_wc_scripts) {
-            wp_enqueue_script('wc-cart-fragments');
-            wp_enqueue_script('wc-add-to-cart');
-        }
+    // Only force-enqueue WC ajax scripts on pages that actually need
+    // the cart-fragments XHR. Research articles / blog posts / static
+    // pages don't render cart UI — loading ~80KB of extra JS and
+    // polling cart-fragments there was pure waste.
+    if (class_exists('WooCommerce') && $force_wc_scripts) {
+        wp_enqueue_script('wc-cart-fragments');
+        wp_enqueue_script('wc-add-to-cart');
     }
 });
+
+/*
+ * Dequeue default WooCommerce stylesheets. Must run at priority 100
+ * (AFTER WC's own enqueue callback at default priority 20) — at
+ * priority 10 the queue entries don't exist yet and the dequeue calls
+ * silently no-op. The visible result is fine today because
+ * woocommerce.css overrides everything WC ships, but two stylesheets
+ * end up parsed instead of one, wasting bytes + CSSOM work per page.
+ */
+add_action('wp_enqueue_scripts', function () {
+    if (!class_exists('WooCommerce')) return;
+    wp_dequeue_style('woocommerce-general');
+    wp_dequeue_style('woocommerce-layout');
+    wp_dequeue_style('woocommerce-smallscreen');
+}, 100);
 
 /* ------------------------------------------------------------------
  * 3. WooCommerce Configuration
@@ -221,9 +239,12 @@ require_once NAV_THEME_DIR . '/inc/age-gate.php';
 /* ------------------------------------------------------------------
  * 6i. Business identity — single source of truth
  *
- * Legal entity (Elytherion LLC), DBA (Navigate Peptides), CMRA mailing
- * address, phone, and support email constants + helpers. Consumed by
- * footer.php, inc/seo.php, template-contact.php, and any legal page.
+ * DBA (Navigate Peptides), shipping address, and support email
+ * constants + helpers. Consumed by footer.php, inc/seo.php,
+ * template-contact.php, and any legal page. Legal-entity name and
+ * phone number are deliberately omitted from constants — see
+ * inc/business.php for the redaction rationale (processor compliance
+ * + privacy posture).
  * ----------------------------------------------------------------*/
 require_once NAV_THEME_DIR . '/inc/business.php';
 
