@@ -128,9 +128,11 @@ function nav_handle_contact_form(): void {
     );
 
     // Admin recipient sanity — catch installs where admin_email is unset
-    // before we call wp_mail, so the error message is specific.
+    // before we call wp_mail, so the error message is specific. Log only
+    // a boolean for diagnostic purposes; the admin address itself never
+    // enters the error log.
     if (!is_email($to)) {
-        error_log('[nav_contact] admin_email option is not a valid email: ' . var_export($to, true));
+        error_log('[nav_contact] admin_email option is not a valid email (set=' . (empty($to) ? '0' : '1') . ')');
         wp_safe_redirect(add_query_arg('error', 'send', nav_get_contact_url()));
         exit;
     }
@@ -151,14 +153,15 @@ function nav_handle_contact_form(): void {
     ];
 
     // Check wp_mail return — a false here means PHPMailer rejected the send
-    // (DNS, auth, plugin veto). Log with enough context to diagnose and
-    // surface to the user rather than silently redirecting to "success".
+    // (DNS, auth, plugin veto). Log a redacted IP token + inquiry type so
+    // we can correlate repeat failures without spilling the admin address
+    // or visitor IP into PHP error_log (GDPR-relevant).
     $sent = wp_mail($to, $subject, $body, $headers);
     if (!$sent) {
         $last = error_get_last();
         error_log(sprintf(
-            '[nav_contact] wp_mail failed: to=%s ip=%s type=%s last=%s',
-            $to, $client_ip, $inquiry_type, $last['message'] ?? '-'
+            '[nav_contact] wp_mail failed: ip_hash=%s type=%s last=%s',
+            nav_redact($client_ip), $inquiry_type, $last['message'] ?? '-'
         ));
         wp_safe_redirect(add_query_arg('error', 'send', nav_get_contact_url()));
         exit;
@@ -184,7 +187,9 @@ function nav_handle_contact_form(): void {
     ];
     $ack_sent = wp_mail($email, $ack_subject, $ack_body, $ack_headers);
     if (!$ack_sent) {
-        error_log(sprintf('[nav_contact] auto-ack failed for %s', $email));
+        // Hash the submitter address so repeat failures are correlatable
+        // without spilling the raw email into PHP error_log (GDPR PII).
+        error_log(sprintf('[nav_contact] auto-ack failed email_hash=%s', nav_redact($email)));
     }
 
     wp_safe_redirect(add_query_arg('sent', '1', nav_get_contact_url()));

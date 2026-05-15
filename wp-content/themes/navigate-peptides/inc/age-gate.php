@@ -81,7 +81,12 @@ add_action('wp_head', function () {
 (function () {
     try {
         var ua = navigator.userAgent || '';
-        var bots = /<?php echo $bot_pattern; ?>/i;
+        /* Bot allowlist pattern is encoded via wp_json_encode then
+           reconstructed as a RegExp in JS — so future refactors that
+           turn $bot_pattern into a filter/option can't inject script
+           context. Today the value is a hardcoded constant; this
+           defense matters for tomorrow's edit. */
+        var bots = new RegExp(<?php echo wp_json_encode($bot_pattern); ?>, 'i');
         var hasCookie = document.cookie.indexOf('<?php echo esc_js($cookie_name); ?>=') !== -1;
         if (hasCookie || bots.test(ua)) {
             document.documentElement.classList.add('nav-age-gate-bypass');
