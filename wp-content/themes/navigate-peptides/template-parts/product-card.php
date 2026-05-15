@@ -27,9 +27,6 @@ $nav_card_color       = function_exists('nav_get_product_category_color')
     ? nav_get_product_category_color($product)
     : '#474C50';
 $nav_card_subtitle    = (string) get_post_meta($nav_product_id, '_nav_technical_subtitle', true);
-$nav_card_glb         = function_exists('nav_safe_glb_url')
-    ? nav_safe_glb_url(get_post_meta($nav_product_id, '_nav_3d_model_url', true), $nav_product_id)
-    : '';
 $nav_card_image       = function_exists('nav_get_product_card_image')
     ? nav_get_product_card_image($product)
     : ['src' => '', 'srcset' => null, 'width' => 400, 'height' => 400];
@@ -39,37 +36,7 @@ $nav_card_show_excerpt = ! empty($args['show_excerpt']);
     <a href="<?php the_permalink(); ?>" class="nav-product-card__link">
         <div class="nav-product-card__accent"></div>
         <div class="nav-product-card__image">
-            <?php if ($nav_card_glb) : ?>
-                <model-viewer
-                    class="nav-product-card__viewer"
-                    src="<?php echo esc_url($nav_card_glb); ?>"
-                    alt="<?php echo esc_attr(get_the_title()); ?> — 3D vial"
-                    interaction-prompt="none"
-                    disable-zoom
-                    disable-pan
-                    disable-tap
-                    camera-orbit="0deg 75deg 110%"
-                    environment-image="neutral"
-                    shadow-intensity="0.6"
-                    exposure="1.2"
-                    loading="lazy"
-                    reveal="auto"
-                    aria-hidden="true"
-                >
-                    <?php if (!empty($nav_card_image['src'])) : ?>
-                        <img
-                            slot="poster"
-                            src="<?php echo esc_url($nav_card_image['src']); ?>"
-                            alt=""
-                            class="nav-product-card__img"
-                            loading="lazy"
-                            decoding="async"
-                            width="<?php echo esc_attr((string) $nav_card_image['width']); ?>"
-                            height="<?php echo esc_attr((string) $nav_card_image['height']); ?>"
-                        >
-                    <?php endif; ?>
-                </model-viewer>
-            <?php elseif (!empty($nav_card_image['src'])) : ?>
+            <?php if (!empty($nav_card_image['src'])) : ?>
                 <img
                     src="<?php echo esc_url($nav_card_image['src']); ?>"
                     <?php if (!empty($nav_card_image['srcset'])) : ?>srcset="<?php echo esc_attr($nav_card_image['srcset']); ?>"<?php endif; ?>

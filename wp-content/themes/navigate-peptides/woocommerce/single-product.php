@@ -121,9 +121,12 @@ while (have_posts()) : the_post();
             <!-- Right: Product Details (7-Point Structure) -->
             <div class="nav-product-single__details">
 
-                <!-- Category badge -->
+                <!-- Category badge — bg uses the cat color at 20% alpha,
+                     but text stays white for AA contrast. Putting the cat
+                     color in both fg and bg yields a 1.4-2.9:1 same-hue
+                     pairing that fails 4.5:1 across the whole palette. -->
                 <?php if ($cat) : ?>
-                    <span class="nav-product-single__cat-badge" style="background-color: <?php echo esc_attr($cat_color); ?>20; color: <?php echo esc_attr($cat_color); ?>">
+                    <span class="nav-product-single__cat-badge" style="background-color: <?php echo esc_attr($cat_color); ?>33; border: 1px solid <?php echo esc_attr($cat_color); ?>; color: #fff;">
                         <?php echo esc_html($cat->name); ?>
                     </span>
                 <?php endif; ?>
