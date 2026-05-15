@@ -1,0 +1,7 @@
+Translation files live here. Generate the source template with:
+  cd wp-content/themes/navigate-peptides
+  wp i18n make-pot . languages/navigate-peptides.pot \
+      --domain=navigate-peptides --skip-js
+
+Per-locale translations (e.g. navigate-peptides-es_ES.po) compile to .mo and load
+via load_theme_textdomain() registered in functions.php.

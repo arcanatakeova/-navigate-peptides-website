@@ -60,6 +60,17 @@ function nav_backfill_default_terms(): void {
         'Research Framework'    => 'framework',
         'Emerging Research'     => 'emerging',
     ];
+    // Fast-path: if every expected slug already exists, skip the loop
+    // entirely. Running the per-slug `term_exists` + log scaffolding on
+    // every theme activation is wasteful when nothing's missing.
+    $all_present = true;
+    foreach ($research_defaults as $slug) {
+        if (!term_exists($slug, 'research_category')) { $all_present = false; break; }
+    }
+    if ($all_present) {
+        // Still drop through to the product_cat block below.
+        $research_defaults = [];
+    }
     foreach ($research_defaults as $name => $slug) {
         if (!term_exists($slug, 'research_category')) {
             $result = wp_insert_term($name, 'research_category', ['slug' => $slug]);
@@ -85,6 +96,13 @@ function nav_backfill_default_terms(): void {
             'Cognitive Research'           => 'cognitive-research',
             'Dermal Research'              => 'dermal-research',
         ];
+        $all_present = true;
+        foreach ($product_defaults as $slug) {
+            if (!term_exists($slug, 'product_cat')) { $all_present = false; break; }
+        }
+        if ($all_present) {
+            $product_defaults = [];
+        }
         foreach ($product_defaults as $name => $slug) {
             if (!term_exists($slug, 'product_cat')) {
                 $result = wp_insert_term($name, 'product_cat', ['slug' => $slug]);
