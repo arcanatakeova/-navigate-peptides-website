@@ -330,17 +330,35 @@ function nav_wc_save_product_meta($post_id) {
         '_nav_3d_model_url',
     ];
 
+    // Collect failures so admins see a single notice listing every
+    // field that couldn't be persisted — vs the previous behavior
+    // where a DB write rejection shipped a product with missing
+    // Batch Verification / COA data and the admin saw a clean
+    // "Updated" notice.
+    $failed = [];
     foreach ($fields as $field) {
         if (isset($_POST[$field])) {
             $is_url = in_array($field, ['_nav_coa_pdf', '_nav_3d_model_url'], true);
-            update_post_meta(
+            $result = update_post_meta(
                 $post_id,
                 $field,
                 $is_url
                     ? esc_url_raw(wp_unslash($_POST[$field]))
                     : sanitize_textarea_field(wp_unslash($_POST[$field]))
             );
+            if ($result === false) {
+                $failed[] = $field;
+            }
         }
+    }
+    if ($failed && function_exists('nav_admin_warn')) {
+        nav_admin_warn(
+            'wc_meta_save_' . $post_id,
+            sprintf(
+                'Product #%d: failed to persist meta fields %s. Re-save or check DB writability.',
+                $post_id, implode(', ', $failed)
+            )
+        );
     }
 }
 add_action('woocommerce_process_product_meta', 'nav_wc_save_product_meta');

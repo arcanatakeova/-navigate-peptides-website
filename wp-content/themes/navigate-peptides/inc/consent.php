@@ -37,11 +37,25 @@ function nav_get_legal_url(string $slug_candidate_a, string $slug_candidate_b = 
 }
 
 function nav_privacy_url(): string {
-    return nav_get_legal_url('privacy-policy', 'privacy');
+    $url = nav_get_legal_url('privacy-policy', 'privacy');
+    if ($url === '' && is_admin() && function_exists('nav_admin_warn')) {
+        nav_admin_warn(
+            'legal_page_missing_privacy',
+            'Privacy policy page is missing — footer link will be hidden and processor audit may flag this. Create a page with slug "privacy-policy".'
+        );
+    }
+    return $url;
 }
 
 function nav_terms_url(): string {
-    return nav_get_legal_url('terms-of-service', 'terms');
+    $url = nav_get_legal_url('terms-of-service', 'terms');
+    if ($url === '' && is_admin() && function_exists('nav_admin_warn')) {
+        nav_admin_warn(
+            'legal_page_missing_terms',
+            'Terms of Service page is missing — footer link will be hidden and processor audit may flag this. Create a page with slug "terms-of-service".'
+        );
+    }
+    return $url;
 }
 
 function nav_refund_url(): string {

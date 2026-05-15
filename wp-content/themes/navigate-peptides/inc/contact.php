@@ -192,6 +192,14 @@ function nav_handle_contact_form(): void {
         error_log(sprintf('[nav_contact] auto-ack failed email_hash=%s', nav_redact($email)));
     }
 
-    wp_safe_redirect(add_query_arg('sent', '1', nav_get_contact_url()));
+    // Surface the ack-send result to the thank-you page so the template
+    // can disclose "we got your message but couldn't send a copy" rather
+    // than silently lying with a clean "Thanks!" when the receipt never
+    // arrived. The admin notification (above) already landed.
+    $redirect_args = ['sent' => '1'];
+    if (!$ack_sent) {
+        $redirect_args['ack'] = 'fail';
+    }
+    wp_safe_redirect(add_query_arg($redirect_args, nav_get_contact_url()));
     exit;
 }

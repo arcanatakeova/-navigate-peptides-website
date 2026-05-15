@@ -48,7 +48,12 @@ get_header();
             // Success / error messages
             if (isset($_GET['sent']) && $_GET['sent'] === '1') : ?>
                 <div class="nav-form-success">
-                    <p>Your inquiry has been submitted. Our team will respond within 1-2 business days.</p>
+                    <p><?php esc_html_e('Your inquiry has been submitted. Our team will respond within 1-2 business days.', 'navigate-peptides'); ?></p>
+                    <?php if (isset($_GET['ack']) && $_GET['ack'] === 'fail') : ?>
+                        <p class="nav-form-success__note">
+                            <?php esc_html_e('We received your message, but the confirmation copy to your inbox couldn\'t be delivered. If you need written acknowledgement, reply to this page or contact us directly — your submission is safe with our team.', 'navigate-peptides'); ?>
+                        </p>
+                    <?php endif; ?>
                 </div>
             <?php elseif (isset($_GET['error'])) :
                 $error_key = sanitize_text_field(wp_unslash($_GET['error']));
