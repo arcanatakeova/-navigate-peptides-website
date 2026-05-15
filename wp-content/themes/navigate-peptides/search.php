@@ -35,8 +35,8 @@ $total_results = $GLOBALS['wp_query']->found_posts;
 <section class="nav-section nav-section--compact">
     <div class="nav-container">
         <form role="search" method="get" class="nav-search-form" action="<?php echo esc_url(home_url('/')); ?>">
-            <label for="nav-search-input" class="screen-reader-text"><?php esc_html_e('Search', 'navigate-peptides'); ?></label>
-            <input type="search" id="nav-search-input" class="nav-form-input" placeholder="<?php esc_attr_e('Search compounds, research, quality…', 'navigate-peptides'); ?>" value="<?php echo esc_attr($search_query); ?>" name="s">
+            <label for="nav-search-results-input" class="screen-reader-text"><?php esc_html_e('Search', 'navigate-peptides'); ?></label>
+            <input type="search" id="nav-search-results-input" class="nav-form-input" placeholder="<?php esc_attr_e('Search compounds, research, quality…', 'navigate-peptides'); ?>" value="<?php echo esc_attr($search_query); ?>" name="s">
             <button type="submit" class="nav-btn nav-btn--primary"><?php esc_html_e('Search', 'navigate-peptides'); ?></button>
         </form>
     </div>
