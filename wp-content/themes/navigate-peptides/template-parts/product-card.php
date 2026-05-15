@@ -90,6 +90,9 @@ $nav_card_show_excerpt = ! empty($args['show_excerpt']);
             <?php if ($nav_card_show_excerpt) : ?>
                 <p class="nav-product-card__excerpt"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 15)); ?></p>
             <?php endif; ?>
+            <span class="nav-product-card__ruo-badge" aria-label="<?php esc_attr_e('Research use only', 'navigate-peptides'); ?>">
+                <?php esc_html_e('RESEARCH USE ONLY', 'navigate-peptides'); ?>
+            </span>
             <div class="nav-product-card__footer">
                 <span class="nav-product-card__price"><?php echo $product->get_price_html(); // phpcs:ignore WordPress.Security.EscapeOutput -- WC returns trusted HTML ?></span>
                 <span class="nav-product-card__action"><?php esc_html_e('View peptide →', 'navigate-peptides'); ?></span>

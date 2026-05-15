@@ -44,6 +44,9 @@ $cat_color     = $is_category ? nav_get_category_color($current_cat->slug) : '#4
             }
             ?>
         </p>
+        <div class="nav-page-hero__ruo" role="note" aria-label="Research use disclaimer">
+            <?php echo esc_html(nav_get_disclaimer('sitewide')); ?>
+        </div>
     </div>
 </section>
 

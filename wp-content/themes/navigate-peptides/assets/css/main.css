@@ -740,6 +740,24 @@ body.admin-bar .nav-header {
     max-width: 640px;
 }
 
+/* Archive page RUO disclaimer — rendered inline in the hero so the
+   canonical compliance statement appears above the product grid
+   instead of only at footer position 99. Required by processor
+   audits that scan above-the-fold copy. */
+.nav-page-hero__ruo {
+    margin-top: 18px;
+    padding: 10px 14px;
+    max-width: 680px;
+    font-family: var(--nav-font-mono);
+    font-size: 11px;
+    line-height: 1.55;
+    letter-spacing: 0.02em;
+    color: var(--nav-text-secondary);
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 2px solid var(--nav-accent);
+    border-radius: 0 4px 4px 0;
+}
+
 @media (min-width: 768px) {
     .nav-page-hero {
         padding: var(--nav-gap-3xl) 0;
@@ -5625,6 +5643,18 @@ body.has-age-gate {
     font-size: 13px;
     line-height: 1.55;
     color: var(--nav-text-primary);
+}
+
+/* Canonical compliance text embedded inside the RUO acknowledgement
+   checkbox — distinct visual weight from the "I acknowledge" lead-in
+   so the legal-text vs personal-acknowledgement layers stay readable. */
+.nav-age-gate__canonical {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--nav-text-secondary);
+    font-style: italic;
 }
 
 /* ---------- Actions ---------- */

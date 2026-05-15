@@ -108,6 +108,7 @@ function nav_research_overview_tab(): void {
 
     echo '<p class="nav-tab-content__ruo">';
     echo esc_html__('This compound is classified within structured research frameworks and is supplied for controlled laboratory environments.', 'navigate-peptides');
+    echo ' ' . esc_html(nav_get_disclaimer('sitewide'));
     echo '</p>';
 
     // Research focus
@@ -382,13 +383,11 @@ add_action('woocommerce_checkout_process', function () {
 });
 
 /* ------------------------------------------------------------------
- * Cart/Checkout: Add sitewide disclaimer
+ * Cart/Checkout: sitewide disclaimer is now rendered inline by
+ * woocommerce/cart/cart.php so the markup lives next to the cart
+ * table it documents. The duplicate action hook used to double-render
+ * the same paragraph; removed.
  * ----------------------------------------------------------------*/
-add_action('woocommerce_after_cart_table', function () {
-    echo '<div class="nav-cart-disclaimer">';
-    echo '<p>' . esc_html(nav_get_disclaimer('sitewide')) . '</p>';
-    echo '</div>';
-});
 
 /* ------------------------------------------------------------------
  * Modify "Add to Cart" button text
