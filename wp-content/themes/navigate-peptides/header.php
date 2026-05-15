@@ -97,11 +97,14 @@ if ($announcement) :
                         </g>
                     </svg>
                 </span>
-                <span class="nav-header__logo-text-group">
-                    <span class="nav-header__logo-name">Navigate</span>
-                    <span class="nav-header__logo-divider"></span>
-                    <span class="nav-header__logo-name nav-header__logo-name--light">Peptides</span>
-                </span>
+                <img
+                    src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/wordmark.png'); ?>"
+                    alt="Navigate Peptides"
+                    class="nav-header__wordmark"
+                    width="158"
+                    height="37"
+                    decoding="async"
+                />
             <?php endif; ?>
         </a>
 

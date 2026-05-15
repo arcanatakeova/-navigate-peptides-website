@@ -1163,30 +1163,15 @@ body.admin-bar .nav-header {
     flex-shrink: 0;
 }
 
-.nav-header__logo-text-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.nav-header__logo-name {
-    font-family: var(--nav-font-body);
-    font-size: 18px;
-    font-weight: 600;
-    letter-spacing: -0.025em;
-    color: var(--nav-text-primary);
-}
-
-.nav-header__logo-name--light {
-    font-weight: 400;
-    letter-spacing: -0.015em;
-}
-
-.nav-header__logo-divider {
-    width: 1.5px;
-    height: 16px;
-    background-color: var(--nav-accent);
+.nav-header__wordmark {
+    height: 34px;
+    width: auto;
+    display: block;
     flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+    .nav-header__wordmark { height: 28px; }
 }
 
 /* ==========================================================================
