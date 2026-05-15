@@ -607,6 +607,13 @@ add_action('wp_head', function () {
             echo '<meta property="product:availability" content="' . esc_attr($stock) . '">' . "\n";
             echo '<meta property="product:brand" content="' . esc_attr(NAV_SEO_SITE_NAME) . '">' . "\n";
             echo '<meta property="product:condition" content="new">' . "\n";
+            // Facebook / OG product spec expects retailer_item_id when SKU
+            // is available — most catalog ingestion tools key on it for
+            // dedupe across feeds and ads.
+            $sku = $product->get_sku();
+            if ($sku) {
+                echo '<meta property="product:retailer_item_id" content="' . esc_attr($sku) . '">' . "\n";
+            }
         }
     }
 
@@ -640,10 +647,12 @@ add_action('wp_head', function () {
         $logo_url = get_template_directory_uri() . '/assets/images/logo.svg';
     }
 
-    // Organization — legal name + address + phone added so processor
-    // underwriters reading the schema (and search-engine knowledge
-    // panels) see a complete merchant record. Constants come from
-    // inc/business.php; helpers degrade gracefully if absent.
+    // Organization — DBA + address + email only. Legal-entity name,
+    // phone number, and ContactPoint(telephone) are DELIBERATELY
+    // OMITTED for processor-compliance privacy posture (Argyle/NMI
+    // RUO storefront — phone leaks user-facing, legal-entity name
+    // is private). Anyone touching this block: do NOT restore those
+    // fields; inc/business.php has matching deletion notes.
     $organization = [
         '@context'    => 'https://schema.org',
         '@type'       => 'Organization',
@@ -792,21 +801,27 @@ add_action('wp_head', function () {
 
     $url       = get_permalink($product->get_id());
     $raw_sku   = $product->get_sku();
-    $sku       = $raw_sku ?: 'NAV-' . $product->get_id();
     $cas       = get_post_meta($product->get_id(), '_nav_cas_number', true);
     $mw        = get_post_meta($product->get_id(), '_nav_molecular_weight', true);
     $sequence  = get_post_meta($product->get_id(), '_nav_sequence', true);
     $purity    = get_post_meta($product->get_id(), '_nav_purity', true);
     $form      = get_post_meta($product->get_id(), '_nav_form', true);
 
-    $image_url = '';
+    // Google Product rich-result guidelines recommend image as an
+    // array with multiple renditions. We emit every WP-registered size
+    // that yields a URL — typically 'medium', 'large', 'full'. Falling
+    // back to the branded vial SVG when no thumbnail is set.
+    $image_urls = [];
     if (has_post_thumbnail($product->get_id())) {
-        $image_url = get_the_post_thumbnail_url($product->get_id(), 'large');
+        foreach (['large', 'medium_large', 'full'] as $size) {
+            $u = get_the_post_thumbnail_url($product->get_id(), $size);
+            if ($u && !in_array($u, $image_urls, true)) {
+                $image_urls[] = $u;
+            }
+        }
     }
-    if (!$image_url) {
-        // Branded vial SVG is the fallback — replaces the raster PNG that
-        // previously shipped. Schema.org allows SVG for Product.image.
-        $image_url = get_template_directory_uri() . '/assets/images/vial-brand.svg';
+    if (empty($image_urls)) {
+        $image_urls[] = get_template_directory_uri() . '/assets/images/vial-brand.svg';
     }
 
     // additionalProperty — chemical/physical attributes
@@ -834,9 +849,8 @@ add_action('wp_head', function () {
         '@type'       => 'Product',
         '@id'         => $url . '#product',
         'name'        => nav_seo_scrub_name($product->get_name()),
-        'sku'         => $sku,
         'url'         => $url,
-        'image'       => $image_url,
+        'image'       => $image_urls,
         'description' => $description,
         'brand'       => [
             '@type' => 'Brand',
@@ -857,9 +871,12 @@ add_action('wp_head', function () {
         ],
     ];
 
-    // Only include MPN when admin supplied a SKU — Google Merchant requires
-    // MPN to be manufacturer-assigned, not our synthesized fallback.
+    // Only ship SKU + MPN when admin supplied them. Our synthesized
+    // 'NAV-{id}' fallback is useful for internal references but Google
+    // can downrank Product rich results that carry a synthesized SKU
+    // (it looks identifier-y but isn't manufacturer-assigned).
     if ($raw_sku) {
+        $schema['sku'] = $raw_sku;
         $schema['mpn'] = $raw_sku;
     }
 
@@ -934,14 +951,21 @@ add_action('wp_head', function () {
         $author = ['@id' => home_url('/') . '#organization'];
     }
 
-    $image_url = '';
+    // Article image — emit array of available sizes (Google's Article
+    // rich-result guidelines recommend multiple aspect renditions). When
+    // there's no featured image, fall back to the OG social-share render
+    // at 1200x630 (replaces the legacy 1.9MB hero-three-vials.png).
+    $image_urls = [];
     if (has_post_thumbnail()) {
-        $image_url = get_the_post_thumbnail_url(null, 'large');
+        foreach (['large', 'medium_large', 'full'] as $size) {
+            $u = get_the_post_thumbnail_url(null, $size);
+            if ($u && !in_array($u, $image_urls, true)) {
+                $image_urls[] = $u;
+            }
+        }
     }
-    if (!$image_url) {
-        // Fall back to the OG social share render (1200x630, optimized)
-        // rather than the legacy 1.9MB hero-three-vials.png.
-        $image_url = get_template_directory_uri() . '/assets/images/og-social-share.png';
+    if (empty($image_urls)) {
+        $image_urls[] = get_template_directory_uri() . '/assets/images/og-social-share.png';
     }
 
     // Guard against empty description — Google's Article guidelines require it.
@@ -961,7 +985,7 @@ add_action('wp_head', function () {
         'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $url],
         'headline'         => $title,
         'description'      => $desc,
-        'image'            => $image_url,
+        'image'            => $image_urls,
         'datePublished'    => $published,
         'dateModified'     => $modified,
         'author'           => $author,
